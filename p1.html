@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title data-key="p1_doc_title">IntelliBuild – Smart Objects</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="theme.css">
+  <script data-theme-role-script>
+    (function () {
+      var path = (window.location.pathname.split('/').pop() || '').toLowerCase();
+      var page = path.replace('.html', '') || 'home';
+      document.documentElement.setAttribute('data-page', page);
+
+      var role = (localStorage.getItem('userRole') || '').toLowerCase();
+      if (!role) {
+        if (page.indexOf('admin') >= 0 || ['index','ajouter-objet','objets','localisations','parametres'].indexOf(page) >= 0) {
+          role = 'admin';
+        } else if (page.indexOf('user') >= 0 || ['user','mesobjet','localisations-user','parametres-user'].indexOf(page) >= 0) {
+          role = 'user';
+        } else {
+          role = 'guest';
+        }
+      }
+      document.documentElement.setAttribute('data-role', role);
+    })();
+  </script></head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="topbar">
+ <h2>
+  <div class="logo">
+    <img class="brand-logo-lg" src="Sans%20titre-2.png" alt="IntelliBuild">
+    <span data-key="brand">IntelliBuild</span>
+  </div>
+ </h2>
+
+  <nav class="menu">
+    <a href="#" data-key="nav_home">Accueil</a>
+    <a href="#features" data-key="nav_features">Fonctionnalités</a>
+    <a href="about.html" data-key="nav_about">À propos</a>
+  </nav>
+
+  <div class="right">
+    <select class="lang">
+      <option value="fr">FR</option>
+      <option value="en">EN</option>
+      <option value="ar">AR</option>
+    </select>
+    <a href="login.html" class="btn outline" data-key="btn_login">Connexion</a>
+    <a href="register.html" class="btn primary" data-key="btn_register">Inscription</a>
+  </div>
+</header>
+
+<!-- ===== SECTION 1 : HERO ===== -->
+<section class="hero">
+  <div class="hero-content">
+    <h1 data-key="title" data-html="true">
+      Plateforme intelligente<br>
+      de gestion d’objets connectés
+    </h1>
+
+    <p data-key="subtitle">
+      Une solution moderne pour décrire, gérer, sécuriser et rechercher
+      les objets connectés dans un smart building.
+    </p>
+
+    <div class="hero-actions">
+      <a href="login.html" class="btn primary big" data-key="start">Commencer</a>
+      <a href="#features" class="btn outline big" data-key="discover">Découvrir</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 2 : BLOCS ===== -->
+<section class="features" id="features">
+  <div class="feature-card">
+    <h3 data-key="feature1_title"> Gestion</h3>
+    <p data-key="feature1_text">Ajouter, modifier et supprimer facilement vos objets connectés.</p>
+  </div>
+
+  <div class="feature-card">
+    <h3 data-key="feature2_title"> Sécurité</h3>
+    <p data-key="feature2_text">Contrôle d’accès, protection des données et surveillance intelligente.</p>
+  </div>
+
+  <div class="feature-card">
+    <h3 data-key="feature3_title"> Recherche</h3>
+    <p data-key="feature3_text">Recherche rapide par type, localisation ou état des objets.</p>
+  </div>
+</section>
+
+<!-- ===== SECTION 3 : DESCRIPTION ===== -->
+<section class="about">
+  <h2 data-key="about_title">Pourquoi IntelliBuild ?</h2>
+  <p data-key="about_text">
+    IntelliBuild centralise la gestion des objets connectés d’un bâtiment
+    intelligent pour améliorer l’efficacité, la sécurité et la visibilité.
+  </p>
+  
+</section>
+
+<footer class="site-footer">
+  <div class="brand">
+    <img src="Sans%20titre-2.png" alt="IntelliBuild">
+    <span>IntelliBuild</span>
+  </div>
+  <div>(c) 2026 IntelliBuild. All rights reserved.</div>
+</footer>
+
+<script src="translations.js"></script>
+
+</body>
+</html>
+
+

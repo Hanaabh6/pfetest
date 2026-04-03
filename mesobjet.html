@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes objets - IntelliBuild</title>
+  <script src="config.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-overlay: rgba(15, 23, 42, 0.48);
+      --panel: rgba(255, 255, 255, 0.86);
+      --sidebar-bg: rgba(0, 0, 0, 0.92);
+      --text-light: #ffffff;
+      --hover-bg: rgba(16, 185, 129, 0.18);
+      --accent: #0ea5a4;
+      --accent-2: #0f766e;
+      --muted: #64748b;
+      --danger: #be123c;
+      --danger-bg: #ffe4e6;
+      --ok: #166534;
+      --ok-bg: #dcfce7;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(var(--bg-overlay), var(--bg-overlay)),
+        url("https://images.pexels.com/photos/4040649/pexels-photo-4040649.jpeg") no-repeat center center fixed;
+      background-size: cover;
+      color: #0f172a;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: var(--sidebar-bg);
+      color: var(--text-light);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+      min-height: 100vh;
+      flex: 0 0 280px;
+      box-shadow: 0 24px 50px rgba(2, 6, 23, 0.45);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .logo img {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      object-fit: contain;
+    }
+
+    .logo h2 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .sidebar nav a {
+      display: block;
+      padding: 13px 14px;
+      margin: 10px 0;
+      text-decoration: none;
+      color: var(--text-light);
+      border-radius: 10px;
+      transition: background 0.25s ease;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .sidebar nav i {
+      width: 18px;
+      text-align: center;
+      margin-right: 10px;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav .nav-active {
+      background: var(--hover-bg);
+    }
+
+    .sidebar nav .nav-active {
+      box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.45);
+    }
+
+    .main-area {
+      flex: 1;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: var(--panel);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 24px 70px rgba(2, 6, 23, 0.38);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 24px;
+      background: linear-gradient(120deg, rgba(14, 165, 164, 0.96), rgba(15, 118, 110, 0.96));
+      color: #fff;
+    }
+
+    .title-wrap h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .title-wrap p {
+      margin: 6px 0 0;
+      opacity: 0.92;
+      font-size: 14px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-link {
+      border: 1px solid rgba(255,255,255,0.6);
+      color: #fff;
+      background: rgba(255,255,255,0.12);
+      padding: 9px 14px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .btn-link:hover { background: rgba(255,255,255,0.2); }
+
+    .body {
+      padding: 24px;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .counter {
+      background: rgba(255, 255, 255, 0.95);
+      color: #0f172a;
+      border: 1px solid #dbeafe;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .refresh-btn {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .refresh-btn:hover { background: var(--accent-2); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 1px solid #dbe6f3;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    th {
+      text-align: left;
+      font-size: 13px;
+      padding: 13px;
+      background: rgba(248, 250, 252, 0.95);
+      color: #334155;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    td {
+      padding: 13px;
+      border-bottom: 1px solid #eef2f7;
+      font-size: 14px;
+      color: #0f172a;
+      vertical-align: middle;
+    }
+
+    tr:hover td { background: #f8fafc; }
+
+    .badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+
+    .badge-inuse {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .badge-ok {
+      background: var(--ok-bg);
+      color: var(--ok);
+    }
+
+    .return-btn {
+      border: none;
+      background: #be123c;
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .return-btn:hover { background: #9f1239; }
+
+    .empty {
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 15px;
+      display: none;
+    }
+
+    @media (max-width: 760px) {
+      body { display: block; }
+      .sidebar { width: 100%; min-height: auto; }
+      .main-area { padding: 12px; }
+      .header { flex-direction: column; align-items: flex-start; }
+      .title-wrap h1 { font-size: 24px; }
+      table { font-size: 12px; }
+      th:nth-child(3), td:nth-child(3) { display: none; }
+    }
+  </style>
+  <link rel="stylesheet" href="theme.css">
+  <script data-theme-role-script>
+    (function () {
+      var path = (window.location.pathname.split('/').pop() || '').toLowerCase();
+      var page = path.replace('.html', '') || 'home';
+      document.documentElement.setAttribute('data-page', page);
+
+      var role = (localStorage.getItem('userRole') || '').toLowerCase();
+      if (!role) {
+        if (page.indexOf('admin') >= 0 || ['index','ajouter-objet','objets','localisations','parametres'].indexOf(page) >= 0) {
+          role = 'admin';
+        } else if (page.indexOf('user') >= 0 || ['user','mesobjet','localisations-user','parametres-user'].indexOf(page) >= 0) {
+          role = 'user';
+        } else {
+          role = 'guest';
+        }
+      }
+      document.documentElement.setAttribute('data-role', role);
+    })();
+  </script></head>
+<body>
+  <aside class="sidebar">
+    <div>
+      <div class="logo">
+        <img src="Sans%20titre-2.png" alt="Logo IntelliBuild">
+        <h2>IntelliBuild</h2>
+      </div>
+      <nav>
+        <a href="user.html"><i class="fas fa-home"></i>Dashboard</a>
+        <a href="mesobjet.html" class="nav-active"><i class="fas fa-box-open"></i>Mes objets</a>
+        <a href="localisations-user.html"><i class="fas fa-map-marker-alt"></i>Localisations</a>
+        <a href="notifications-user.html"><i class="fas fa-bell"></i>Notifications</a>
+        <a href="parametres-user.html"><i class="fas fa-cog"></i>Parametres</a>
+      </nav>
+    </div>
+  </aside>
+
+  <main class="main-area">
+  <div class="container">
+    <div class="header">
+      <div class="title-wrap">
+        <h1><i class="fas fa-box-open"></i> Mes objets</h1>
+        <p>Objets que vous avez pris et que vous pouvez rendre</p>
+      </div>
+      <div class="header-actions">
+        <a class="btn-link" href="user.html"><i class="fas fa-arrow-left"></i> Dashboard</a>
+      </div>
+    </div>
+
+    <div class="body">
+      <div class="toolbar">
+        <div class="counter" id="counter">0 objet en cours</div>
+        <button class="refresh-btn" id="refreshBtn"><i class="fas fa-rotate"></i> Actualiser</button>
+      </div>
+
+      <table id="objectsTable" aria-label="Mes objets empruntes">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Type</th>
+            <th>Localisation</th>
+            <th>Statut</th>
+            <th>Pris le</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+
+      <div class="empty" id="emptyState">
+        <i class="fas fa-inbox" style="font-size:32px; margin-bottom:8px;"></i>
+        <div>Vous n'avez aucun objet en cours.</div>
+      </div>
+    </div>
+  </div>
+  </main>
+
+  <script>
+    const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "http://127.0.0.1:8000";
+    const token = localStorage.getItem("userToken");
+
+    const tableBody = document.getElementById("tableBody");
+    const emptyState = document.getElementById("emptyState");
+    const counter = document.getElementById("counter");
+    const refreshBtn = document.getElementById("refreshBtn");
+
+    if (!token) {
+      window.location.href = "login.html";
+    }
+
+    function authHeaders() {
+      return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      };
+    }
+
+    function formatDate(raw) {
+      if (!raw) return "-";
+      const d = new Date(raw);
+      if (Number.isNaN(d.getTime())) return raw;
+      return d.toLocaleString("fr-FR");
+    }
+
+    function sanitize(v) {
+      return String(v || "").replace(/[&<>'"]/g, (ch) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#39;",
+        '"': "&quot;"
+      }[ch]));
+    }
+
+    async function loadMesObjets() {
+      try {
+        const response = await fetch(`${API_BASE}/user/mes-objets`, {
+          method: "GET",
+          headers: authHeaders()
+        });
+
+        if (response.status === 401) {
+          localStorage.removeItem("userToken");
+          localStorage.removeItem("userRole");
+          localStorage.removeItem("userEmail");
+          window.location.href = "login.html";
+          return;
+        }
+
+        const data = await response.json().catch(() => []);
+        if (!response.ok) {
+          alert(data.detail || "Impossible de charger vos objets");
+          return;
+        }
+
+        const items = Array.isArray(data) ? data : [];
+        counter.textContent = `${items.length} objet${items.length > 1 ? "s" : ""} en cours`;
+
+        if (items.length === 0) {
+          tableBody.innerHTML = "";
+          emptyState.style.display = "block";
+          document.getElementById("objectsTable").style.display = "none";
+          return;
+        }
+
+        emptyState.style.display = "none";
+        document.getElementById("objectsTable").style.display = "table";
+
+        tableBody.innerHTML = items.map((item) => {
+          const room = item.location && item.location.room ? item.location.room : "-";
+          const availability = String(item.availability || "en_utilisation").toLowerCase();
+          const badge = availability === "disponible"
+            ? '<span class="badge badge-ok">Disponible</span>'
+            : '<span class="badge badge-inuse">En utilisation</span>';
+
+          return `
+            <tr>
+              <td><strong>${sanitize(item.name || "Objet")}</strong></td>
+              <td>${sanitize(item.type || "-")}</td>
+              <td>${sanitize(room)}</td>
+              <td>${badge}</td>
+              <td>${sanitize(formatDate(item.taken_at))}</td>
+              <td>
+                <button class="return-btn" onclick="retournerObjet('${sanitize(item.thing_id)}')">
+                  <i class="fas fa-undo"></i> Rendre
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join("");
+      } catch (error) {
+        console.error("Erreur mes objets:", error);
+        alert("Erreur réseau");
+      }
+    }
+
+    async function retournerObjet(thingId) {
+      const safeId = String(thingId || "").trim();
+      if (!safeId) return;
+
+      const confirmMsg = `Voulez-vous vraiment rendre l'objet ${safeId} ?`;
+      if (!window.confirm(confirmMsg)) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/things/${encodeURIComponent(safeId)}/retourner`, {
+          method: "POST",
+          headers: authHeaders()
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          alert(data.detail || "Retour impossible");
+          return;
+        }
+
+        alert(data.message || "Objet rendu");
+        await loadMesObjets();
+      } catch (error) {
+        console.error("Erreur retour:", error);
+        alert("Erreur réseau");
+      }
+    }
+
+    refreshBtn.addEventListener("click", loadMesObjets);
+    loadMesObjets();
+  </script>
+</body>
+</html>
+
+
+

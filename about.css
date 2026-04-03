@@ -1,0 +1,87 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f7f9fc;
+  color: #333;
+}
+
+/* HERO */
+.about-hero {
+  background: linear-gradient(120deg,#00b894, #00b894);
+  color: white;
+  padding: 80px 10%;
+}
+
+.about-text h1 {
+  font-size: 42px;
+  margin-bottom: 20px;
+}
+
+.about-text p {
+  font-size: 18px;
+  max-width: 700px;
+}
+
+/* SERVICES */
+.services {
+  padding: 70px 10%;
+  text-align: center;
+}
+
+.services h2 {
+  margin-bottom: 40px;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.service-card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* WHY US */
+.why-us {
+  background: #eef2f7;
+  padding: 70px 10%;
+}
+
+.why-us h2 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.why-grid div {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+}
+
+/* STATS */
+.stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 60px 10%;
+  background: white;
+}
+
+.stat h1 {
+  color:#00b894;
+  font-size: 48px;
+}
+
+.stat p {
+  text-align: center;
+  font-weight: bold;
+}

@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntelliBuild - Ajouter un objet</title>
+    <script src="config.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { 
+            background: url('https://images.pexels.com/photos/4040649/pexels-photo-4040649.jpeg') no-repeat center center fixed;
+            background-size: cover; 
+            display: flex; 
+            min-height: 100vh;
+            margin: 0;
+        }
+        .glass-sidebar { background: rgba(0, 0, 0, 0.92); backdrop-filter: blur(4px); }
+        .form-card { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(12px); 
+            border-radius: 24px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .overlay-modal { position: fixed; inset: 0; display: grid; place-items: center; z-index: 1200; }
+        .overlay-modal[hidden] { display: none; }
+        .overlay-backdrop { position: absolute; inset: 0; background: rgba(2, 6, 23, 0.66); backdrop-filter: blur(3px); }
+        .overlay-panel {
+            position: relative;
+            width: min(900px, calc(100vw - 32px));
+            max-height: calc(100vh - 48px);
+            overflow: auto;
+            border-radius: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.97);
+            box-shadow: 0 24px 55px rgba(2, 6, 23, 0.35);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+        .overlay-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+        .overlay-title { margin: 0; font-size: 22px; color: #0f172a; }
+        .overlay-close { border: none; width: 36px; height: 36px; border-radius: 999px; background: #e2e8f0; color: #0f172a; font-size: 18px; cursor: pointer; }
+        .overlay-close:hover { background: #cbd5e1; }
+        .role-chip { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #065f46; background: #d1fae5; }
+        .role-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
+        .role-item { background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 12px; padding: 12px; }
+        .role-item h4 { margin: 0 0 6px; font-size: 14px; color: #0f172a; }
+        .role-item p { margin: 0; font-size: 13px; color: #334155; }
+        .glass-main { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(10px); }
+
+        .step-banner {
+            border: 1px solid #bfdbfe;
+            background: linear-gradient(125deg, rgba(219, 234, 254, 0.7), rgba(236, 253, 245, 0.8));
+            border-radius: 18px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+        .type-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .type-card {
+            border: 1px solid #dbe3ef;
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 11px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .type-card:hover {
+            border-color: #34d399;
+            transform: translateY(-1px);
+            box-shadow: 0 9px 22px rgba(16, 185, 129, 0.14);
+        }
+        .type-card.active {
+            border-color: #10b981;
+            background: linear-gradient(140deg, #ecfdf5, #d1fae5);
+            box-shadow: 0 10px 26px rgba(16, 185, 129, 0.18);
+        }
+        .type-icon {
+            width: 42px;
+            height: 42px;
+            margin: 0 auto 8px;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            background: #f1f5f9;
+            color: #0f766e;
+            font-size: 17px;
+        }
+        .type-card.active .type-icon {
+            background: #10b981;
+            color: #ffffff;
+        }
+        .type-title {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .type-meta {
+            margin: 3px 0 0;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 700;
+        }
+        .selected-type-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: #e2e8f0;
+            color: #334155;
+            font-size: 12px;
+            font-weight: 800;
+        }
+        .selected-type-pill.active {
+            background: #dcfce7;
+            color: #065f46;
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: 900;
+            color: #0f172a;
+            margin: 0 0 8px;
+        }
+        .field-card {
+            border: 1px solid #dbe3ef;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 14px;
+            padding: 12px;
+        }
+        .field-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 7px;
+        }
+        .field-help {
+            margin-top: 7px;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .field-input, .field-select, .field-textarea {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 11px;
+            padding: 10px 12px;
+            outline: none;
+            transition: all 0.2s ease;
+            background: #fff;
+        }
+        .field-input:focus, .field-select:focus, .field-textarea:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.16);
+        }
+        .field-textarea { resize: vertical; min-height: 95px; }
+        .desc-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .tiny-btn {
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: #0f172a;
+            border-radius: 9px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .tiny-btn:hover { border-color: #10b981; color: #065f46; }
+        .preview-box {
+            border: 1px dashed #94a3b8;
+            background: linear-gradient(135deg, rgba(248, 250, 252, 0.9), rgba(236, 253, 245, 0.65));
+            border-radius: 14px;
+            padding: 10px;
+        }
+        .preview-line {
+            margin: 2px 0;
+            font-size: 12px;
+            color: #334155;
+            font-weight: 700;
+        }
+    </style>
+  <link rel="stylesheet" href="theme.css">
+  <script data-theme-role-script>
+    (function () {
+      var path = (window.location.pathname.split('/').pop() || '').toLowerCase();
+      var page = path.replace('.html', '') || 'home';
+      document.documentElement.setAttribute('data-page', page);
+
+      var role = (localStorage.getItem('userRole') || '').toLowerCase();
+      if (!role) {
+        if (page.indexOf('admin') >= 0 || ['index','ajouter-objet','objets','localisations','parametres'].indexOf(page) >= 0) {
+          role = 'admin';
+        } else if (page.indexOf('user') >= 0 || ['user','mesobjet','localisations-user','parametres-user'].indexOf(page) >= 0) {
+          role = 'user';
+        } else {
+          role = 'guest';
+        }
+      }
+      document.documentElement.setAttribute('data-role', role);
+    })();
+  </script></head>
+<body class="flex">
+    <aside class="w-64 glass-sidebar min-h-screen text-gray-300 p-6 flex flex-col gap-6 shadow-2xl">
+        <div class="text-2xl font-bold flex items-center gap-2 text-white">
+            <img src="Sans%20titre-2.png" alt="IntelliBuild" class="h-10 w-10 rounded-full object-contain">
+            <span>IntelliBuild</span>
+        </div>
+        <select class="lang w-full bg-gray-800 text-gray-200 rounded-lg p-2 text-sm">
+            <option value="fr">Français</option>
+            <option value="en">English</option>
+            <option value="ar">العربية</option>
+        </select>
+        <nav class="flex flex-col gap-4 mt-10">
+            <a href="index.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
+                <i class="fas fa-home"></i> <span data-key="nav_dashboard">Dashboard</span>
+            </a>
+            <a href="ajouter-objet.html" class="bg-emerald-700 p-3 rounded-lg flex items-center gap-3 text-white shadow-lg">
+                <i class="fas fa-plus"></i> <span data-key="nav_add">Ajouter</span>
+            </a>
+            <a href="objets.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
+                <i class="fas fa-cube"></i> <span data-key="nav_objects">Objets</span>
+            </a>
+            <a href="localisations.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
+                <i class="fas fa-map-marker-alt"></i> <span data-key="nav_locations">Localisations</span>
+            </a>
+            <a href="#" id="openHistoryOverlay" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
+                <i class="fas fa-clock-rotate-left"></i> <span data-key="nav_history">Historique</span>
+            </a>
+            <a href="#" id="openRoleOverlay" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
+                <i class="fas fa-user-shield"></i> <span data-key="nav_role">Role</span>
+            </a>
+            <a href="notifications-admin.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
+                <i class="fas fa-bell"></i> <span>Notifications</span>
+            </a>
+            <a href="parametres.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition mt-auto">
+                <i class="fas fa-cog"></i> <span data-key="nav_settings">Paramètres</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col p-6">
+        <div class="flex-1 flex items-center justify-center">
+            <div class="form-card p-10 w-full max-w-lg">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800" data-key="add_object_title">Ajouter un objet</h2>
+                    <p class="text-gray-500" data-key="add_object_sub">Remplissez les informations de l'appareil</p>
+                </div>
+
+                <div id="presetTypeHint" class="hidden mb-5 p-3 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm font-semibold"></div>
+
+                <div class="step-banner">
+                    <div class="flex items-center justify-between gap-3 flex-wrap">
+                        <p class="m-0 text-sm font-black text-slate-800">Etape 1: Choisissez d'abord un type (Lampe, Climatiseur, Camera...)</p>
+                        <span id="selectedTypePill" class="selected-type-pill">Aucun type choisi</span>
+                    </div>
+                    <div id="typeShowcase" class="type-showcase"></div>
+                </div>
+
+                <form id="addForm" class="space-y-4">
+                    <p class="section-title">Etape 2: Renseignez les details de l'objet</p>
+
+                    <div class="field-card">
+                        <label class="field-label" for="objName" data-key="add_object_name"><i class="fas fa-tag text-emerald-700"></i> Nom de l'objet</label>
+                        <input type="text" id="objName" maxlength="80" placeholder="Ex: Lampe Bureau C-12" data-key="ph_object_name" data-attr="placeholder" required class="field-input">
+                        <p class="field-help">Nom court, clair et unique pour retrouver rapidement l'objet.</p>
+                    </div>
+
+                    <input type="hidden" id="objType" value="">
+
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="field-card">
+                            <label class="field-label" for="objLoc" data-key="add_object_location"><i class="fas fa-map-marker-alt text-emerald-700"></i> Localisation</label>
+                            <select id="objLoc" required class="field-select">
+                                <option value="">-- Selectionner une salle --</option>
+
+                                <optgroup label="RDC">
+                                    <option value="Accueil">Accueil</option>
+                                    <option value="Cafétéria">Cafétéria</option>
+                                    <option value="Showroom">Showroom</option>
+                                    <option value="Auditorium">Auditorium</option>
+                                    <option value="Sanitaires">Sanitaires</option>
+                                    <option value="Espace Détente">Espace Détente</option>
+                                </optgroup>
+
+                                <optgroup label="1er étage">
+                                    <option value="Zone de Stockage">Zone de Stockage</option>
+                                    <option value="Atelier Réparation">Atelier Réparation</option>
+                                    <option value="Local Serveurs">Local Serveurs</option>
+                                    <option value="Poste Sécurité">Poste Sécurité</option>
+                                    <option value="Quai d'Expédition">Quai d'Expédition</option>
+                                    <option value="Bureau Chef">Bureau Chef</option>
+                                </optgroup>
+
+                                <optgroup label="2ème étage">
+                                    <option value="Studio Graphique">Studio Graphique</option>
+                                    <option value="Bureau RH">Bureau RH</option>
+                                    <option value="Comptabilité">Comptabilité</option>
+                                    <option value="Salle de Presse">Salle de Presse</option>
+                                    <option value="Bureau Com">Bureau Com</option>
+                                    <option value="Archives">Archives</option>
+                                </optgroup>
+
+                                <optgroup label="3ème étage">
+                                    <option value="Open Space Alpha">Open Space Alpha</option>
+                                    <option value="Labo Robotique">Labo Robotique</option>
+                                    <option value="Bureau Lead Dev">Bureau Lead Dev</option>
+                                    <option value="Salle Réunion 3A">Salle Réunion 3A</option>
+                                    <option value="Zone Debug">Zone Debug</option>
+                                    <option value="Serveurs 3">Serveurs 3</option>
+                                </optgroup>
+
+                                <optgroup label="4ème étage">
+                                    <option value="Bureau PDG">Bureau PDG</option>
+                                    <option value="Salle du Conseil">Salle du Conseil</option>
+                                    <option value="Salon VIP">Salon VIP</option>
+                                    <option value="Terrasse Privée">Terrasse Privée</option>
+                                    <option value="Secrétariat">Secrétariat</option>
+                                    <option value="Archives Dir.">Archives Dir.</option>
+                                </optgroup>
+                            </select>
+                            <p class="field-help">Choisissez la salle principale ou l'equipement est installe.</p>
+                        </div>
+                    </div>
+
+                    <div class="field-card">
+                        <label class="field-label" for="objDesc" data-key="add_object_description"><i class="fas fa-align-left text-emerald-700"></i> Description</label>
+                        <textarea id="objDesc" rows="3" placeholder="Ex: Lampe connectee LED, pilotable a distance, zone open space." class="field-textarea"></textarea>
+                        <div class="desc-actions">
+                            <button type="button" id="generateDescBtn" class="tiny-btn">Generer une description</button>
+                            <button type="button" id="clearDescBtn" class="tiny-btn">Effacer description</button>
+                        </div>
+                        <p class="field-help">Ajoutez des infos utiles: connectivite, usage, contraintes techniques.</p>
+                    </div>
+
+                    <div class="preview-box" id="objectPreview">
+                        <p class="preview-line">Apercu: Objet non complete</p>
+                    </div>
+
+                    <div class="flex gap-4 pt-4">
+                        <button type="button" onclick="window.location.href='index.html'" class="flex-1 py-3 border rounded-xl font-bold text-slate-700 bg-white hover:bg-slate-50" data-key="btn_cancel"><i class="fas fa-xmark mr-2"></i>Annuler</button>
+                        <button type="submit" class="flex-1 py-3 bg-emerald-700 text-white font-bold rounded-xl shadow-lg hover:bg-emerald-800" data-key="btn_save"><i class="fas fa-floppy-disk mr-2"></i>Enregistrer l'objet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <footer class="mt-8 bg-white/80 backdrop-blur-md p-3 rounded-2xl shadow-lg flex items-center justify-between text-[11px] text-gray-700">
+            <div class="flex items-center gap-2 font-semibold text-gray-800">
+                <img src="Sans%20titre-2.png" alt="IntelliBuild" class="h-6 w-6 rounded-full object-contain">
+                <span>IntelliBuild</span>
+            </div>
+            <div>(c) 2026 IntelliBuild. All rights reserved.</div>
+        </footer>
+    </main>
+
+    <div class="overlay-modal" id="infoOverlay" hidden aria-hidden="true">
+        <div class="overlay-backdrop" id="overlayBackdrop"></div>
+        <div class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
+            <div class="overlay-header">
+                <h3 class="overlay-title" id="overlayTitle">Details</h3>
+                <button class="overlay-close" id="overlayClose" type="button" aria-label="Fermer">x</button>
+            </div>
+            <div class="overlay-body" id="overlayBody"></div>
+        </div>
+    </div>
+
+    <script src="translations.js"></script>
+    <script>
+        const apiBase = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://127.0.0.1:8000';
+        const token = localStorage.getItem('userToken');
+        if (!token) window.location.href = "login.html";
+
+        const openHistoryOverlay = document.getElementById('openHistoryOverlay');
+        const openRoleOverlay = document.getElementById('openRoleOverlay');
+        const infoOverlay = document.getElementById('infoOverlay');
+        const overlayBackdrop = document.getElementById('overlayBackdrop');
+        const overlayClose = document.getElementById('overlayClose');
+        const overlayTitle = document.getElementById('overlayTitle');
+        const overlayBody = document.getElementById('overlayBody');
+        const typeSelect = document.getElementById('objType');
+        const typeShowcase = document.getElementById('typeShowcase');
+        const selectedTypePill = document.getElementById('selectedTypePill');
+        const objNameInput = document.getElementById('objName');
+        const objLocSelect = document.getElementById('objLoc');
+        const objDescInput = document.getElementById('objDesc');
+        const objectPreview = document.getElementById('objectPreview');
+        const generateDescBtn = document.getElementById('generateDescBtn');
+        const clearDescBtn = document.getElementById('clearDescBtn');
+
+        const TYPE_PRESETS = [
+            { value: 'Lampe', icon: 'fas fa-lightbulb', hint: 'Ex: Lampe Bureau Connectee' },
+            { value: 'Climatiseur', icon: 'fas fa-snowflake', hint: 'Ex: Climatiseur Zone A' },
+            { value: 'Camera', icon: 'fas fa-video', hint: 'Ex: Camera Entree Principale' },
+            { value: 'Capteur', icon: 'fas fa-microchip', hint: 'Ex: Capteur Temperature Salle 2' },
+            { value: 'Television', icon: 'fas fa-tv', hint: 'Ex: Ecran Salle Reunion' },
+            { value: 'Serrure connectee', icon: 'fas fa-lock', hint: 'Ex: Serrure Porte Serveurs' },
+            { value: 'Routeur / Reseau', icon: 'fas fa-wifi', hint: 'Ex: Routeur Etage 3' },
+            { value: 'Machine connectee', icon: 'fas fa-gears', hint: 'Ex: Machine Cafe IoT' }
+        ];
+
+        function tr(key, fallback) {
+            const locale = (localStorage.getItem('lang') || 'fr').toLowerCase();
+            if (typeof translations !== 'undefined' && translations[locale] && translations[locale][key] !== undefined) {
+                return translations[locale][key];
+            }
+            return fallback;
+        }
+
+        function openOverlay(title, htmlContent) {
+            overlayTitle.textContent = title;
+            overlayBody.innerHTML = htmlContent;
+            infoOverlay.hidden = false;
+            infoOverlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeOverlay() {
+            infoOverlay.hidden = true;
+            infoOverlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        function authHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        function isAdminHistoryEntry(entry) {
+            const action = String(entry && entry.action ? entry.action : '').trim().toLowerCase();
+            return action.includes('admin') || ['utilisateurs', 'session', 'profil', 'navigation'].includes(action);
+        }
+
+        function buildHistoryOverlayHtml(history) {
+            const rows = history.map(item => `
+                <tr>
+                    <td class="p-3 text-sm text-slate-600">${item.date || '-'}</td>
+                    <td class="p-3 text-sm font-semibold text-slate-700">${item.action || '-'}</td>
+                    <td class="p-3 text-sm">${item.detail || '-'}</td>
+                    <td class="p-3 text-sm"><span class="px-3 py-1 rounded-full text-xs font-bold ${String(item.status || '').toLowerCase().includes('succes') ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-700'}">${item.status || '-'}</span></td>
+                </tr>`).join('');
+            const emptyRow = history.length ? '' : '<tr><td colspan="4" class="p-3 text-sm text-slate-500">Aucune action admin pour le moment.</td></tr>';
+            return `<div class="glass-main p-6 rounded-3xl shadow-2xl">
+                        <h3 class="text-xl font-bold mb-4">Historique admin</h3>
+                        <div class="overflow-x-auto"><table class="w-full text-left"><tbody class="divide-y divide-gray-200">${rows || emptyRow}</tbody></table></div>
+                    </div>`;
+        }
+
+        function buildRoleOverlayHtml() {
+            return `<div class="glass-main p-6 rounded-3xl shadow-2xl">
+                        <h3 class="text-xl font-bold mb-4">Role admin</h3>
+                        <span class="role-chip">Admin</span>
+                        <div class="role-grid">
+                            <div class="role-item"><h4>Gestion objets</h4><p>Accès complet.</p></div>
+                            <div class="role-item"><h4>Supervision</h4><p>Accès stats.</p></div>
+                        </div>
+                    </div>`;
+        }
+
+        async function fetchAdminHistory() {
+            const response = await fetch(`${apiBase}/user/history`, { method: 'GET', headers: authHeaders() });
+            const data = await response.json().catch(function () { return []; });
+            const list = Array.isArray(data) ? data : [];
+            return list.filter(isAdminHistoryEntry);
+        }
+
+        function normalizeText(value) {
+            return String(value || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .trim();
+        }
+
+        function getCurrentType() {
+            return String(typeSelect.value || '').trim();
+        }
+
+        function setSelectedTypePill() {
+            const current = getCurrentType();
+            if (!current) {
+                selectedTypePill.textContent = 'Aucun type choisi';
+                selectedTypePill.className = 'selected-type-pill';
+                return;
+            }
+            selectedTypePill.textContent = `Type choisi: ${current}`;
+            selectedTypePill.className = 'selected-type-pill active';
+        }
+
+        function updateActiveTypeCard() {
+            const current = normalizeText(getCurrentType());
+            typeShowcase.querySelectorAll('[data-type-value]').forEach(function (btn) {
+                const val = normalizeText(btn.getAttribute('data-type-value') || '');
+                btn.classList.toggle('active', current && val === current);
+            });
+        }
+
+        function applyTypeSelection(typeValue, autoHint) {
+            const clean = String(typeValue || '').trim();
+            if (!clean) return;
+            typeSelect.value = clean;
+
+            const nameInput = document.getElementById('objName');
+            if (nameInput && !String(nameInput.value || '').trim() && autoHint) {
+                nameInput.placeholder = autoHint;
+            }
+
+            setSelectedTypePill();
+            updateActiveTypeCard();
+            updatePreview();
+        }
+
+        function buildAutoDescription() {
+            const type = getCurrentType() || 'Objet connecte';
+            const room = String(objLocSelect.value || 'salle non precisee').trim();
+            return `${type} installe dans ${room}. Equipement connecte pour supervision et gestion via IntelliBuild.`;
+        }
+
+        function updatePreview() {
+            const name = String(objNameInput.value || '').trim();
+            const type = String(typeSelect.value || '').trim();
+            const room = String(objLocSelect.value || '').trim();
+
+            if (!name && !type && !room) {
+                objectPreview.innerHTML = '<p class="preview-line">Apercu: Objet non complete</p>';
+                return;
+            }
+
+            objectPreview.innerHTML = `
+                <p class="preview-line"><strong>Nom:</strong> ${name || '-'}</p>
+                <p class="preview-line"><strong>Type:</strong> ${type || '-'}</p>
+                <p class="preview-line"><strong>Salle:</strong> ${room || '-'}</p>
+            `;
+        }
+
+        async function loadTypeCounts() {
+            try {
+                const res = await fetch(`${(window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://127.0.0.1:8000'}/things/search`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ search_query: '' })
+                });
+                const data = await res.json().catch(function () { return []; });
+                const list = Array.isArray(data) ? data : [];
+                const counts = {};
+                list.forEach(function (item) {
+                    const t = String(item['@type'] || item.type || '').trim();
+                    if (!t) return;
+                    const key = normalizeText(t);
+                    counts[key] = (counts[key] || 0) + 1;
+                });
+                return counts;
+            } catch {
+                return {};
+            }
+        }
+
+        async function renderTypeShowcase() {
+            const counts = await loadTypeCounts();
+            typeShowcase.innerHTML = TYPE_PRESETS.map(function (preset) {
+                const count = counts[normalizeText(preset.value)] || 0;
+                return `
+                    <button type="button" class="type-card" data-type-value="${preset.value}" data-type-hint="${preset.hint}">
+                        <div class="type-icon"><i class="${preset.icon}"></i></div>
+                        <p class="type-title">${preset.value}</p>
+                        <p class="type-meta">${count} existant(s)</p>
+                    </button>
+                `;
+            }).join('');
+
+            typeShowcase.querySelectorAll('[data-type-value]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const value = String(btn.getAttribute('data-type-value') || '').trim();
+                    const hint = String(btn.getAttribute('data-type-hint') || '').trim();
+                    applyTypeSelection(value, hint);
+                });
+            });
+
+            setSelectedTypePill();
+            updateActiveTypeCard();
+        }
+
+        function applyPreselectedTypeFromQuery() {
+            const params = new URLSearchParams(window.location.search || '');
+            const requestedType = String(params.get('type') || '').trim();
+            if (!requestedType) return;
+
+            const hint = document.getElementById('presetTypeHint');
+
+            applyTypeSelection(requestedType, '');
+            hint.textContent = `Type preselectionne depuis Objets: ${requestedType}`;
+            hint.classList.remove('hidden');
+        }
+
+        document.getElementById('addForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = String(objNameInput.value || '').trim();
+            const type = String(typeSelect.value || '').trim();
+            const location = String(objLocSelect.value || '').trim();
+
+            if (!name) {
+                alert('Veuillez saisir un nom d\'objet.');
+                objNameInput.focus();
+                return;
+            }
+            if (!type) {
+                alert('Veuillez choisir un type d\'objet.');
+                typeSelect.focus();
+                return;
+            }
+            if (!location) {
+                alert('Veuillez selectionner une salle.');
+                objLocSelect.focus();
+                return;
+            }
+
+            const data = {
+                name,
+                type,
+                location,
+                description: String(objDescInput.value || '').trim()
+            };
+
+            try {
+            const response = await fetch(`${(window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://127.0.0.1:8000'}/things/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert("Objet enregistré !");
+                    window.location.href = "index.html";
+                } else {
+                    const err = await response.json().catch(() => ({}));
+                    alert(err.detail || "Erreur serveur");
+                }
+            } catch (error) {
+                alert("Erreur de connexion.");
+            }
+        });
+
+        openHistoryOverlay.addEventListener('click', async (e) => {
+            e.preventDefault();
+            openOverlay('Historique admin', '<div class="glass-main p-6 rounded-3xl shadow-2xl">Chargement...</div>');
+            try {
+                const history = await fetchAdminHistory();
+                overlayBody.innerHTML = buildHistoryOverlayHtml(history);
+            } catch (error) {
+                console.error('Erreur historique admin:', error);
+                overlayBody.innerHTML = '<div class="glass-main p-6 rounded-3xl shadow-2xl text-red-600">Impossible de charger l\'historique admin.</div>';
+            }
+        });
+        openRoleOverlay.addEventListener('click', (e) => { e.preventDefault(); openOverlay('Role admin', buildRoleOverlayHtml()); });
+        overlayBackdrop.addEventListener('click', closeOverlay);
+        overlayClose.addEventListener('click', closeOverlay);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeOverlay(); });
+
+        objNameInput.addEventListener('input', updatePreview);
+        objLocSelect.addEventListener('change', updatePreview);
+
+        generateDescBtn.addEventListener('click', function () {
+            if (!String(objDescInput.value || '').trim()) {
+                objDescInput.value = buildAutoDescription();
+            } else {
+                objDescInput.value = `${String(objDescInput.value || '').trim()} ${buildAutoDescription()}`;
+            }
+        });
+
+        clearDescBtn.addEventListener('click', function () {
+            objDescInput.value = '';
+        });
+
+        (async function initAddPage() {
+            await renderTypeShowcase();
+            applyPreselectedTypeFromQuery();
+            setSelectedTypePill();
+            updateActiveTypeCard();
+            updatePreview();
+        })();
+    </script>
+</body>
+</html>
+
+
+

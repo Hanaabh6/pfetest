@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-key="about_doc_title">A propos - IntelliBuild</title>
+  <link rel="stylesheet" href="about.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="theme.css">
+  <script data-theme-role-script>
+    (function () {
+      var path = (window.location.pathname.split('/').pop() || '').toLowerCase();
+      var page = path.replace('.html', '') || 'home';
+      document.documentElement.setAttribute('data-page', page);
+
+      var role = (localStorage.getItem('userRole') || '').toLowerCase();
+      if (!role) {
+        if (page.indexOf('admin') >= 0 || ['index','ajouter-objet','objets','localisations','parametres'].indexOf(page) >= 0) {
+          role = 'admin';
+        } else if (page.indexOf('user') >= 0 || ['user','mesobjet','localisations-user','parametres-user'].indexOf(page) >= 0) {
+          role = 'user';
+        } else {
+          role = 'guest';
+        }
+      }
+      document.documentElement.setAttribute('data-role', role);
+    })();
+  </script></head>
+<body>
+
+<header class="topbar">
+  <h2>
+    <div class="logo">
+      <img class="brand-logo-lg" src="Sans%20titre-2.png" alt="IntelliBuild">
+      <span data-key="brand">IntelliBuild</span>
+    </div>
+  </h2>
+  <nav class="menu">
+    <a href="p1.html" data-key="nav_home">Accueil</a>
+    <a href="about.html" data-key="nav_about">A propos</a>
+  </nav>
+  <div class="right">
+    <select class="lang">
+      <option value="fr">FR</option>
+      <option value="en">EN</option>
+      <option value="ar">AR</option>
+    </select>
+    <a href="login.html" class="btn outline" data-key="btn_login">Connexion</a>
+    <a href="register.html" class="btn primary" data-key="btn_register">Inscription</a>
+  </div>
+</header>
+
+<section class="about-hero">
+  <div class="about-text">
+    <h1 data-key="about_hero_title">Plateforme intelligente<br>de gestion d'objets connectes</h1>
+    <p data-key="about_hero_text">
+      IntelliBuild est une solution moderne permettant de decrire,
+      gerer et rechercher les objets connectes dans un smart building
+      en utilisant les standards du Web (Thing Description, Schema.org).
+    </p>
+    <div class="hero-actions">
+      <a href="p1.html" class="btn outline" data-key="nav_home">Accueil</a>
+    </div>
+  </div>
+</section>
+
+<section class="services">
+  <h2 data-key="features_section_title">Nos Services</h2>
+
+  <div class="services-grid">
+    <div class="service-card">
+      <h3 data-key="feature1_title">Gestion des objets</h3>
+      <p data-key="feature1_text">Ajout, modification et suppression des objets connectes via une interface simple.</p>
+    </div>
+
+    <div class="service-card">
+      <h3 data-key="feature2_title">Securite</h3>
+      <p data-key="feature2_text">Controle d'acces, gestion des etats et securisation des donnees.</p>
+    </div>
+
+    <div class="service-card">
+      <h3 data-key="feature3_title">Recherche intelligente</h3>
+      <p data-key="feature3_text">Recherche par type, localisation ou statut des objets.</p>
+    </div>
+  </div>
+</section>
+
+<section class="why-us">
+  <h2 data-key="about_title">Pourquoi choisir IntelliBuild</h2>
+
+  <div class="why-grid">
+    <div>
+      <h4 data-key="why1_title">Standard Web</h4>
+      <p data-key="why1_text">Base sur W3C Thing Description et Schema.org.</p>
+    </div>
+
+    <div>
+      <h4 data-key="why2_title">Interface intuitive</h4>
+      <p data-key="why2_text">Utilisation simple pour les utilisateurs non techniques.</p>
+    </div>
+
+    <div>
+      <h4 data-key="why3_title">Architecture moderne</h4>
+      <p data-key="why3_text">FastAPI, MongoDB, Frontend web.</p>
+    </div>
+
+    <div>
+      <h4 data-key="why4_title">Extensible</h4>
+      <p data-key="why4_text">Ajout facile de nouveaux types d'objets.</p>
+    </div>
+
+    <div>
+      <h4 data-key="why5_title">Projet academique solide</h4>
+      <p data-key="why5_text">Conforme aux exigences PFE.</p>
+    </div>
+
+    <div>
+      <h4 data-key="why6_title">Travail en equipe</h4>
+      <p data-key="why6_text">Developpement collaboratif.</p>
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat">
+    <h1>10+</h1>
+    <p data-key="stats1_label">Types d'objets</p>
+  </div>
+
+  <div class="stat">
+    <h1>100+</h1>
+    <p data-key="stats2_label">Objets simules</p>
+  </div>
+
+  <div class="stat">
+    <h1>4</h1>
+    <p data-key="stats3_label">Membres du groupe</p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="brand">
+    <img src="Sans%20titre-2.png" alt="IntelliBuild">
+    <span>IntelliBuild</span>
+  </div>
+  <div>(c) 2026 IntelliBuild. All rights reserved.</div>
+</footer>
+
+<script src="translations.js"></script>
+</body>
+</html>
+
+
