@@ -407,10 +407,24 @@
             { value: 'Camera', icon: 'fas fa-video', hint: 'Ex: Camera Entree Principale' },
             { value: 'Capteur', icon: 'fas fa-microchip', hint: 'Ex: Capteur Temperature Salle 2' },
             { value: 'Television', icon: 'fas fa-tv', hint: 'Ex: Ecran Salle Reunion' },
+            { value: 'Imprimante', icon: 'fas fa-print', hint: 'Ex: Imprimante Bureau RH' },
             { value: 'Serrure connectee', icon: 'fas fa-lock', hint: 'Ex: Serrure Porte Serveurs' },
             { value: 'Routeur / Reseau', icon: 'fas fa-wifi', hint: 'Ex: Routeur Etage 3' },
             { value: 'Machine connectee', icon: 'fas fa-gears', hint: 'Ex: Machine Cafe IoT' }
         ];
+
+        function iconForType(typeValue) {
+            const n = normalizeText(typeValue);
+            if (n.includes('eclair') || n.includes('lamp') || n.includes('luminaire')) return 'fas fa-lightbulb';
+            if (n.includes('climat') || n.includes('hvac')) return 'fas fa-snowflake';
+            if (n.includes('camera') || n.includes('video')) return 'fas fa-video';
+            if (n.includes('capteur') || n.includes('sensor')) return 'fas fa-microchip';
+            if (n.includes('television') || n.includes('tv') || n.includes('ecran')) return 'fas fa-tv';
+            if (n.includes('serrure') || n.includes('lock')) return 'fas fa-lock';
+            if (n.includes('routeur') || n.includes('reseau') || n.includes('wifi')) return 'fas fa-wifi';
+            if (n.includes('machine')) return 'fas fa-gears';
+            return 'fas fa-cube';
+        }
 
         function tr(key, fallback) {
             const locale = (localStorage.getItem('lang') || 'fr').toLowerCase();
@@ -559,10 +573,16 @@
                 const list = Array.isArray(data) ? data : [];
                 const counts = {};
                 list.forEach(function (item) {
-                    const t = String(item['@type'] || item.type || '').trim();
+                    const t = String(item.type || item['@type'] || '').trim();
                     if (!t) return;
                     const key = normalizeText(t);
-                    counts[key] = (counts[key] || 0) + 1;
+                    if (!counts[key]) {
+                        counts[key] = { count: 0, label: t };
+                    }
+                    counts[key].count += 1;
+                    if (!counts[key].label) {
+                        counts[key].label = t;
+                    }
                 });
                 return counts;
             } catch {
@@ -572,13 +592,44 @@
 
         async function renderTypeShowcase() {
             const counts = await loadTypeCounts();
-            typeShowcase.innerHTML = TYPE_PRESETS.map(function (preset) {
-                const count = counts[normalizeText(preset.value)] || 0;
+            const cards = [];
+            const seen = new Set();
+
+            TYPE_PRESETS.forEach(function (preset) {
+                const key = normalizeText(preset.value);
+                seen.add(key);
+                const count = counts[key] ? counts[key].count : 0;
+                cards.push({
+                    value: preset.value,
+                    icon: preset.icon,
+                    hint: preset.hint,
+                    count: count
+                });
+            });
+
+            Object.keys(counts).forEach(function (key) {
+                if (seen.has(key)) return;
+                const label = String((counts[key] && counts[key].label) || '').trim();
+                if (!label) return;
+                cards.push({
+                    value: label,
+                    icon: iconForType(label),
+                    hint: `Ex: ${label} Zone A`,
+                    count: counts[key].count || 0
+                });
+            });
+
+            cards.sort(function (a, b) {
+                if (b.count !== a.count) return b.count - a.count;
+                return a.value.localeCompare(b.value, 'fr', { sensitivity: 'base' });
+            });
+
+            typeShowcase.innerHTML = cards.map(function (card) {
                 return `
-                    <button type="button" class="type-card" data-type-value="${preset.value}" data-type-hint="${preset.hint}">
-                        <div class="type-icon"><i class="${preset.icon}"></i></div>
-                        <p class="type-title">${preset.value}</p>
-                        <p class="type-meta">${count} existant(s)</p>
+                    <button type="button" class="type-card" data-type-value="${card.value}" data-type-hint="${card.hint}">
+                        <div class="type-icon"><i class="${card.icon}"></i></div>
+                        <p class="type-title">${card.value}</p>
+                        <p class="type-meta">${card.count} existant(s)</p>
                     </button>
                 `;
             }).join('');

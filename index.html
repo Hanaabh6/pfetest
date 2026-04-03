@@ -591,7 +591,7 @@
                 tbody.innerHTML = items.map(item => {
                     const itemId = String(item.id || '').trim();
                     if (itemId) objectCacheById[itemId] = item;
-                    const objectType = item["@type"] || item.type || "Objet Inconnu";
+                    const objectType = item.type || item["@type"] || "Objet Inconnu";
                     const itemName = item.name || 'Sans nom';
                     const itemLocation = item.location?.room || item.location || 'N/A';
                     const itemStatus = item.status || 'inconnu';

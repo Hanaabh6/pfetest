@@ -785,7 +785,7 @@ async function loadUserThings(query) {
       return `
         <tr class="object-row" tabindex="0" role="button" aria-label="Voir le detail de ${item.name || "objet"}" data-obj-id="${objectId.replace(/"/g, "&quot;")}" data-obj-name="${(item.name || "Objet").replace(/"/g, "&quot;")}" data-obj-status="${statusCode}">
           <td>${item.name || "-"}</td>
-          <td>${item["@type"] || item.type || "-"}</td>
+          <td>${item.type || item["@type"] || "-"}</td>
           <td>${item.location?.room || item.location || "-"}</td>
           <td>${distanceText}</td>
           <td><span class="badge ${statusClass}" data-status="${statusCode}">${statusText}</span></td>

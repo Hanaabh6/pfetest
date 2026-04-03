@@ -311,7 +311,7 @@
                 objGrid.innerHTML = list.map(function (item) {
                     const itemId = String(item.id || '').trim();
                     if (itemId) objectCacheById[itemId] = item;
-                    const objectType = String(item['@type'] || item.type || 'Objet Inconnu');
+                    const objectType = String(item.type || item['@type'] || 'Objet Inconnu');
                     const availability = (item.availability || item.status || '').toString().toLowerCase();
                     const isAvailable = availability === 'disponible' || availability === 'active';
 
