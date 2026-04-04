@@ -1,11 +1,11 @@
 """
-Script pour peupler et maintenir la collection Index_Mots_Cles
+Script pour peupler et maintenir la collection keyword_index
 avec les mots clés extraits des objets (things).
 
 Utilise une stratégie de tokenization et de poids pour optimiser la recherche.
 """
 
-from base import things_collection, Index_Mots_Cles_collection
+from base import things_collection, keyword_index_collection
 from main_localisation import normalize_text
 from pymongo import InsertOne, UpdateOne, ReplaceOne
 from collections import Counter
@@ -41,7 +41,6 @@ def extract_keywords_from_object(obj: dict) -> dict[str, int]:
     FIELD_WEIGHTS = {
         "name": 10,           # Très important
         "type": 8,            # Important
-        "tags": 6,            # Important
         "room": 5,            # Important
         "description": 3,     # Modéré
         "status": 2,          # Faible
@@ -58,14 +57,6 @@ def extract_keywords_from_object(obj: dict) -> dict[str, int]:
         tokens = tokenize_text(obj["type"])
         for token in tokens:
             keywords_weight[token] = keywords_weight.get(token, 0) + FIELD_WEIGHTS["type"]
-    
-    # Traiter les tags
-    tags = obj.get("tags", [])
-    if isinstance(tags, list):
-        for tag in tags:
-            tokens = tokenize_text(str(tag))
-            for token in tokens:
-                keywords_weight[token] = keywords_weight.get(token, 0) + FIELD_WEIGHTS["tags"]
     
     # Traiter la localisation
     location = obj.get("location", {})
@@ -97,7 +88,7 @@ def rebuild_keyword_index():
     try:
         # Effacer l'index existant
         print("  📊 Suppression de l'index existant...")
-        Index_Mots_Cles_collection.delete_many({})
+        keyword_index_collection.delete_many({})
         
         # Récupérer tous les objets
         things = list(things_collection.find({}))
@@ -126,7 +117,7 @@ def rebuild_keyword_index():
         # Exécuter les insertions par batch
         if operations:
             print(f"  ✍️  Insertion de {len(operations)} documents...")
-            result = Index_Mots_Cles_collection.bulk_write(operations)
+            result = keyword_index_collection.bulk_write(operations)
             print(f"  ✅ {result.inserted_count} documents insérés")
         
         print(f"\n📊 Statistiques des mots clés:")
@@ -151,7 +142,7 @@ def update_keyword_for_object(thing_id: str, thing_data: dict):
     
     try:
         # Supprimer les anciens mots clés
-        deleted = Index_Mots_Cles_collection.delete_many({"thingId": thing_id})
+        deleted = keyword_index_collection.delete_many({"thingId": thing_id})
         print(f"  🗑️  {deleted.deleted_count} anciens mots clés supprimés")
         
         # Extraire et insérer les nouveaux
@@ -169,7 +160,7 @@ def update_keyword_for_object(thing_id: str, thing_data: dict):
             operations.append(InsertOne(doc))
         
         if operations:
-            result = Index_Mots_Cles_collection.bulk_write(operations)
+            result = keyword_index_collection.bulk_write(operations)
             print(f"  ✅ {result.inserted_count} nouveaux mots clés insérés")
         else:
             print("  ℹ️  Aucun mot clé à insérer")
@@ -186,16 +177,16 @@ def get_index_statistics():
     print("\n📊 Statistiques de l'index des mots clés:\n")
     
     try:
-        total_docs = Index_Mots_Cles_collection.count_documents({})
-        unique_keywords = Index_Mots_Cles_collection.distinct("mot")
-        unique_things = Index_Mots_Cles_collection.distinct("thingId")
+        total_docs = keyword_index_collection.count_documents({})
+        unique_keywords = keyword_index_collection.distinct("mot")
+        unique_things = keyword_index_collection.distinct("thingId")
         
         print(f"  📈 Nombre total d'entrées: {total_docs}")
         print(f"  🏷️  Nombre de mots clés uniques: {len(unique_keywords)}")
         print(f"  📦 Nombre d'objets indexés: {len(unique_things)}")
         
         # Top 15 mots clés
-        top_keywords = list(Index_Mots_Cles_collection.aggregate([
+        top_keywords = list(keyword_index_collection.aggregate([
             {"$group": {"_id": "$mot", "count": {"$sum": 1}, "avg_poids": {"$avg": "$poids"}}},
             {"$sort": {"count": -1}},
             {"$limit": 15}
@@ -206,7 +197,7 @@ def get_index_statistics():
             print(f"     {i}. '{item['_id']}': {item['count']} fois (poids moyen: {item['avg_poids']:.1f})")
         
         # Objets avec le plus de mots clés
-        top_things = list(Index_Mots_Cles_collection.aggregate([
+        top_things = list(keyword_index_collection.aggregate([
             {"$group": {"_id": "$thingId", "count": {"$sum": 1}, "name": {"$first": "$object_name"}}},
             {"$sort": {"count": -1}},
             {"$limit": 10}
@@ -239,3 +230,4 @@ if __name__ == "__main__":
         print("Commandes disponibles:")
         print("  python populate_keywords.py rebuild  - Reconstruire l'index")
         print("  python populate_keywords.py stats    - Afficher les statistiques")
+

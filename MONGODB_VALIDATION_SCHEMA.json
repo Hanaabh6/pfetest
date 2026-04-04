@@ -71,12 +71,6 @@
           }
         }
       },
-      "tags": {
-        "bsonType": "array",
-        "items": {
-          "bsonType": "string"
-        }
-      },
       "@context": {
         "bsonType": "string"
       },

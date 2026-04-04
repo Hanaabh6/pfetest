@@ -1,5 +1,5 @@
 {
-  "collectionName": "Index_Mots_Cles",
+  "collectionName": "keyword_index",
   "validator": {
     "$jsonSchema": {
       "bsonType": "object",
@@ -24,7 +24,7 @@
         },
         "poids": {
           "bsonType": "int",
-          "description": "Poids/pertinence du mot clé (plus élevé = plus pertinent). Basé sur le champ d'origine (nom=10, type=8, tags=6, etc.)",
+          "description": "Poids/pertinence du mot clé (plus élevé = plus pertinent). Basé sur le champ d'origine (nom=10, type=8, salle=5, etc.)",
           "minimum": 1,
           "maximum": 100
         },
@@ -117,3 +117,4 @@
     }
   ]
 }
+

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from base import Index_Mots_Cles_collection
+from base import keyword_index_collection
 from main_auth import auth_router
 from main_localisation import localisation_router
 from main_borrow import borrow_router
@@ -12,7 +12,7 @@ import os
 
 load_dotenv("bdd.env")
 
-index_mot_cle_collection = Index_Mots_Cles_collection
+index_mot_cle_collection = keyword_index_collection
 
 app = FastAPI()
 
@@ -41,5 +41,6 @@ app.include_router(notifications_router)
 @app.get("/")
 def root():
     return {"message": "API is running"}
+
 
 

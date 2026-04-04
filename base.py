@@ -66,7 +66,7 @@ class _NullCollection:
 class _NullDatabase:
     def __init__(self):
         self.things = _NullCollection()
-        self.Index_Mots_Cles = _NullCollection()
+        self.keyword_index = _NullCollection()
         self.notifications = _NullCollection()
         self.user_history = _NullCollection()
 
@@ -106,10 +106,10 @@ client = _build_client()
 db = client.smart_building
 things_collection = db.things
 # Collection officielle des mots-cles pour la recherche
-Index_Mots_Cles_collection = db.Index_Mots_Cles
+keyword_index_collection = db.keyword_index
 notifications_collection = db.notifications
 
 # Aliases de compatibilite pour l'ancien code
-Index_Mots_Cles_collection = Index_Mots_Cles_collection
-Index_Mots_Cles_collection = Index_Mots_Cles_collection
+keyword_index_collection = keyword_index_collection
+keyword_index_collection = keyword_index_collection
 user_history_collection = db.user_history

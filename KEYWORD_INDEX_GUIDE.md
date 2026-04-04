@@ -2,7 +2,7 @@
 
 ## 📌 Aperçu
 
-La collection `Index_Mots_Cles` est une **collection denormalisée d'index** conçue pour optimiser la **recherche rapide** des objets par mots clés dans votre application smart building.
+La collection `keyword_index` est une **collection denormalisée d'index** conçue pour optimiser la **recherche rapide** des objets par mots clés dans votre application smart building.
 
 ### Avantages
 - ⚡ **Recherche ultra-rapide**: Requêtes sub-milliseconde
@@ -78,7 +78,7 @@ python populate_keywords.py stats
 
 ```python
 # Chercher tous les objets contenant le mot "ECLAIRAGE"
-results = Index_Mots_Cles_collection.find(
+results = keyword_index_collection.find(
     {"mot": "ECLAIRAGE"}
 ).limit(10)
 
@@ -90,7 +90,7 @@ for doc in results:
 
 ```python
 # Trouver "ECLAIRAGE" et trier par pertinence décroissante
-results = Index_Mots_Cles_collection.find(
+results = keyword_index_collection.find(
     {"mot": "ECLAIRAGE"}
 ).sort([("poids", -1)]).limit(20)
 ```
@@ -118,14 +118,14 @@ pipeline = [
     {"$limit": 20}
 ]
 
-results = Index_Mots_Cles_collection.aggregate(pipeline)
+results = keyword_index_collection.aggregate(pipeline)
 ```
 
 ### 4. Recherche Textuelle (Fuzzy)
 
 ```python
 # Recherche textuelle avec index text
-results = Index_Mots_Cles_collection.find(
+results = keyword_index_collection.find(
     {"$text": {"$search": "ECLAIRAGE bureau"}},
     {"score": {"$meta": "textScore"}}
 ).sort([("score", {"$meta": "textScore"})])
@@ -138,7 +138,7 @@ results = Index_Mots_Cles_collection.find(
 prefix = "lam"  # L'utilisateur tape "lam"
 
 # Utiliser regex pour les suggestions
-suggestions = Index_Mots_Cles_collection.distinct(
+suggestions = keyword_index_collection.distinct(
     "mot",
     {"mot": {"$regex": f"^{re.escape(prefix)}", "$options": "i"}}
 )
@@ -151,7 +151,7 @@ print(suggestions)  # ["ECLAIRAGE", "lambda", ...]
 # Afficher tous les mots clés d'un objet
 thing_id = "507f1f77bcf86cd799439011"
 
-words = Index_Mots_Cles_collection.find(
+words = keyword_index_collection.find(
     {"thingId": thing_id}
 ).sort([("poids", -1)])
 
@@ -168,7 +168,7 @@ Votre code utilise déjà cet index:
 ```python
 def _collect_index_scores(tokens: list[str]) -> dict[str, int]:
     """Récupère les scores des objets pour les tokens."""
-    docs = list(Index_Mots_Cles_collection.find({
+    docs = list(keyword_index_collection.find({
         "mot": {"$in": tokens}
     }).limit(5000))
     
@@ -294,7 +294,7 @@ from fastapi import APIRouter, Query
 @app.get("/api/keywords/suggest")
 def suggest_keywords(q: str = Query(..., min_length=2)):
     """Autocomplétion pour les mots clés."""
-    suggestions = Index_Mots_Cles_collection.distinct(
+    suggestions = keyword_index_collection.distinct(
         "mot",
         {"mot": {"$regex": f"^{normalize_text(q)}", "$options": "i"}}
     )
@@ -328,3 +328,4 @@ def create_thing(thing_data: dict):
 ---
 
 **Dernière mise à jour**: April 2024
+

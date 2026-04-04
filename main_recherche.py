@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from rapidfuzz import fuzz
 import re
 
-from base import Index_Mots_Cles_collection, things_collection
+from base import keyword_index_collection, things_collection
 from main_localisation import compute_distance_and_room_flags, normalize_text
 
 recherche_router = APIRouter(tags=["recherche"])
@@ -41,9 +41,6 @@ def _extract_searchable_fields(item: dict) -> list[str]:
         str(item.get("status", "")),
         str(item.get("availability", "")),
     ]
-    tags = item.get("tags", [])
-    if isinstance(tags, list):
-        res.extend([str(t) for t in tags])
 
     loc = item.get("location", "")
     if isinstance(loc, dict):
@@ -70,7 +67,7 @@ def _focus_text(item: dict) -> str:
 def _collect_index_scores(tokens: list[str]) -> dict[str, int]:
     if not tokens:
         return {}
-    docs = list(Index_Mots_Cles_collection.find({"mot": {"$in": tokens}}).limit(5000))
+    docs = list(keyword_index_collection.find({"mot": {"$in": tokens}}).limit(5000))
     score_by_thing: dict[str, int] = {}
     for doc in docs:
         thing_id = str(doc.get("thingId") or "").strip()
@@ -141,7 +138,6 @@ def search_things(data: SearchRequest = Body(...)):
                 {"availability": {"$regex": safe, "$options": "i"}},
                 {"location.room": {"$regex": safe, "$options": "i"}},
                 {"location": {"$regex": safe, "$options": "i"}},
-                {"tags": {"$elemMatch": {"$regex": safe, "$options": "i"}}},
             ])
 
         if index_scores:
@@ -203,3 +199,4 @@ def search_things(data: SearchRequest = Body(...)):
     except Exception as e:
         print(f"Erreur search: {e}")
         raise HTTPException(status_code=500, detail="Erreur recherche")
+

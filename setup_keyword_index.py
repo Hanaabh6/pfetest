@@ -13,7 +13,7 @@ import os
 # Ajouter le répertoire actuel au path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from base import Index_Mots_Cles_collection, things_collection
+from base import keyword_index_collection, things_collection
 
 
 def print_header(text: str):
@@ -30,11 +30,11 @@ def check_mongodb_connection():
     try:
         # Tester la connexion
         count = things_collection.count_documents({})
-        unique_count = Index_Mots_Cles_collection.count_documents({})
+        unique_count = keyword_index_collection.count_documents({})
         
         print(f"✅ MongoDB connecté")
         print(f"   • Collection 'things': {count} documents")
-        print(f"   • Collection 'Index_Mots_Cles': {unique_count} documents")
+        print(f"   • Collection 'keyword_index': {unique_count} documents")
         
         return True
         
@@ -50,7 +50,7 @@ def check_existing_indexes():
     print_header("📊 Index Existants")
     
     try:
-        indexes = list(Index_Mots_Cles_collection.list_indexes())
+        indexes = list(keyword_index_collection.list_indexes())
         
         if len(indexes) <= 1:  # Seulement l'index _id par défaut
             print("❌ Aucun index customisé trouvé")
@@ -181,7 +181,7 @@ def main():
         print("✅ Les index existent déjà")
     
     # Étape 4: Peupler la collection
-    existing_count = Index_Mots_Cles_collection.count_documents({})
+    existing_count = keyword_index_collection.count_documents({})
     
     if existing_count == 0 or ask_confirmation(f"Reconstruire l'index ({existing_count} documents actuels)?"):
         if not populate_keywords():
@@ -228,3 +228,4 @@ if __name__ == "__main__":
         import traceback
         traceback.print_exc()
         sys.exit(1)
+

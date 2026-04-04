@@ -2,7 +2,7 @@
 
 ## 📋 Résumé
 
-Vous avez maintenant un système complet et optimisé pour la **recherche rapide par mots clés** dans votre application smart building. Ce système utilise une collection denormalisée `Index_Mots_Cles` avec 6 index MongoDB optimisés.
+Vous avez maintenant un système complet et optimisé pour la **recherche rapide par mots clés** dans votre application smart building. Ce système utilise une collection denormalisée `keyword_index` avec 6 index MongoDB optimisés.
 
 ---
 
@@ -80,7 +80,7 @@ things_collection (MongoDB)
          ↓
          ↓ (sync sur CREATE/UPDATE/DELETE)
          ↓
-Index_Mots_Cles_collection (MongoDB)
+keyword_index_collection (MongoDB)
          ↓
          ↓ (recherche rapide)
          ↓
@@ -107,9 +107,9 @@ Application Frontend
 ### Recherche Simple
 
 ```python
-from base import Index_Mots_Cles_collection
+from base import keyword_index_collection
 
-results = Index_Mots_Cles_collection.find({"mot": "ECLAIRAGE"})
+results = keyword_index_collection.find({"mot": "ECLAIRAGE"})
 for doc in results:
     print(f"{doc['object_name']}: pertinence {doc['poids']}")
 ```
@@ -126,14 +126,14 @@ pipeline = [
     }},
     {"$sort": {"score": -1}}
 ]
-results = Index_Mots_Cles_collection.aggregate(pipeline)
+results = keyword_index_collection.aggregate(pipeline)
 ```
 
 ### Autocomplétion
 
 ```python
 prefix = "lam"
-suggestions = Index_Mots_Cles_collection.distinct(
+suggestions = keyword_index_collection.distinct(
     "mot",
     {"mot": {"$regex": f"^{prefix}", "$options": "i"}}
 )
@@ -197,10 +197,10 @@ python create_keyword_indexes.py create   # Recréer
 **Q: Comment faire un autocomplétion?**
 ```python
 from populate_keywords import tokenize_text
-from base import Index_Mots_Cles_collection
+from base import keyword_index_collection
 
 q = normalize_text(input_user)
-suggestions = Index_Mots_Cles_collection.distinct(
+suggestions = keyword_index_collection.distinct(
     "mot",
     {"mot": {"$regex": f"^{q}", "$options": "i"}}
 )
@@ -263,7 +263,7 @@ Pour plus d'objets → considérer:
 
 - [ ] `python setup_keyword_index.py` exécuté
 - [ ] `main_crud.py` intégré avec sync_*
-- [ ] `main_recherche.py` utilise Index_Mots_Cles
+- [ ] `main_recherche.py` utilise keyword_index
 - [ ] Tests de recherche validés
 - [ ] Statistiques > 0 documents
 - [ ] Performance < 50ms confirmée
@@ -282,3 +282,4 @@ Pour plus d'objets → considérer:
 **Création**: April 2024
 **Version**: 1.0
 **Status**: ✅ Prêt pour production
+

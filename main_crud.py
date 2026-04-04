@@ -6,7 +6,7 @@ import uuid
 from fastapi import APIRouter, Body, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from base import Index_Mots_Cles_collection, things_collection
+from base import keyword_index_collection, things_collection
 from main_auth import require_admin
 from main_localisation import canonical_room_name as _canonical_room_name, coords_from_room as _coords_from_room
 from notifications_service import create_notification
@@ -20,7 +20,6 @@ class AddThingRequest(BaseModel):
     location: str = Field(..., min_length=1, max_length=120)
     description: str = Field(default="", max_length=800)
     status: str = Field(default="active", max_length=40)
-    tags: list[str] = Field(default_factory=list)
 
 
 class UpdateThingRequest(BaseModel):
@@ -29,7 +28,6 @@ class UpdateThingRequest(BaseModel):
     location: str = Field(..., min_length=1, max_length=120)
     description: str = Field(default="", max_length=800)
     status: str = Field(default="active", max_length=40)
-    tags: list[str] = Field(default_factory=list)
 
 
 def _main_module():
@@ -44,8 +42,8 @@ def _things_collection():
 def _index_collection():
     module = _main_module()
     if module is not None:
-        return getattr(module, "index_mot_cle_collection", getattr(module, "Index_Mots_Cles_collection", Index_Mots_Cles_collection))
-    return Index_Mots_Cles_collection
+        return getattr(module, "index_mot_cle_collection", getattr(module, "keyword_index_collection", keyword_index_collection))
+    return keyword_index_collection
 
 
 def _normalize_text(text: str) -> str:
@@ -146,7 +144,6 @@ def add_thing(request: Request, data: AddThingRequest = Body(...)):
                 "y": coords["y"],
                 "z": coords["z"],
             },
-            "tags": [t.strip().lower() for t in data.tags if t.strip()],
         }
 
         _things_collection().insert_one(new_item)
@@ -161,6 +158,25 @@ def add_thing(request: Request, data: AddThingRequest = Body(...)):
         return {"message": "Succes", "id": new_item["id"]}
     except Exception as e:
         print(f"Erreur add: {e}")
+        raise HTTPException(status_code=500, detail="Erreur MongoDB")
+
+
+@crud_router.get("/things/{thing_id}")
+def get_thing(thing_id: str):
+    try:
+        thing = _things_collection().find_one({"id": thing_id})
+        if not thing:
+            raise HTTPException(status_code=404, detail="Objet non trouvé")
+
+        thing["id"] = str(thing.get("id", thing_id))
+        if "_id" in thing:
+            thing["_id"] = str(thing["_id"])
+
+        return thing
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Erreur get thing: {e}")
         raise HTTPException(status_code=500, detail="Erreur MongoDB")
 
 
@@ -239,7 +255,6 @@ def update_thing(thing_id: str, request: Request, data: UpdateThingRequest = Bod
                 "y": coords["y"],
                 "z": coords["z"],
             },
-            "tags": [t.strip().lower() for t in data.tags if t.strip()],
         }
 
         things = _things_collection()

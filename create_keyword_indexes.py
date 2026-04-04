@@ -1,23 +1,23 @@
 """
-Script pour créer les index MongoDB sur la collection Index_Mots_Cles
+Script pour créer les index MongoDB sur la collection keyword_index
 pour une recherche rapide et optimisée des mots clés.
 """
 
 from pymongo import ASCENDING, DESCENDING, TEXT
-from base import Index_Mots_Cles_collection
+from base import keyword_index_collection
 import sys
 
 
 def create_keyword_indexes():
     """Crée tous les index nécessaires pour la recherche rapide des mots clés."""
     
-    print("🔧 Création des index pour la collection Index_Mots_Cles...")
+    print("🔧 Création des index pour la collection keyword_index...")
     
     try:
         # Index 1: Index simple sur le champ 'mot' (recherche par mot exact)
         # C'est le plus utilisé pour les requêtes de recherche
         print("\n1️⃣  Création de l'index sur 'mot'...")
-        idx1 = Index_Mots_Cles_collection.create_index(
+        idx1 = keyword_index_collection.create_index(
             [("mot", ASCENDING)],
             name="idx_mot",
             background=True
@@ -26,7 +26,7 @@ def create_keyword_indexes():
         
         # Index 2: Index composé sur 'mot' + 'thingId' pour les recherches avec filtrage par objet
         print("\n2️⃣  Création de l'index composé 'mot' + 'thingId'...")
-        idx2 = Index_Mots_Cles_collection.create_index(
+        idx2 = keyword_index_collection.create_index(
             [("mot", ASCENDING), ("thingId", ASCENDING)],
             name="idx_mot_thingId",
             background=True
@@ -35,7 +35,7 @@ def create_keyword_indexes():
         
         # Index 3: Index sur 'thingId' pour retrouver tous les mots clés d'un objet
         print("\n3️⃣  Création de l'index sur 'thingId'...")
-        idx3 = Index_Mots_Cles_collection.create_index(
+        idx3 = keyword_index_collection.create_index(
             [("thingId", ASCENDING)],
             name="idx_thingId",
             background=True
@@ -44,7 +44,7 @@ def create_keyword_indexes():
         
         # Index 4: Index sur 'poids' (weight) en ordre décroissant pour trier par pertinence
         print("\n4️⃣  Création de l'index sur 'poids' (pertinence)...")
-        idx4 = Index_Mots_Cles_collection.create_index(
+        idx4 = keyword_index_collection.create_index(
             [("poids", DESCENDING)],
             name="idx_poids",
             background=True
@@ -53,7 +53,7 @@ def create_keyword_indexes():
         
         # Index 5: Index texte sur 'mot' pour la recherche textuelle avec patterns
         print("\n5️⃣  Création de l'index texte sur 'mot'...")
-        idx5 = Index_Mots_Cles_collection.create_index(
+        idx5 = keyword_index_collection.create_index(
             [("mot", TEXT)],
             name="idx_mot_text",
             background=True
@@ -62,7 +62,7 @@ def create_keyword_indexes():
         
         # Index 6: Index composé pour les recherches avec tri par poids
         print("\n6️⃣  Création de l'index composé 'mot' + 'poids'...")
-        idx6 = Index_Mots_Cles_collection.create_index(
+        idx6 = keyword_index_collection.create_index(
             [("mot", ASCENDING), ("poids", DESCENDING)],
             name="idx_mot_poids",
             background=True
@@ -71,7 +71,7 @@ def create_keyword_indexes():
         
         # Afficher tous les index créés
         print("\n📊 Tous les index actuels:")
-        indexes = Index_Mots_Cles_collection.list_indexes()
+        indexes = keyword_index_collection.list_indexes()
         for idx in indexes:
             print(f"   - {idx['name']}: {idx['key']}")
         
@@ -87,7 +87,7 @@ def drop_all_indexes():
     """Supprime tous les index (sauf l'index _id par défaut)."""
     print("⚠️  Suppression de tous les index...")
     try:
-        Index_Mots_Cles_collection.drop_indexes()
+        keyword_index_collection.drop_indexes()
         print("✅ Tous les index ont été supprimés")
         return True
     except Exception as e:
@@ -100,8 +100,8 @@ def analyze_current_indexes():
     print("\n📈 Analyse des index actuels:\n")
     
     try:
-        indexes = list(Index_Mots_Cles_collection.list_indexes())
-        stats = Index_Mots_Cles_collection.aggregate([
+        indexes = list(keyword_index_collection.list_indexes())
+        stats = keyword_index_collection.aggregate([
             {"$collStats": {"histogram": {"metadata": True}}}
         ])
         
@@ -132,3 +132,4 @@ if __name__ == "__main__":
     else:
         # Par défaut, créer les index
         create_keyword_indexes()
+

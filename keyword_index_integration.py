@@ -5,7 +5,7 @@ Ce module fournit des hooks pour mettre à jour automatiquement l'index des mots
 lors de la création ou modification d'objets.
 """
 
-from base import things_collection, Index_Mots_Cles_collection
+from base import things_collection, keyword_index_collection
 from populate_keywords import extract_keywords_from_object, update_keyword_for_object
 from pymongo import InsertOne
 from typing import Optional, Dict, Any
@@ -38,7 +38,7 @@ def sync_keyword_index_on_create(thing_id: str, thing_data: dict) -> bool:
             operations.append(InsertOne(doc))
         
         if operations:
-            Index_Mots_Cles_collection.bulk_write(operations)
+            keyword_index_collection.bulk_write(operations)
             print(f"✅ Index mis à jour pour l'objet {thing_id} ({len(operations)} mots)")
         
         return True
@@ -74,7 +74,7 @@ def sync_keyword_index_on_delete(thing_id: str) -> bool:
         True si succès, False sinon
     """
     try:
-        result = Index_Mots_Cles_collection.delete_many({"thingId": thing_id})
+        result = keyword_index_collection.delete_many({"thingId": thing_id})
         print(f"🗑️  {result.deleted_count} mots clés supprimés pour l'objet {thing_id}")
         return True
         
@@ -89,7 +89,7 @@ def get_search_results_with_keywords(tokens: list[str],
     Récupère les objets correspondant aux tokens avec les détails complets.
     
     Cette fonction combine:
-    1. Requête sur Index_Mots_Cles
+    1. Requête sur keyword_index
     2. Calcul d'un score par objet
     3. Récupération des détails depuis things_collection
     
@@ -105,7 +105,7 @@ def get_search_results_with_keywords(tokens: list[str],
     
     try:
         # Étape 1: Récupérer les documents de l'index
-        index_docs = list(Index_Mots_Cles_collection.find({
+        index_docs = list(keyword_index_collection.find({
             "mot": {"$in": tokens}
         }).limit(5000))
         
@@ -154,7 +154,7 @@ def bulk_rebuild_keywords(batch_size: int = 100):
     
     try:
         # Vider l'index
-        Index_Mots_Cles_collection.delete_many({})
+        keyword_index_collection.delete_many({})
         
         # Traiter les objets par batch
         total = 0
@@ -176,14 +176,14 @@ def bulk_rebuild_keywords(batch_size: int = 100):
             
             # Insérer quand le batch est plein
             if len(batch) >= batch_size * 10:  # ~1000 documents
-                Index_Mots_Cles_collection.bulk_write(batch)
+                keyword_index_collection.bulk_write(batch)
                 total += len(batch)
                 print(f"  ✅ {total} documents insérés...")
                 batch = []
         
         # Insérer les documents restants
         if batch:
-            Index_Mots_Cles_collection.bulk_write(batch)
+            keyword_index_collection.bulk_write(batch)
             total += len(batch)
         
         print(f"✨ Reconstruction terminée! ({total} documents)")
@@ -243,3 +243,4 @@ def delete_thing(thing_id: str):
     
     return {"status": "deleted"}
 """
+
