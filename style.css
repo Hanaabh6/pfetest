@@ -51,6 +51,16 @@ body {
   border-radius: 9999px;
 }
 
+.brand-logo,
+.brand-logo-lg,
+.logo img,
+.brand img,
+aside .logo img {
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 10px 18px rgba(8, 17, 31, 0.18));
+}
+
 /* About page styles */
 .about-hero {
   background: linear-gradient(180deg, rgba(0,184,148,0.08), rgba(0,0,0,0.03));

@@ -32,7 +32,10 @@
       --bg-overlay: rgba(15, 23, 42, 0.48);
       --sidebar-bg: rgba(0, 0, 0, 0.92);
       --text-light: #ffffff;
-      --hover-bg: rgba(16, 185, 129, 0.18);
+      --menu-link: #d1d5db;
+      --menu-hover-bg: #1f2937;
+      --menu-active-bg: #047857;
+      --menu-active-ring: rgba(16, 185, 129, 0.45);
       --glass: rgba(255, 255, 255, 0.9);
     }
 
@@ -49,17 +52,17 @@
     }
 
     .sidebar {
-      width: 256px;
+      width: 280px;
       box-sizing: border-box;
       background: rgba(0, 0, 0, 0.92);
       backdrop-filter: blur(10px);
-      color: #d1d5db;
+      color: var(--menu-link);
       padding: 24px;
       display: flex;
       flex-direction: column;
       gap: 24px;
       min-height: 100vh;
-      flex: 0 0 256px;
+      flex: 0 0 280px;
       z-index: 50;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
@@ -77,22 +80,29 @@
     .sidebar nav a {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px;
+      gap: 10px;
+      padding: 13px 14px;
+      margin: 10px 0;
       text-decoration: none;
-      color: #d1d5db;
+      color: var(--menu-link);
       border-radius: 10px;
-      transition: background 0.2s ease;
+      transition: background 0.25s ease, color 0.25s ease;
       cursor: pointer;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
-    .sidebar nav a:hover { background: #1f2937; }
+    .sidebar nav i {
+      width: 18px;
+      text-align: center;
+      flex: 0 0 18px;
+    }
+
+    .sidebar nav a:hover { background: var(--menu-hover-bg); color: #fff; }
     .sidebar nav .nav-active {
-      background: #047857;
+      background: var(--menu-active-bg);
       color: #fff;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25);
+      box-shadow: inset 0 0 0 1px var(--menu-active-ring);
     }
 
     .main-wrap {
@@ -101,8 +111,8 @@
       padding: 24px 16px 24px 20px;
       flex: 1;
       min-width: 0;
-      width: calc(100vw - 256px);
-      max-width: calc(100vw - 256px);
+      width: calc(100vw - 280px);
+      max-width: calc(100vw - 280px);
       box-sizing: border-box;
     }
 
@@ -251,7 +261,7 @@
 <body>
   <aside class="sidebar">
     <div class="logo text-2xl font-bold">
-      <img src="Sans%20titre-2.png" alt="Logo IntelliBuild">
+      <img src="intellibuild-mark.svg" alt="Logo IntelliBuild">
       <span>IntelliBuild</span>
     </div>
 
@@ -269,20 +279,56 @@
       <a href="localisations.html"><i class="fas fa-map-marker-alt"></i> Localisations</a>
       <a href="#" id="openHistoryOverlay"><i class="fas fa-clock-rotate-left"></i> Historique</a>
       <a href="#" id="openRoleOverlay"><i class="fas fa-user-shield"></i> Role</a>
-      <a href="notifications-admin.html"><i class="fas fa-bell"></i> Notifications</a>
+      <a href="notifications-admin.html"><i class="fas fa-bell"></i> <span data-key="nav_notifications">Notifications</span></a>
+      <a href="documatation.html"><i class="fas fa-book-open"></i> <span data-key="nav_documentation">Documentation</span></a>
       <a href="parametres.html" class="nav-active mt-auto"><i class="fas fa-cog"></i> Parametres admin</a>
     </nav>
   </aside>
 
   <main class="main-wrap">
-    <section class="glass p-6 mb-5">
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 class="text-3xl font-black text-slate-800 m-0">Centre de controle admin</h1>
-          <p class="text-slate-600 mt-1 mb-0">Gestion des utilisateurs et supervision de la plateforme.</p>
+    <section class="page-hero glass mb-5">
+      <div class="hero-copy">
+        <span class="page-kicker">Paramètres admin</span>
+        <h1>Centre de contrôle et de supervision</h1>
+        <p>Gérez les utilisateurs, suivez l’activité et gardez un œil sur toute l’administration depuis une vue plus claire et plus premium.</p>
+        <div class="page-badges">
+          <span class="page-badge">Gestion utilisateurs</span>
+          <span class="page-badge">Activité récente</span>
+          <span class="page-badge">Historique admin</span>
         </div>
-        <span class="admin-pill">ADMIN PRIVILEGES</span>
       </div>
+      <div class="hero-note-card">
+        <h3 class="side-panel-title">Session active</h3>
+        <p id="sessionHeroName" class="page-stat-value text-3xl">Admin</p>
+        <p id="sessionHeroEmail" class="page-stat-note">-</p>
+        <div class="mt-4 flex items-center justify-between gap-3 flex-wrap">
+          <span id="sessionHeroRole" class="admin-pill">ADMIN PRIVILEGES</span>
+          <span id="settingsSyncLabel" class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Sync en attente</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-stat-grid mb-5">
+      <article class="page-stat-card">
+        <p class="page-stat-label">Utilisateurs</p>
+        <p id="settingsUsersMetric" class="page-stat-value">0</p>
+        <p class="page-stat-note">Comptes visibles dans la plateforme.</p>
+      </article>
+      <article class="page-stat-card">
+        <p class="page-stat-label">Admins</p>
+        <p id="settingsAdminsMetric" class="page-stat-value">0</p>
+        <p class="page-stat-note">Profils avec privilèges élevés.</p>
+      </article>
+      <article class="page-stat-card">
+        <p class="page-stat-label">Événements activité</p>
+        <p id="settingsActivityMetric" class="page-stat-value">0</p>
+        <p class="page-stat-note">Lignes chargées dans le journal utilisateur.</p>
+      </article>
+      <article class="page-stat-card">
+        <p class="page-stat-label">Entrées historique</p>
+        <p id="settingsHistoryMetric" class="page-stat-value">0</p>
+        <p class="page-stat-note">Actions admin actuellement disponibles.</p>
+      </article>
     </section>
 
     <section class="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-5">
@@ -291,7 +337,7 @@
         <div class="quick-grid">
           <a href="objets.html" class="quick-item"><i class="fas fa-pen mr-2"></i>Editer objets</a>
           <a href="ajouter-objet.html" class="quick-item"><i class="fas fa-circle-plus mr-2"></i>Ajouter objet</a>
-          <a href="notifications-admin.html" class="quick-item"><i class="fas fa-bell mr-2"></i>Notifications</a>
+          <a href="notifications-admin.html" class="quick-item"><i class="fas fa-bell mr-2"></i><span data-key="nav_notifications">Notifications</span></a>
           <a href="localisations.html" class="quick-item"><i class="fas fa-map mr-2"></i>Carte localisation</a>
           <a href="reset.html" class="quick-item"><i class="fas fa-key mr-2"></i>Reset password</a>
           <button id="signOutBtn" class="btn btn-danger"><i class="fas fa-sign-out-alt mr-2"></i>Sign out</button>
@@ -434,6 +480,14 @@
     const activityEmpty = document.getElementById("activityEmpty");
     const historyBody = document.getElementById("historyBody");
     const historyEmpty = document.getElementById("historyEmpty");
+    const settingsUsersMetric = document.getElementById("settingsUsersMetric");
+    const settingsAdminsMetric = document.getElementById("settingsAdminsMetric");
+    const settingsActivityMetric = document.getElementById("settingsActivityMetric");
+    const settingsHistoryMetric = document.getElementById("settingsHistoryMetric");
+    const settingsSyncLabel = document.getElementById("settingsSyncLabel");
+    const sessionHeroName = document.getElementById("sessionHeroName");
+    const sessionHeroEmail = document.getElementById("sessionHeroEmail");
+    const sessionHeroRole = document.getElementById("sessionHeroRole");
     const editAdminOverlay = document.getElementById("editAdminOverlay");
     const openHistoryOverlay = document.getElementById("openHistoryOverlay");
     const openRoleOverlay = document.getElementById("openRoleOverlay");
@@ -446,6 +500,13 @@
     const editAdminBioInput = document.getElementById("editAdminBioInput");
 
     let currentAdminProfile = null;
+
+    function markSettingsSync(label) {
+      const stamp = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+      if (settingsSyncLabel) {
+        settingsSyncLabel.textContent = `${label} ${stamp}`;
+      }
+    }
 
     function authHeaders() {
       return {
@@ -625,6 +686,9 @@
         adminBio.textContent = bio || "Aucune bio";
         editAdminNameInput.value = displayName;
         editAdminBioInput.value = bio;
+        if (sessionHeroName) sessionHeroName.textContent = displayName;
+        if (sessionHeroEmail) sessionHeroEmail.textContent = email || "-";
+        if (sessionHeroRole) sessionHeroRole.textContent = String(role || "admin").toUpperCase();
       } catch (error) {
         console.error("Erreur profil admin:", error);
       }
@@ -652,10 +716,19 @@
         }).join("");
 
         usersEmpty.hidden = list.length > 0;
+        if (settingsUsersMetric) settingsUsersMetric.textContent = String(list.length);
+        if (settingsAdminsMetric) {
+          settingsAdminsMetric.textContent = String(list.filter(function (user) {
+            return String(user.role || "user").toLowerCase() === "admin";
+          }).length);
+        }
+        markSettingsSync("Users sync");
       } catch (error) {
         console.error("Erreur utilisateurs:", error);
         usersBody.innerHTML = "";
         usersEmpty.hidden = false;
+        if (settingsUsersMetric) settingsUsersMetric.textContent = "0";
+        if (settingsAdminsMetric) settingsAdminsMetric.textContent = "0";
       }
     }
 
@@ -687,10 +760,13 @@
         }).join("");
 
         activityEmpty.hidden = list.length > 0;
+        if (settingsActivityMetric) settingsActivityMetric.textContent = String(list.length);
+        markSettingsSync("Activité sync");
       } catch (error) {
         console.error("Erreur activite utilisateurs:", error);
         activityBody.innerHTML = "";
         activityEmpty.hidden = false;
+        if (settingsActivityMetric) settingsActivityMetric.textContent = "0";
       }
     }
 
@@ -700,16 +776,19 @@
         historyBody.innerHTML = renderHistoryRows(list);
 
         historyEmpty.hidden = list.length > 0;
+        if (settingsHistoryMetric) settingsHistoryMetric.textContent = String(list.length);
+        markSettingsSync("Historique sync");
       } catch (error) {
         console.error("Erreur historique admin:", error);
         historyBody.innerHTML = "";
         historyEmpty.hidden = false;
+        if (settingsHistoryMetric) settingsHistoryMetric.textContent = "0";
       }
     }
 
     async function changeUserRole(userId, nextRole, email) {
       if (!userId) return;
-      const ok = window.confirm(`Confirmer le changement de role vers '${nextRole}' pour ${email || userId} ?`);
+      const ok = await window.appUiConfirm(`Confirmer le changement de role vers '${nextRole}' pour ${email || userId} ?`);
       if (!ok) return;
 
       try {

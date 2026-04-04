@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reinitialiser le mot de passe – IntelliBuild</title>
+  <title data-key="reset_doc_title">Reinitialiser le mot de passe – IntelliBuild</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="theme.css">
@@ -31,43 +31,50 @@
 <header class="topbar">
   <h2>
     <div class="logo">
-      <img class="brand-logo-lg" src="Sans%20titre-2.png" alt="IntelliBuild">
-      <span>IntelliBuild</span>
+      <img class="brand-logo-lg" src="intellibuild-mark.svg" alt="IntelliBuild">
+      <span data-key="brand">IntelliBuild</span>
     </div>
   </h2>
-  <a href="login.html" class="btn outline">Connexion</a>
+  <a href="login.html" class="btn outline" data-key="btn_login">Connexion</a>
 </header>
 
 <section class="auth-container">
   <div class="auth-box">
-    <h2>Reinitialiser le mot de passe</h2>
-    <p>Choisis un nouveau mot de passe.</p>
+    <h2 data-key="reset_title">Reinitialiser le mot de passe</h2>
+    <p data-key="reset_sub">Choisis un nouveau mot de passe.</p>
 
     <form id="resetForm">
-      <label>Nouveau mot de passe</label>
-      <input id="newPassword" type="password" placeholder="••••••••" required>
+      <label data-key="label_new_password">Nouveau mot de passe</label>
+      <input id="newPassword" type="password" placeholder="••••••••" data-key="ph_password" data-attr="placeholder" required>
 
-      <label>Confirmer le mot de passe</label>
-      <input id="confirmPassword" type="password" placeholder="••••••••" required>
+      <label data-key="label_confirm_password">Confirmer le mot de passe</label>
+      <input id="confirmPassword" type="password" placeholder="••••••••" data-key="ph_confirm_password" data-attr="placeholder" required>
 
-      <button type="submit" class="login-btn">Mettre a jour</button>
+      <button type="submit" class="login-btn" data-key="btn_update_password">Mettre a jour</button>
     </form>
   </div>
 </section>
 
 <footer class="site-footer">
   <div class="brand">
-    <img src="Sans%20titre-2.png" alt="IntelliBuild">
-    <span>IntelliBuild</span>
+    <img src="intellibuild-mark.svg" alt="IntelliBuild">
+    <span data-key="brand">IntelliBuild</span>
   </div>
   <div>(c) 2026 IntelliBuild. All rights reserved.</div>
 </footer>
 
+<script src="config.js"></script>
+<script src="translations.js"></script>
 <script>
   const SUPABASE_URL = "https://jmxctdcosdckpbufocwc.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_mqd59UHa-nfnHa6ZBs0dvQ_lL5vp2WK";
 
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  function tr(key, fallback, params) {
+    if (window.getTranslationText) return window.getTranslationText(key, fallback, params);
+    return fallback;
+  }
 
   function getHashParams() {
     const hash = window.location.hash.substring(1);
@@ -89,27 +96,25 @@
     const pass = document.getElementById('newPassword').value;
     const confirm = document.getElementById('confirmPassword').value;
     if (pass !== confirm) {
-      alert('Les mots de passe ne correspondent pas.');
+      alert(tr('reset_error_mismatch', 'Les mots de passe ne correspondent pas.'));
       return;
     }
 
     const hasSession = await initSessionFromHash();
     if (!hasSession) {
-      alert('Lien invalide ou expire.');
+      alert(tr('reset_error_invalid', 'Lien invalide ou expire.'));
       return;
     }
 
     const { error } = await client.auth.updateUser({ password: pass });
     if (error) {
-      alert(error.message || 'Erreur lors de la mise a jour.');
+      alert(error.message || tr('reset_error_update', 'Erreur lors de la mise a jour.'));
       return;
     }
 
-    alert('Mot de passe mis a jour. Tu peux te connecter.');
+    alert(tr('reset_success', 'Mot de passe mis a jour. Tu peux te connecter.'));
     window.location.href = 'login.html';
   });
 </script>
 </body>
 </html>
-
-

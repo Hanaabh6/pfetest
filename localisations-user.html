@@ -14,7 +14,10 @@
             --bg-overlay: rgba(15, 23, 42, 0.48);
             --sidebar-bg: rgba(0, 0, 0, 0.92);
             --text-light: #ffffff;
-            --hover-bg: rgba(16, 185, 129, 0.18);
+            --menu-link: #d1d5db;
+            --menu-hover-bg: #1f2937;
+            --menu-active-bg: #047857;
+            --menu-active-ring: rgba(16, 185, 129, 0.45);
         }
 
         body { 
@@ -35,16 +38,20 @@
         .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
         .logo img { width: 40px; }
         .sidebar nav a {
-            display: flex; align-items: center; gap: 10px; padding: 13px 14px; margin: 10px 0; text-decoration: none; color: var(--text-light);
-            border-radius: 10px; transition: background 0.25s ease; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; padding: 13px 14px; margin: 10px 0; text-decoration: none; color: var(--menu-link);
+            border-radius: 10px; transition: background 0.25s ease, color 0.25s ease; cursor: pointer;
         }
         .sidebar nav i {
             width: 18px;
             text-align: center;
             flex: 0 0 18px;
         }
-        .sidebar nav a:hover, .sidebar nav .nav-active { background: var(--hover-bg); }
-        .sidebar nav .nav-active { box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.45); background: var(--hover-bg); }
+        .sidebar nav a:hover { background: var(--menu-hover-bg); color: #fff; }
+        .sidebar nav .nav-active {
+            background: var(--menu-active-bg);
+            color: #fff;
+            box-shadow: inset 0 0 0 1px var(--menu-active-ring);
+        }
         
         /* --- PROFIL DROPDOWN --- */
         .avatar {
@@ -137,6 +144,37 @@
             opacity: 1;
             transform: translateY(0);
         }
+        .user-mini-guide {
+            width: min(320px, 100%);
+            margin-left: auto;
+        }
+        .location-guide-card {
+            display: grid;
+            gap: 16px;
+        }
+        .location-guide-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(15, 23, 42, 0.06);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        .location-guide-meta strong {
+            color: #0f172a;
+            font-size: 1rem;
+        }
+        @media (max-width: 900px) {
+            .user-mini-guide {
+                width: 100%;
+            }
+            .location-guide-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
   <link rel="stylesheet" href="theme.css">
   <script data-theme-role-script>
@@ -163,15 +201,16 @@
     <aside class="sidebar">
         <div>
             <div class="logo">
-                <img src="Sans%20titre-2.png" alt="Logo IntelliBuild">
+                <img src="intellibuild-mark.svg" alt="Logo IntelliBuild">
                 <h2 class="text-xl font-bold" data-key="brand">IntelliBuild</h2>
             </div>
             <nav id="sideNav">
                 <a href="user.html"><i class="fas fa-home"></i><span data-key="nav_dashboard">Dashboard</span></a>
                 <a href="user.html#objectsSection"><i class="fas fa-cube"></i><span data-key="nav_objects">Objets</span></a>
-                <a href="mesobjet.html"><i class="fas fa-box-open"></i><span>Mes objets</span></a>
+                <a href="mesobjet.html"><i class="fas fa-box-open"></i><span data-key="nav_my_objects">Mes objets</span></a>
                 <a href="localisations-user.html" class="nav-active"><i class="fas fa-map-marker-alt"></i><span data-key="nav_locations">Localisations</span></a>
-                <a href="notifications-user.html"><i class="fas fa-bell"></i><span>Notifications</span></a>
+                <a href="notifications-user.html"><i class="fas fa-bell"></i><span data-key="nav_notifications">Notifications</span></a>
+                <a href="documatation.html"><i class="fas fa-book-open"></i><span data-key="nav_documentation">Documentation</span></a>
                 <a href="#" id="openHistoryOverlay"><i class="fas fa-clock-rotate-left"></i><span data-key="nav_history">Historique</span></a>
                 <a href="#" id="openRoleOverlay"><i class="fas fa-user-shield"></i><span data-key="nav_role">Role</span></a>
                 <a href="parametres-user.html"><i class="fas fa-cog"></i><span data-key="nav_settings">Paramètres</span></a>
@@ -208,32 +247,31 @@
         </header>
 
         <main class="p-8">
-            <div class="mb-10 text-center">
-                <h1 class="text-5xl font-black text-white mb-2 drop-shadow-lg">Architecture Interactive</h1>
-                <p class="text-emerald-50 text-lg font-medium">Cliquez sur un bureau pour mettre à jour votre localisation.</p>
-            </div>
-
-            <section class="control-panel max-w-5xl mx-auto mb-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-                    <div>
-                        <label class="text-xs font-bold uppercase text-slate-600">Recherche salle</label>
-                        <input id="roomSearchInput" class="control-input" type="text" placeholder="Ex: Labo, Bureau, Auditorium">
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold uppercase text-slate-600">Selection rapide</label>
-                        <select id="roomQuickSelect" class="control-select">
-                            <option value="">Choisir une salle...</option>
-                        </select>
-                    </div>
-                    <div class="flex gap-2">
-                        <button id="goRoomBtn" type="button" class="flex-1 px-3 py-2 rounded-lg bg-emerald-700 text-white font-bold hover:bg-emerald-800">Definir position</button>
-                        <button id="resetRoomFilterBtn" type="button" class="px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 font-bold hover:bg-slate-50">Reset</button>
+            <section class="page-hero max-w-5xl mx-auto mb-8">
+                <div class="hero-copy">
+                    <span class="page-kicker"><i class="fas fa-location-dot"></i> Localisation interactive</span>
+                    <h1>Choisissez votre salle en 3D</h1>
+                    <p>Explorez chaque etage, cliquez sur une salle et mettez a jour votre position sans quitter l’architecture du batiment.</p>
+                    <div class="page-badges">
+                        <span class="page-badge"><i class="fas fa-cube"></i> Vue 3D fluide</span>
+                        <span class="page-badge"><i class="fas fa-building"></i> Etages visuels</span>
+                        <span class="page-badge"><i class="fas fa-street-view"></i> Position instantanee</span>
                     </div>
                 </div>
-                <div class="mt-3 flex flex-wrap gap-2">
-                    <span class="tiny-chip"><i class="fas fa-layer-group"></i> Etages: <span id="floorCount">0</span></span>
-                    <span class="tiny-chip"><i class="fas fa-door-open"></i> Salles: <span id="roomCount">0</span></span>
-                    <span class="tiny-chip"><i class="fas fa-location-dot"></i> Actuelle: <span id="roomNowChip">-</span></span>
+
+                <div class="hero-note-card location-guide-card">
+                    <div>
+                        <h3 class="side-panel-title">Comment l'utiliser</h3>
+                        <ul class="side-list">
+                            <li>Choisissez un etage puis cliquez directement sur la salle qui vous interesse.</li>
+                            <li>Faites glisser la scene pour voir les espaces sous plusieurs angles.</li>
+                            <li>Votre position active se met a jour des que vous selectionnez une salle.</li>
+                        </ul>
+                    </div>
+                    <div class="location-guide-meta">
+                        <span class="tiny-chip"><i class="fas fa-map-pin"></i> Salle active</span>
+                        <strong id="heroActiveRoom">Chargement...</strong>
+                    </div>
                 </div>
             </section>
 
@@ -264,13 +302,6 @@
         const infoOverlay = document.getElementById('infoOverlay');
         const overlayBody = document.getElementById('overlayBody');
         const overlayTitle = document.getElementById('overlayTitle');
-        const roomSearchInput = document.getElementById('roomSearchInput');
-        const roomQuickSelect = document.getElementById('roomQuickSelect');
-        const goRoomBtn = document.getElementById('goRoomBtn');
-        const resetRoomFilterBtn = document.getElementById('resetRoomFilterBtn');
-        const floorCount = document.getElementById('floorCount');
-        const roomCount = document.getElementById('roomCount');
-        const roomNowChip = document.getElementById('roomNowChip');
         const posToast = document.getElementById('posToast');
 
     const apiBase = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "http://127.0.0.1:8000";
@@ -441,34 +472,11 @@
             localStorage.setItem('user_y', String(coords.y));
             localStorage.setItem('user_z', String(coords.z));
             document.getElementById('posName').textContent = room;
-            roomNowChip.textContent = room;
+            const heroActiveRoom = document.getElementById('heroActiveRoom');
+            if (heroActiveRoom) {
+                heroActiveRoom.textContent = room;
+            }
             showPosToast(`Localisation mise a jour: ${room}`);
-        }
-
-        function allRooms() {
-            return ARCHI_DATA.flatMap(function (floor) {
-                return Array.isArray(floor.rooms) ? floor.rooms : [];
-            });
-        }
-
-        function populateRoomQuickSelect() {
-            const rooms = allRooms().slice().sort(function (a, b) { return a.localeCompare(b, 'fr'); });
-            roomQuickSelect.innerHTML = '<option value="">Choisir une salle...</option>' + rooms.map(function (room) {
-                return `<option value="${room}">${room}</option>`;
-            }).join('');
-
-            floorCount.textContent = String(ARCHI_DATA.length);
-            roomCount.textContent = String(rooms.length);
-        }
-
-        function applyRoomFilter() {
-            const q = normalizeText(roomSearchInput.value || '');
-            document.querySelectorAll('[data-floor-name]').forEach(function (card) {
-                const floorName = normalizeText(card.getAttribute('data-floor-name') || '');
-                const roomsText = normalizeText(card.getAttribute('data-floor-rooms') || '');
-                const visible = !q || floorName.includes(q) || roomsText.includes(q);
-                card.style.display = visible ? '' : 'none';
-            });
         }
 
         function createFloor3D(containerId, rooms, floorColor) {
@@ -544,8 +552,10 @@
             ARCHI_DATA.forEach(f => createFloor3D(`canvas-${f.id}`, f.rooms, f.color));
             const currentRoom = localStorage.getItem('user_room') || "Non definie";
             document.getElementById('posName').textContent = currentRoom;
-            roomNowChip.textContent = currentRoom;
-            populateRoomQuickSelect();
+            const heroActiveRoom = document.getElementById('heroActiveRoom');
+            if (heroActiveRoom) {
+                heroActiveRoom.textContent = currentRoom;
+            }
             
             loadUserProfile();
         }
@@ -563,21 +573,6 @@
             e.preventDefault();
             openOverlay("Historique", await loadHistoryHtml());
         };
-
-        roomSearchInput.addEventListener('input', applyRoomFilter);
-        goRoomBtn.addEventListener('click', function () {
-            const room = String(roomQuickSelect.value || '').trim();
-            if (!room) {
-                showPosToast('Selectionnez une salle');
-                return;
-            }
-            setMyPos(room);
-        });
-        resetRoomFilterBtn.addEventListener('click', function () {
-            roomSearchInput.value = '';
-            roomQuickSelect.value = '';
-            applyRoomFilter();
-        });
     </script>
 </body>
 </html>

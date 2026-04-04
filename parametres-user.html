@@ -32,7 +32,10 @@
       --bg-overlay: rgba(15, 23, 42, 0.48);
       --sidebar-bg: rgba(0, 0, 0, 0.92);
       --text-light: #ffffff;
-      --hover-bg: rgba(16, 185, 129, 0.18);
+      --menu-link: #d1d5db;
+      --menu-hover-bg: #1f2937;
+      --menu-active-bg: #047857;
+      --menu-active-ring: rgba(16, 185, 129, 0.45);
       --glass: rgba(255, 255, 255, 0.9);
     }
 
@@ -67,14 +70,18 @@
       padding: 13px 14px;
       margin: 10px 0;
       text-decoration: none;
-      color: var(--text-light);
+      color: var(--menu-link);
       border-radius: 10px;
-      transition: background 0.25s ease;
+      transition: background 0.25s ease, color 0.25s ease;
       cursor: pointer;
     }
 
-    .sidebar nav a:hover, .sidebar nav .nav-active { background: var(--hover-bg); }
-    .sidebar nav .nav-active { box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.45); }
+    .sidebar nav a:hover { background: var(--menu-hover-bg); color: #fff; }
+    .sidebar nav .nav-active {
+      background: var(--menu-active-bg);
+      color: #fff;
+      box-shadow: inset 0 0 0 1px var(--menu-active-ring);
+    }
 
     .main-wrap {
       margin-left: 280px;
@@ -241,16 +248,19 @@
   <aside class="sidebar">
     <div>
       <div class="logo">
-        <img src="Sans%20titre-2.png" alt="Logo IntelliBuild">
+        <img src="intellibuild-mark.svg" alt="Logo IntelliBuild">
         <h2 class="text-xl font-bold">IntelliBuild</h2>
       </div>
 
       <nav>
-        <a href="user.html"><i class="fas fa-home mr-2"></i> Dashboard</a>
-        <a href="user.html#objectsSection"><i class="fas fa-cube mr-2"></i> Objets</a>
-        <a href="mesobjet.html"><i class="fas fa-box-open mr-2"></i> Mes objets</a>
-        <a href="localisations-user.html"><i class="fas fa-map-marker-alt mr-2"></i> Localisations</a>
-        <a href="notifications-user.html"><i class="fas fa-bell mr-2"></i> Notifications</a>
+        <a href="user.html"><i class="fas fa-home mr-2"></i><span data-key="nav_dashboard">Dashboard</span></a>
+        <a href="user.html#objectsSection"><i class="fas fa-cube mr-2"></i><span data-key="nav_objects">Objets</span></a>
+        <a href="mesobjet.html"><i class="fas fa-box-open mr-2"></i> <span data-key="nav_my_objects">Mes objets</span></a>
+        <a href="localisations-user.html"><i class="fas fa-map-marker-alt mr-2"></i><span data-key="nav_locations">Localisations</span></a>
+        <a href="notifications-user.html"><i class="fas fa-bell mr-2"></i> <span data-key="nav_notifications">Notifications</span></a>
+        <a href="documatation.html"><i class="fas fa-book-open mr-2"></i> <span data-key="nav_documentation">Documentation</span></a>
+        <a href="#historySection"><i class="fas fa-clock-rotate-left mr-2"></i><span data-key="nav_history">Historique</span></a>
+        <a href="#profileSection"><i class="fas fa-user-shield mr-2"></i><span data-key="nav_role">Role</span></a>
         <a href="parametres-user.html" class="nav-active"><i class="fas fa-cog mr-2"></i> Parametres</a>
       </nav>
     </div>
@@ -267,7 +277,7 @@
   </aside>
 
   <main class="main-wrap">
-    <section class="glass p-6 mb-5">
+    <section id="profileSection" class="glass p-6 mb-5">
       <div class="profile-head">
         <div id="avatarBadge" class="avatar">U</div>
         <div>
@@ -283,10 +293,10 @@
       <article class="glass p-5 xl:col-span-2">
         <h2 class="text-xl font-black text-slate-800 mb-3">Actions rapides</h2>
         <div class="quick-grid">
-          <a href="user.html" class="quick-item"><i class="fas fa-home mr-2"></i>Retour dashboard</a>
+          <a href="user.html" class="quick-item"><i class="fas fa-home mr-2"></i><span data-key="btn_back_dashboard">Retour dashboard</span></a>
           <a href="localisations-user.html" class="quick-item"><i class="fas fa-map mr-2"></i>Aller a localisations</a>
           <a href="notifications-user.html" class="quick-item"><i class="fas fa-bell mr-2"></i>Voir notifications</a>
-          <a href="mesobjet.html" class="quick-item"><i class="fas fa-box-open mr-2"></i>Mes objets</a>
+          <a href="mesobjet.html" class="quick-item"><i class="fas fa-box-open mr-2"></i><span data-key="nav_my_objects">Mes objets</span></a>
           <a href="reset.html" class="quick-item"><i class="fas fa-key mr-2"></i>Reinitialiser mot de passe</a>
           <button id="openSignOutBtn" class="btn btn-danger"><i class="fas fa-sign-out-alt mr-2"></i>Sign out</button>
         </div>
@@ -310,7 +320,7 @@
       <p id="bioText" class="text-slate-600 m-0">Aucune bio enregistree.</p>
     </section>
 
-    <section class="glass p-5">
+    <section id="historySection" class="glass p-5">
       <div class="flex items-center justify-between gap-3 mb-3">
         <h2 class="text-xl font-black text-slate-800 m-0">Historique personnel</h2>
         <button id="refreshHistoryBtn" class="btn btn-outline">Rafraichir</button>

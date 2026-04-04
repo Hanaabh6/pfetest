@@ -3,15 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Notifications User - IntelliBuild</title>
+  <title data-key="notifications_user_doc_title">Notifications User - IntelliBuild</title>
   <script src="config.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --bg-overlay: rgba(15, 23, 42, 0.48);
       --panel: rgba(255, 255, 255, 0.86);
       --sidebar-bg: rgba(0, 0, 0, 0.92);
       --text-light: #ffffff;
-      --hover-bg: rgba(16, 185, 129, 0.18);
+      --menu-link: #d1d5db;
+      --menu-hover-bg: #1f2937;
+      --menu-active-bg: #047857;
+      --menu-active-ring: rgba(16, 185, 129, 0.45);
       --text: #0f172a;
       --muted: #64748b;
       --ok: #166534;
@@ -70,13 +74,15 @@
     }
 
     .sidebar nav a {
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       padding: 13px 14px;
       margin: 10px 0;
       text-decoration: none;
-      color: var(--text-light);
+      color: var(--menu-link);
       border-radius: 10px;
-      transition: background 0.25s ease;
+      transition: background 0.25s ease, color 0.25s ease;
       cursor: pointer;
       font-weight: 600;
     }
@@ -84,21 +90,49 @@
     .sidebar nav i {
       width: 18px;
       text-align: center;
-      margin-right: 10px;
+      flex: 0 0 18px;
     }
 
-    .sidebar nav a:hover,
-    .sidebar nav .nav-active {
-      background: var(--hover-bg);
-    }
+    .sidebar nav a:hover { background: var(--menu-hover-bg); color: #fff; }
 
     .sidebar nav .nav-active {
-      box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.45);
+      background: var(--menu-active-bg);
+      color: #fff;
+      box-shadow: inset 0 0 0 1px var(--menu-active-ring);
     }
 
     .main-area {
       flex: 1;
       padding: 24px;
+    }
+
+    .sidebar-bottom {
+      display: grid;
+      gap: 12px;
+    }
+
+    .lang {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .lang-title {
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .lang-select {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(17, 24, 39, 0.9);
+      color: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
     }
 
     .wrap {
@@ -225,16 +259,31 @@
   <aside class="sidebar">
     <div>
       <div class="logo">
-        <img src="Sans%20titre-2.png" alt="Logo IntelliBuild">
-        <h2>IntelliBuild</h2>
+        <img src="intellibuild-mark.svg" alt="Logo IntelliBuild">
+        <h2 data-key="brand">IntelliBuild</h2>
       </div>
       <nav>
-        <a href="user.html"><i class="fas fa-home"></i>Dashboard</a>
-        <a href="mesobjet.html"><i class="fas fa-box-open"></i>Mes objets</a>
-        <a href="localisations-user.html"><i class="fas fa-map-marker-alt"></i>Localisations</a>
-        <a href="notifications-user.html" class="nav-active"><i class="fas fa-bell"></i>Notifications</a>
-        <a href="parametres-user.html"><i class="fas fa-cog"></i>Parametres</a>
+        <a href="user.html"><i class="fas fa-home"></i><span data-key="nav_dashboard">Dashboard</span></a>
+        <a href="user.html#objectsSection"><i class="fas fa-cube"></i><span data-key="nav_objects">Objets</span></a>
+        <a href="mesobjet.html"><i class="fas fa-box-open"></i><span data-key="nav_my_objects">Mes objets</span></a>
+        <a href="localisations-user.html"><i class="fas fa-map-marker-alt"></i><span data-key="nav_locations">Localisations</span></a>
+        <a href="notifications-user.html" class="nav-active"><i class="fas fa-bell"></i><span data-key="nav_notifications">Notifications</span></a>
+        <a href="documatation.html"><i class="fas fa-book-open"></i><span data-key="nav_documentation">Documentation</span></a>
+        <a href="parametres-user.html#historySection"><i class="fas fa-clock-rotate-left"></i><span data-key="nav_history">Historique</span></a>
+        <a href="parametres-user.html#profileSection"><i class="fas fa-user-shield"></i><span data-key="nav_role">Role</span></a>
+        <a href="parametres-user.html"><i class="fas fa-cog"></i><span data-key="nav_settings">Parametres</span></a>
       </nav>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="lang">
+        <div class="lang-title" data-key="lang_title">Langue</div>
+        <select class="lang-select" aria-label="Choisir la langue">
+          <option value="fr">FR</option>
+          <option value="en">EN</option>
+          <option value="ar">AR</option>
+        </select>
+      </div>
     </div>
   </aside>
 
@@ -242,28 +291,29 @@
   <main class="wrap">
     <header class="head">
       <div>
-        <h1 class="title">Notifications User</h1>
-        <p class="sub">Canal personnel: vos emprunts, retours et messages utiles.</p>
+        <h1 class="title" data-key="notifications_user_title">Notifications User</h1>
+        <p class="sub" data-key="notifications_user_sub">Canal personnel: vos emprunts, retours et messages utiles.</p>
       </div>
       <div class="actions">
-        <button class="btn btn-light" id="refreshBtn" type="button">Rafraichir</button>
-        <button class="btn btn-primary" id="markAllBtn" type="button">Tout marquer lu</button>
-        <button class="btn btn-light" type="button" onclick="window.location.href='user.html'">Retour dashboard</button>
+        <button class="btn btn-light" id="refreshBtn" type="button" data-key="btn_refresh">Rafraichir</button>
+        <button class="btn btn-primary" id="markAllBtn" type="button" data-key="btn_mark_all_read">Tout marquer lu</button>
+        <button class="btn btn-light" type="button" onclick="window.location.href='user.html'" data-key="btn_back_dashboard">Retour dashboard</button>
       </div>
     </header>
 
     <div class="toolbar">
       <div class="unread">
-        Non lues:
+        <span data-key="unread_label">Non lues:</span>
         <span class="badge type-info" id="unreadCount">0</span>
       </div>
     </div>
 
     <section id="notifList" class="notif-list"></section>
-    <div id="emptyState" class="empty" hidden>Aucune notification utilisateur pour le moment.</div>
+    <div id="emptyState" class="empty" hidden data-key="notifications_user_empty">Aucune notification utilisateur pour le moment.</div>
   </main>
   </div>
 
+  <script src="translations.js"></script>
   <script>
     const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "http://127.0.0.1:8000";
     const token = localStorage.getItem("userToken");
@@ -274,9 +324,22 @@
     const unreadCount = document.getElementById("unreadCount");
     const refreshBtn = document.getElementById("refreshBtn");
     const markAllBtn = document.getElementById("markAllBtn");
+    let notificationsReady = false;
 
     if (!token) window.location.href = "login.html";
     if (role === "admin") window.location.href = "notifications-admin.html";
+
+    function tr(key, fallback, params) {
+      if (window.getTranslationText) return window.getTranslationText(key, fallback, params);
+      return fallback;
+    }
+
+    function getCurrentLocale() {
+      const lang = String(localStorage.getItem("lang") || "fr").toLowerCase();
+      if (lang === "ar") return "ar";
+      if (lang === "en") return "en-US";
+      return "fr-FR";
+    }
 
     function authHeaders() {
       return {
@@ -289,7 +352,7 @@
       if (!value) return "-";
       const d = new Date(value);
       if (Number.isNaN(d.getTime())) return value;
-      return d.toLocaleString("fr-FR");
+      return d.toLocaleString(getCurrentLocale());
     }
 
     function typeClass(type) {
@@ -332,13 +395,13 @@
         notifList.innerHTML = list.map((n) => `
           <article class="notif ${n.is_read ? "" : "unread-item"}">
             <div class="row-top">
-              <h4>${(n.title || "Notification").replace(/</g, "&lt;")}</h4>
+              <h4>${(n.title || tr("notification_default_title", "Notification")).replace(/</g, "&lt;")}</h4>
               <span class="badge ${typeClass(n.type)}">${String(n.type || "info")}</span>
             </div>
             <div>${String(n.message || "").replace(/</g, "&lt;")}</div>
             <div class="meta">${formatDate(n.created_at)}</div>
             <div>
-              ${n.is_read ? "" : `<button class="btn btn-light" type="button" onclick="markOneAsRead('${n.id}')">Marquer lu</button>`}
+              ${n.is_read ? "" : `<button class="btn btn-light" type="button" onclick="markOneAsRead('${n.id}')">${tr("btn_mark_read", "Marquer lu")}</button>`}
             </div>
           </article>
         `).join("");
@@ -360,7 +423,7 @@
         });
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          alert(data.detail || "Impossible de marquer les notifications.");
+          alert(data.detail || tr("notif_mark_all_error", "Impossible de marquer les notifications."));
           return;
         }
         await loadNotifications();
@@ -373,7 +436,13 @@
     markAllBtn.addEventListener("click", markAllAsRead);
 
     window.markOneAsRead = markOneAsRead;
-    loadNotifications();
+    window.addEventListener("app:languagechange", function () {
+      if (!notificationsReady) return;
+      loadNotifications();
+    });
+    loadNotifications().finally(function () {
+      notificationsReady = true;
+    });
   </script>
 </body>
 </html>

@@ -30,8 +30,6 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
                 localStorage.removeItem("userDisplayName");
             }
 
-            alert("Connexion réussie !");
-
             // 2. REDIRECTION LOGIQUE
             // Si c'est un admin -> index.html (Gestion complète)
             // Sinon (user) -> user.html

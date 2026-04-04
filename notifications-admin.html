@@ -3,13 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Notifications Admin - IntelliBuild</title>
+  <title data-key="notifications_admin_doc_title">Notifications Admin - IntelliBuild</title>
   <script src="config.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     :root {
       --bg-1: #0b1220;
       --bg-2: #1e293b;
+      --sidebar-bg: rgba(0, 0, 0, 0.92);
+      --menu-link: #d1d5db;
+      --menu-hover-bg: #1f2937;
+      --menu-active-bg: #047857;
+      --menu-active-ring: rgba(16, 185, 129, 0.45);
       --panel: rgba(255, 255, 255, 0.96);
       --text: #0f172a;
       --muted: #64748b;
@@ -38,10 +43,10 @@
     }
 
     .admin-sidebar {
-      width: 256px;
-      background: rgba(0, 0, 0, 0.92);
+      width: 280px;
+      background: var(--sidebar-bg);
       backdrop-filter: blur(10px);
-      color: #d1d5db;
+      color: var(--menu-link);
       padding: 24px;
       display: flex;
       flex-direction: column;
@@ -88,20 +93,28 @@
     .sidebar-nav a {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px;
+      gap: 10px;
+      padding: 13px 14px;
+      margin: 10px 0;
       border-radius: 10px;
-      color: #d1d5db;
+      color: var(--menu-link);
       text-decoration: none;
-      transition: background 0.2s ease;
+      transition: background 0.25s ease, color 0.25s ease;
+      font-weight: 600;
     }
 
-    .sidebar-nav a:hover { background: #1f2937; }
+    .sidebar-nav a i {
+      width: 18px;
+      text-align: center;
+      flex: 0 0 18px;
+    }
+
+    .sidebar-nav a:hover { background: var(--menu-hover-bg); color: #fff; }
 
     .sidebar-nav .active {
-      background: #047857;
+      background: var(--menu-active-bg);
       color: #fff;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25);
+      box-shadow: inset 0 0 0 1px var(--menu-active-ring);
     }
 
     .sidebar-nav .settings-link {
@@ -348,8 +361,8 @@
 <body>
   <aside class="admin-sidebar">
     <div class="sidebar-logo">
-      <img src="Sans%20titre-2.png" alt="IntelliBuild">
-      <span>IntelliBuild</span>
+      <img src="intellibuild-mark.svg" alt="IntelliBuild">
+      <span data-key="brand">IntelliBuild</span>
     </div>
 
     <select class="sidebar-lang" id="langSelect">
@@ -359,14 +372,15 @@
     </select>
 
     <nav class="sidebar-nav">
-      <a href="index.html"><i class="fas fa-home"></i><span>Dashboard</span></a>
-      <a href="ajouter-objet.html"><i class="fas fa-plus"></i><span>Ajouter</span></a>
-      <a href="objets.html"><i class="fas fa-cube"></i><span>Objets</span></a>
-      <a href="localisations.html"><i class="fas fa-map-marker-alt"></i><span>Localisations</span></a>
-      <a href="#" id="openHistoryOverlay"><i class="fas fa-clock-rotate-left"></i><span>Historique</span></a>
-      <a href="#" id="openRoleOverlay"><i class="fas fa-user-shield"></i><span>Role</span></a>
-      <a href="notifications-admin.html" class="active"><i class="fas fa-bell"></i><span>Notifications</span></a>
-      <a href="parametres.html" class="settings-link"><i class="fas fa-cog"></i><span>Paramètres</span></a>
+      <a href="index.html"><i class="fas fa-home"></i><span data-key="nav_dashboard">Dashboard</span></a>
+      <a href="ajouter-objet.html"><i class="fas fa-plus"></i><span data-key="nav_add">Ajouter</span></a>
+      <a href="objets.html"><i class="fas fa-cube"></i><span data-key="nav_objects">Objets</span></a>
+      <a href="localisations.html"><i class="fas fa-map-marker-alt"></i><span data-key="nav_locations">Localisations</span></a>
+      <a href="#" id="openHistoryOverlay"><i class="fas fa-clock-rotate-left"></i><span data-key="nav_history">Historique</span></a>
+      <a href="#" id="openRoleOverlay"><i class="fas fa-user-shield"></i><span data-key="nav_role">Role</span></a>
+      <a href="notifications-admin.html" class="active"><i class="fas fa-bell"></i><span data-key="nav_notifications">Notifications</span></a>
+      <a href="documatation.html"><i class="fas fa-book-open"></i><span data-key="nav_documentation">Documentation</span></a>
+      <a href="parametres.html" class="settings-link"><i class="fas fa-cog"></i><span data-key="nav_settings">Paramètres</span></a>
     </nav>
   </aside>
 
@@ -374,25 +388,25 @@
     <main class="wrap">
     <header class="head">
       <div>
-        <h1 class="title">Notifications Admin</h1>
-        <p class="sub">Canal reserve aux actions et alertes d'administration.</p>
+        <h1 class="title" data-key="notifications_admin_title">Notifications Admin</h1>
+        <p class="sub" data-key="notifications_admin_sub">Canal reserve aux actions et alertes d'administration.</p>
       </div>
       <div class="actions">
-        <button class="btn btn-light" id="refreshBtn" type="button">Rafraichir</button>
-        <button class="btn btn-primary" id="markAllBtn" type="button">Tout marquer lu</button>
-        <button class="btn btn-light" type="button" onclick="window.location.href='index.html'">Retour dashboard</button>
+        <button class="btn btn-light" id="refreshBtn" type="button" data-key="btn_refresh">Rafraichir</button>
+        <button class="btn btn-primary" id="markAllBtn" type="button" data-key="btn_mark_all_read">Tout marquer lu</button>
+        <button class="btn btn-light" type="button" onclick="window.location.href='index.html'" data-key="btn_back_dashboard">Retour dashboard</button>
       </div>
     </header>
 
     <div class="toolbar">
       <div class="unread">
-        Non lues:
+        <span data-key="unread_label">Non lues:</span>
         <span class="badge type-info" id="unreadCount">0</span>
       </div>
     </div>
 
     <section id="notifList" class="notif-list"></section>
-    <div id="emptyState" class="empty" hidden>Aucune notification admin pour le moment.</div>
+    <div id="emptyState" class="empty" hidden data-key="notifications_admin_empty">Aucune notification admin pour le moment.</div>
     </main>
   </div>
 
@@ -400,13 +414,14 @@
     <div class="overlay-backdrop" id="overlayBackdrop"></div>
     <div class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
       <div class="overlay-header">
-        <h3 class="overlay-title" id="overlayTitle">Details</h3>
+        <h3 class="overlay-title" id="overlayTitle" data-key="detail_overlay_title">Details</h3>
         <button class="overlay-close" id="overlayClose" type="button" aria-label="Fermer">x</button>
       </div>
       <div class="overlay-body" id="overlayBody"></div>
     </div>
   </div>
 
+  <script src="translations.js"></script>
   <script>
     const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "http://127.0.0.1:8000";
     const token = localStorage.getItem("userToken");
@@ -424,9 +439,22 @@
     const overlayClose = document.getElementById("overlayClose");
     const overlayTitle = document.getElementById("overlayTitle");
     const overlayBody = document.getElementById("overlayBody");
+    let adminNotificationsReady = false;
 
     if (!token) window.location.href = "login.html";
     if (role !== "admin") window.location.href = "user.html";
+
+    function tr(key, fallback, params) {
+      if (window.getTranslationText) return window.getTranslationText(key, fallback, params);
+      return fallback;
+    }
+
+    function getCurrentLocale() {
+      const lang = String(localStorage.getItem("lang") || "fr").toLowerCase();
+      if (lang === "ar") return "ar";
+      if (lang === "en") return "en-US";
+      return "fr-FR";
+    }
 
     function authHeaders() {
       return {
@@ -439,7 +467,7 @@
       if (!value) return "-";
       const d = new Date(value);
       if (Number.isNaN(d.getTime())) return value;
-      return d.toLocaleString("fr-FR");
+      return d.toLocaleString(getCurrentLocale());
     }
 
     function typeClass(type) {
@@ -464,13 +492,13 @@
 
     function normalizeAdminActionLabel(action) {
       const raw = String(action || "").trim();
-      if (!raw) return "Admin - Action";
-      if (raw === "Utilisateurs") return "Admin - Gestion utilisateurs";
-      if (raw === "Session") return "Admin - Session";
-      if (raw === "Profil") return "Admin - Profil";
-      if (raw === "Navigation") return "Admin - Navigation";
+      if (!raw) return tr("admin_action_default", "Admin - Action");
+      if (raw === "Utilisateurs") return tr("admin_action_users", "Admin - Gestion utilisateurs");
+      if (raw === "Session") return tr("admin_action_session", "Admin - Session");
+      if (raw === "Profil") return tr("admin_action_profile", "Admin - Profil");
+      if (raw === "Navigation") return tr("admin_action_navigation", "Admin - Navigation");
       if (raw.startsWith("Admin -")) return raw;
-      return `Admin - ${raw}`;
+      return `${tr("role_admin_chip", "Admin")} - ${raw}`;
     }
 
     function renderHistoryTable(history) {
@@ -485,18 +513,18 @@
           </tr>`;
       }).join("");
 
-      const empty = history.length ? "" : '<tr><td colspan="4" class="history-empty">Aucun historique pour le moment.</td></tr>';
+      const empty = history.length ? "" : `<tr><td colspan="4" class="history-empty">${tr("history_empty_admin", "Aucun historique pour le moment.")}</td></tr>`;
       return `
         <div class="history-panel">
-          <h3>Historique admin</h3>
+          <h3>${tr("history_admin_title", "Historique admin")}</h3>
           <div class="history-table-wrap">
             <table class="history-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Action</th>
-                  <th>Detail</th>
-                  <th>Statut</th>
+                  <th>${tr("history_date", "Date")}</th>
+                  <th>${tr("history_action", "Action")}</th>
+                  <th>${tr("history_detail", "Detail")}</th>
+                  <th>${tr("history_status", "Statut")}</th>
                 </tr>
               </thead>
               <tbody>${rows || empty}</tbody>
@@ -517,13 +545,13 @@
     }
 
     async function openHistoryOverlayView() {
-      openOverlay("Historique admin", '<div class="history-panel">Chargement...</div>');
+      openOverlay(tr("history_admin_title", "Historique admin"), `<div class="history-panel">${tr("history_loading", "Chargement...")}</div>`);
       try {
         const history = await fetchAdminHistory();
         overlayBody.innerHTML = renderHistoryTable(history);
       } catch (error) {
         console.error("Erreur historique admin:", error);
-        overlayBody.innerHTML = '<div class="history-panel" style="color:#be123c;">Impossible de charger l\'historique.</div>';
+        overlayBody.innerHTML = `<div class="history-panel" style="color:#be123c;">${tr("notif_history_error", "Impossible de charger l'historique.")}</div>`;
       }
     }
 
@@ -533,7 +561,7 @@
     });
 
     function buildRoleOverlayHtml() {
-      return `<div class="p-2"><h3 class="text-xl font-bold mb-4">Role</h3><span class="role-chip">Admin</span><div class="role-grid"><div class="role-item"><h4>Gestion</h4><p>Acces complet.</p></div></div></div>`;
+      return `<div class="p-2"><h3 class="text-xl font-bold mb-4">${tr("nav_role", "Role")}</h3><span class="role-chip">${tr("role_admin_chip", "Admin")}</span><div class="role-grid"><div class="role-item"><h4>${tr("role_admin_manage_title", "Gestion")}</h4><p>${tr("role_admin_manage_text", "Acces complet.")}</p></div></div></div>`;
     }
 
     async function loadCount() {
@@ -568,13 +596,13 @@
         notifList.innerHTML = list.map((n) => `
           <article class="notif ${n.is_read ? "" : "unread-item"}">
             <div class="row-top">
-              <h4>${(n.title || "Notification").replace(/</g, "&lt;")}</h4>
+              <h4>${(n.title || tr("notification_default_title", "Notification")).replace(/</g, "&lt;")}</h4>
               <span class="badge ${typeClass(n.type)}">${String(n.type || "info")}</span>
             </div>
             <div>${String(n.message || "").replace(/</g, "&lt;")}</div>
             <div class="meta">${formatDate(n.created_at)}${n.actor_email ? ` - ${n.actor_email}` : ""}</div>
             <div>
-              ${n.is_read ? "" : `<button class="btn btn-light" type="button" onclick="markOneAsRead('${n.id}')">Marquer lu</button>`}
+              ${n.is_read ? "" : `<button class="btn btn-light" type="button" onclick="markOneAsRead('${n.id}')">${tr("btn_mark_read", "Marquer lu")}</button>`}
             </div>
           </article>
         `).join("");
@@ -596,7 +624,7 @@
         });
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          alert(data.detail || "Impossible de marquer les notifications.");
+          alert(data.detail || tr("notif_mark_all_error", "Impossible de marquer les notifications."));
           return;
         }
         await loadNotifications();
@@ -609,13 +637,19 @@
     markAllBtn.addEventListener("click", markAllAsRead);
     openRoleOverlay.addEventListener("click", function (event) {
       event.preventDefault();
-      openOverlay("Role", buildRoleOverlayHtml());
+      openOverlay(tr("nav_role", "Role"), buildRoleOverlayHtml());
     });
     overlayBackdrop.addEventListener("click", closeOverlay);
     overlayClose.addEventListener("click", closeOverlay);
 
     window.markOneAsRead = markOneAsRead;
-    loadNotifications();
+    window.addEventListener("app:languagechange", function () {
+      if (!adminNotificationsReady) return;
+      loadNotifications();
+    });
+    loadNotifications().finally(function () {
+      adminNotificationsReady = true;
+    });
   </script>
 </body>
 </html>

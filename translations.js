@@ -4,6 +4,11 @@ const translations = {
     p1_doc_title: 'IntelliBuild – Smart Objects',
     login_doc_title: 'Connexion – IntelliBuild',
     register_doc_title: 'Inscription – IntelliBuild',
+    about_doc_title: 'A propos - IntelliBuild',
+    reset_doc_title: 'Reinitialiser le mot de passe – IntelliBuild',
+    my_objects_doc_title: 'Mes objets - IntelliBuild',
+    notifications_user_doc_title: 'Notifications utilisateur - IntelliBuild',
+    notifications_admin_doc_title: 'Notifications admin - IntelliBuild',
 
     brand: 'IntelliBuild',
     nav_home: 'Accueil',
@@ -12,10 +17,19 @@ const translations = {
     nav_dashboard: 'Dashboard',
     nav_add: 'Ajouter',
     nav_objects: 'Objets',
+    nav_my_objects: 'Mes objets',
     nav_locations: 'Localisations',
+    nav_notifications: 'Notifications',
+    nav_documentation: 'Documentation',
     nav_settings: 'Paramètres',
     btn_login: 'Connexion',
     btn_register: 'Inscription',
+    btn_refresh: 'Actualiser',
+    btn_mark_all_read: 'Tout marquer lu',
+    btn_mark_read: 'Marquer lu',
+    btn_back_dashboard: 'Retour dashboard',
+    btn_update_password: 'Mettre a jour',
+    btn_return: 'Rendre',
 
     title: 'Plateforme intelligente<br>de gestion d’objets connectés',
     subtitle: 'Une solution moderne pour décrire, gérer, sécuriser et rechercher les objets connectés dans un smart building.',
@@ -74,6 +88,7 @@ const translations = {
     login_sub: 'Accédez à votre plateforme de gestion d’objets connectés',
     label_email: 'Email',
     label_password: 'Mot de passe',
+    label_new_password: 'Nouveau mot de passe',
     btn_signin: 'Se connecter',
     auth_link_register: 'Pas encore de compte ? <a href="register.html">Créer un compte</a>',
 
@@ -141,12 +156,57 @@ const translations = {
     role_settings_title: 'Parametres personnels',
     role_settings_text: "Peut changer sa langue d'affichage (FR, EN, AR).",
     status_active_label: 'Actif',
-    status_inactive_label: 'Inactif'
+    status_inactive_label: 'Inactif',
+    status_in_use: 'En utilisation',
+    reset_title: 'Reinitialiser le mot de passe',
+    reset_sub: 'Choisis un nouveau mot de passe.',
+    reset_error_mismatch: 'Les mots de passe ne correspondent pas.',
+    reset_error_invalid: 'Lien invalide ou expire.',
+    reset_error_update: 'Erreur lors de la mise a jour.',
+    reset_success: 'Mot de passe mis a jour. Tu peux te connecter.',
+    my_objects_title: 'Mes objets',
+    my_objects_sub: 'Objets que vous avez pris et que vous pouvez rendre',
+    my_objects_empty: "Vous n'avez aucun objet en cours.",
+    my_objects_counter_singular: '{count} objet en cours',
+    my_objects_counter_plural: '{count} objets en cours',
+    my_objects_load_error: 'Impossible de charger vos objets',
+    table_taken_on: 'Pris le',
+    table_action: 'Action',
+    confirm_return_object: "Voulez-vous vraiment rendre l'objet {id} ?",
+    return_impossible: 'Retour impossible',
+    object_returned: 'Objet rendu',
+    notifications_user_title: 'Notifications utilisateur',
+    notifications_admin_title: 'Notifications admin',
+    notifications_user_sub: 'Canal personnel: vos emprunts, retours et messages utiles.',
+    notifications_admin_sub: "Canal reserve aux actions et alertes d'administration.",
+    notifications_user_empty: 'Aucune notification utilisateur pour le moment.',
+    notifications_admin_empty: 'Aucune notification admin pour le moment.',
+    unread_label: 'Non lues:',
+    notification_default_title: 'Notification',
+    notif_mark_all_error: 'Impossible de marquer les notifications.',
+    history_loading: 'Chargement...',
+    history_admin_title: 'Historique admin',
+    history_empty_admin: 'Aucun historique pour le moment.',
+    notif_history_error: "Impossible de charger l'historique.",
+    role_admin_chip: 'Admin',
+    role_admin_manage_title: 'Gestion',
+    role_admin_manage_text: 'Acces complet.',
+    admin_action_default: 'Admin - Action',
+    admin_action_users: 'Admin - Gestion utilisateurs',
+    admin_action_session: 'Admin - Session',
+    admin_action_profile: 'Admin - Profil',
+    admin_action_navigation: 'Admin - Navigation',
+    error_network: 'Erreur reseau'
   },
   en: {
     p1_doc_title: 'IntelliBuild – Smart Objects',
     login_doc_title: 'Login – IntelliBuild',
     register_doc_title: 'Register – IntelliBuild',
+    about_doc_title: 'About - IntelliBuild',
+    reset_doc_title: 'Reset password – IntelliBuild',
+    my_objects_doc_title: 'My objects - IntelliBuild',
+    notifications_user_doc_title: 'User notifications - IntelliBuild',
+    notifications_admin_doc_title: 'Admin notifications - IntelliBuild',
 
     brand: 'IntelliBuild',
     nav_home: 'Home',
@@ -155,10 +215,19 @@ const translations = {
     nav_dashboard: 'Dashboard',
     nav_add: 'Add',
     nav_objects: 'Objects',
+    nav_my_objects: 'My objects',
     nav_locations: 'Locations',
+    nav_notifications: 'Notifications',
+    nav_documentation: 'Documentation',
     nav_settings: 'Settings',
     btn_login: 'Login',
     btn_register: 'Sign Up',
+    btn_refresh: 'Refresh',
+    btn_mark_all_read: 'Mark all as read',
+    btn_mark_read: 'Mark as read',
+    btn_back_dashboard: 'Back to dashboard',
+    btn_update_password: 'Update',
+    btn_return: 'Return',
 
     title: 'Smart connected objects management platform',
     subtitle: 'A modern solution for describing, managing, securing and searching connected objects in a smart building.',
@@ -217,6 +286,7 @@ const translations = {
     login_sub: 'Access your connected objects management platform',
     label_email: 'Email',
     label_password: 'Password',
+    label_new_password: 'New password',
     btn_signin: 'Sign In',
     auth_link_register: 'Don\'t have an account? <a href="register.html">Create account</a>',
 
@@ -284,12 +354,57 @@ const translations = {
     role_settings_title: 'Personal settings',
     role_settings_text: 'Can change display language (FR, EN, AR).',
     status_active_label: 'Active',
-    status_inactive_label: 'Inactive'
+    status_inactive_label: 'Inactive',
+    status_in_use: 'In use',
+    reset_title: 'Reset password',
+    reset_sub: 'Choose a new password.',
+    reset_error_mismatch: 'Passwords do not match.',
+    reset_error_invalid: 'Invalid or expired link.',
+    reset_error_update: 'Error while updating password.',
+    reset_success: 'Password updated. You can now sign in.',
+    my_objects_title: 'My objects',
+    my_objects_sub: 'Objects you have taken and can return',
+    my_objects_empty: 'You do not have any current objects.',
+    my_objects_counter_singular: '{count} current object',
+    my_objects_counter_plural: '{count} current objects',
+    my_objects_load_error: 'Unable to load your objects',
+    table_taken_on: 'Taken on',
+    table_action: 'Action',
+    confirm_return_object: 'Do you really want to return object {id}?',
+    return_impossible: 'Unable to return object',
+    object_returned: 'Object returned',
+    notifications_user_title: 'User notifications',
+    notifications_admin_title: 'Admin notifications',
+    notifications_user_sub: 'Personal channel: your borrowings, returns and useful messages.',
+    notifications_admin_sub: 'Channel reserved for administration actions and alerts.',
+    notifications_user_empty: 'No user notifications at the moment.',
+    notifications_admin_empty: 'No admin notifications at the moment.',
+    unread_label: 'Unread:',
+    notification_default_title: 'Notification',
+    notif_mark_all_error: 'Unable to mark notifications.',
+    history_loading: 'Loading...',
+    history_admin_title: 'Admin history',
+    history_empty_admin: 'No history yet.',
+    notif_history_error: 'Unable to load history.',
+    role_admin_chip: 'Admin',
+    role_admin_manage_title: 'Management',
+    role_admin_manage_text: 'Full access.',
+    admin_action_default: 'Admin - Action',
+    admin_action_users: 'Admin - User management',
+    admin_action_session: 'Admin - Session',
+    admin_action_profile: 'Admin - Profile',
+    admin_action_navigation: 'Admin - Navigation',
+    error_network: 'Network error'
   },
   ar: {
     p1_doc_title: 'IntelliBuild – الأجهزة الذكية',
     login_doc_title: 'تسجيل الدخول – IntelliBuild',
     register_doc_title: 'إنشاء حساب – IntelliBuild',
+    about_doc_title: 'حول المنصة - IntelliBuild',
+    reset_doc_title: 'إعادة تعيين كلمة المرور – IntelliBuild',
+    my_objects_doc_title: 'أشيائي - IntelliBuild',
+    notifications_user_doc_title: 'إشعارات المستخدم - IntelliBuild',
+    notifications_admin_doc_title: 'إشعارات المشرف - IntelliBuild',
 
     brand: 'IntelliBuild',
     nav_home: 'الرئيسية',
@@ -298,10 +413,19 @@ const translations = {
     nav_dashboard: 'لوحة التحكم',
     nav_add: 'إضافة',
     nav_objects: 'عناصر',
+    nav_my_objects: 'أشيائي',
     nav_locations: 'مواقع',
+    nav_notifications: 'الإشعارات',
+    nav_documentation: 'التوثيق',
     nav_settings: 'الإعدادات',
     btn_login: 'تسجيل الدخول',
     btn_register: 'إنشاء حساب',
+    btn_refresh: 'تحديث',
+    btn_mark_all_read: 'تعليم الكل كمقروء',
+    btn_mark_read: 'تعليم كمقروء',
+    btn_back_dashboard: 'العودة إلى لوحة التحكم',
+    btn_update_password: 'تحديث',
+    btn_return: 'إرجاع',
 
     title: 'منصة ذكية لإدارة الأشياء المتصلة',
     subtitle: 'حل حديث لوصف وإدارة وتأمين والبحث عن الأشياء المتصلة في مبنى ذكي.',
@@ -360,6 +484,7 @@ const translations = {
     login_sub: 'ادخل إلى منصة إدارة أجهزتك المتصلة',
     label_email: 'البريد الإلكتروني',
     label_password: 'كلمة المرور',
+    label_new_password: 'كلمة المرور الجديدة',
     btn_signin: 'تسجيل الدخول',
     auth_link_register: 'ليس لديك حساب؟ <a href="register.html">إنشاء حساب</a>',
 
@@ -427,30 +552,119 @@ const translations = {
     role_settings_title: 'الإعدادات الشخصية',
     role_settings_text: 'يمكنه تغيير لغة العرض (FR, EN, AR).',
     status_active_label: 'نشط',
-    status_inactive_label: 'غير نشط'
+    status_inactive_label: 'غير نشط',
+    status_in_use: 'قيد الاستخدام',
+    reset_title: 'إعادة تعيين كلمة المرور',
+    reset_sub: 'اختر كلمة مرور جديدة.',
+    reset_error_mismatch: 'كلمتا المرور غير متطابقتين.',
+    reset_error_invalid: 'الرابط غير صالح أو منتهي الصلاحية.',
+    reset_error_update: 'حدث خطأ أثناء تحديث كلمة المرور.',
+    reset_success: 'تم تحديث كلمة المرور. يمكنك الآن تسجيل الدخول.',
+    my_objects_title: 'أشيائي',
+    my_objects_sub: 'الأشياء التي أخذتها ويمكنك إرجاعها',
+    my_objects_empty: 'ليس لديك أي عناصر حالية.',
+    my_objects_counter_singular: '{count} عنصر قيد الاستخدام',
+    my_objects_counter_plural: '{count} عناصر قيد الاستخدام',
+    my_objects_load_error: 'تعذر تحميل العناصر الخاصة بك',
+    table_taken_on: 'تاريخ الأخذ',
+    table_action: 'الإجراء',
+    confirm_return_object: 'هل تريد حقا إرجاع العنصر {id}؟',
+    return_impossible: 'تعذر إرجاع العنصر',
+    object_returned: 'تم إرجاع العنصر',
+    notifications_user_title: 'إشعارات المستخدم',
+    notifications_admin_title: 'إشعارات المشرف',
+    notifications_user_sub: 'قناة شخصية: عمليات الاستعارة والإرجاع والرسائل المفيدة.',
+    notifications_admin_sub: 'قناة مخصصة لإجراءات وتنبيهات الإدارة.',
+    notifications_user_empty: 'لا توجد إشعارات للمستخدم حاليا.',
+    notifications_admin_empty: 'لا توجد إشعارات للمشرف حاليا.',
+    unread_label: 'غير المقروءة:',
+    notification_default_title: 'إشعار',
+    notif_mark_all_error: 'تعذر تعليم الإشعارات.',
+    history_loading: 'جار التحميل...',
+    history_admin_title: 'سجل المشرف',
+    history_empty_admin: 'لا يوجد سجل حاليا.',
+    notif_history_error: 'تعذر تحميل السجل.',
+    role_admin_chip: 'مشرف',
+    role_admin_manage_title: 'الإدارة',
+    role_admin_manage_text: 'صلاحية كاملة.',
+    admin_action_default: 'المشرف - إجراء',
+    admin_action_users: 'المشرف - إدارة المستخدمين',
+    admin_action_session: 'المشرف - الجلسة',
+    admin_action_profile: 'المشرف - الملف الشخصي',
+    admin_action_navigation: 'المشرف - التنقل',
+    error_network: 'خطأ في الشبكة'
   }
 };
+
+function interpolateText(template, params) {
+  return String(template || '').replace(/\{(\w+)\}/g, function (_, key) {
+    return params && params[key] !== undefined ? String(params[key]) : '';
+  });
+}
+
+function getTranslationText(key, fallback, params, lang) {
+  const locale = (lang || localStorage.getItem('lang') || 'fr').toLowerCase();
+  const dict = translations[locale] || translations.fr || {};
+  const source = dict[key];
+  const text = source !== undefined ? source : fallback;
+  return params ? interpolateText(text, params) : text;
+}
+
+function isLanguageSelect(select) {
+  if (!select || select.tagName.toLowerCase() !== 'select') return false;
+  const id = String(select.id || '').toLowerCase();
+  const className = String(select.className || '').toLowerCase();
+  if (id.includes('lang') || className.includes('lang')) return true;
+
+  const options = Array.from(select.options || []).map(function (opt) {
+    return String(opt.value || opt.textContent || '').trim().toLowerCase();
+  }).filter(Boolean);
+  if (!options.length) return false;
+  return options.every(function (value) {
+    return ['fr', 'en', 'ar', 'francais', 'english', 'arabic', 'العربية'].includes(value);
+  });
+}
+
+function getLanguageSelects() {
+  return Array.from(document.querySelectorAll('select')).filter(isLanguageSelect);
+}
+
+function localizeLanguageSelect(select, locale) {
+  if (!select) return;
+  Array.from(select.options || []).forEach(function (opt) {
+    const code = String(opt.value || opt.textContent || '').trim().toLowerCase();
+    const normalized = code === 'francais' ? 'fr' : code === 'english' ? 'en' : code;
+    const labelKey = 'lang_' + normalized;
+    if (translations[locale] && translations[locale][labelKey]) {
+      opt.value = normalized;
+      opt.textContent = translations[locale][labelKey];
+    }
+  });
+  select.value = locale;
+}
 
 function setLang(lang) {
   const locale = (lang || 'fr').toLowerCase();
   if (!translations[locale]) return;
 
-  // Update document title if present
+  localStorage.setItem('lang', locale);
+  document.documentElement.lang = locale;
+  document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
+
   const titleEl = document.querySelector('title[data-key]');
   if (titleEl) {
     const key = titleEl.getAttribute('data-key');
-    if (translations[locale][key]) document.title = translations[locale][key];
+    const titleText = translations[locale][key];
+    if (titleText !== undefined) document.title = titleText;
   }
 
-  // Translate all elements with data-key
-  document.querySelectorAll('[data-key]').forEach(el => {
-    // skip elements marked to not translate
+  document.querySelectorAll('[data-key]').forEach(function (el) {
     if (el.getAttribute('data-translate') === 'false') return;
     const key = el.getAttribute('data-key');
     if (!key) return;
     const txt = translations[locale][key];
-    if (txt === undefined) return; // skip missing keys
-    if (el.tagName.toLowerCase() === 'title') return; // handled above
+    if (txt === undefined) return;
+    if (el.tagName.toLowerCase() === 'title') return;
     if (el.getAttribute('data-html') === 'true') {
       el.innerHTML = txt;
     } else if (el.getAttribute('data-attr')) {
@@ -460,44 +674,32 @@ function setLang(lang) {
     }
   });
 
-  // Localize language selector option labels (keep option values as codes)
-  let select = document.querySelector('select.lang, .lang-select');
-  if (!select) {
-    const container = document.querySelector('.lang');
-    if (container) select = container.querySelector('select');
-  }
-  if (select) {
-    select.querySelectorAll('option').forEach(opt => {
-      const code = opt.value ? opt.value.trim().toLowerCase() : opt.textContent.trim().toLowerCase();
-      const labelKey = `lang_${code}`;
-      if (translations[locale] && translations[locale][labelKey]) {
-        opt.textContent = translations[locale][labelKey];
-      }
-    });
-  }
+  getLanguageSelects().forEach(function (select) {
+    localizeLanguageSelect(select, locale);
+  });
+
+  window.dispatchEvent(new CustomEvent('app:languagechange', { detail: { lang: locale } }));
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  let select = document.querySelector('select.lang, .lang-select');
-  if (!select) {
-    const container = document.querySelector('.lang');
-    if (container) select = container.querySelector('select');
-  }
-  if (select) {
-    select.querySelectorAll('option').forEach(opt => {
-      opt.value = opt.value ? opt.value.trim().toLowerCase() : opt.textContent.trim().toLowerCase();
+function bindLanguageSelects() {
+  getLanguageSelects().forEach(function (select) {
+    if (select.dataset.langBound === 'true') return;
+    select.dataset.langBound = 'true';
+    localizeLanguageSelect(select, (localStorage.getItem('lang') || 'fr').toLowerCase());
+    select.addEventListener('change', function (event) {
+      const value = String(event.target.value || 'fr').toLowerCase();
+      setLang(value);
     });
-  }
+  });
+}
 
-  const saved = localStorage.getItem('lang') || (select ? select.value : 'fr') || 'fr';
+window.translations = translations;
+window.getTranslationText = getTranslationText;
+window.translatePage = setLang;
+window.setLang = setLang;
+
+document.addEventListener('DOMContentLoaded', function () {
+  bindLanguageSelects();
+  const saved = (localStorage.getItem('lang') || 'fr').toLowerCase();
   setLang(saved);
-  if (select) select.value = saved;
-
-  if (select) {
-    select.addEventListener('change', (e) => {
-      const v = e.target.value.toLowerCase();
-      localStorage.setItem('lang', v);
-      setLang(v);
-    });
-  }
 });

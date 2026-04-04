@@ -14,7 +14,40 @@
             min-height: 100vh;
             margin: 0;
         }
-        .glass-sidebar { background: rgba(0, 0, 0, 0.92); backdrop-filter: blur(4px); }
+        .glass-sidebar {
+            width: 280px !important;
+            flex: 0 0 280px !important;
+            padding: 24px !important;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(4px);
+        }
+        .glass-sidebar nav {
+            gap: 0 !important;
+            margin-top: 40px !important;
+        }
+        .glass-sidebar nav a {
+            gap: 10px !important;
+            padding: 13px 14px !important;
+            margin: 10px 0 !important;
+            border-radius: 10px !important;
+            color: #d1d5db !important;
+            font-weight: 600;
+            transition: background 0.25s ease, color 0.25s ease;
+        }
+        .glass-sidebar nav a i {
+            width: 18px;
+            text-align: center;
+            flex: 0 0 18px;
+        }
+        .glass-sidebar nav a:hover {
+            background: #1f2937 !important;
+            color: #fff !important;
+        }
+        .glass-sidebar nav a.bg-emerald-700 {
+            background: #047857 !important;
+            color: #fff !important;
+            box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.45);
+        }
         .glass-main { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
 
         /* --- NOUVEAUX STYLES AJOUTÉS POUR LES OVERLAYS --- */
@@ -35,6 +68,37 @@
         .role-item { background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 12px; padding: 12px; }
         .role-item h4 { margin: 0 0 6px; font-size: 14px; color: #0f172a; }
         .role-item p { margin: 0; font-size: 13px; color: #334155; }
+        .objects-toolbar-shell { display: grid; gap: 16px; align-items: center; }
+        .objects-search { min-width: 0; }
+        .objects-filter-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+        .objects-filter-row .filter-chip {
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+        .objects-toolbar-note {
+            margin: 0;
+            white-space: nowrap;
+        }
+        @media (min-width: 1280px) {
+            .objects-toolbar-shell {
+                grid-template-columns: minmax(300px, 360px) minmax(0, 1fr) auto;
+            }
+            .objects-filter-row {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding-bottom: 4px;
+            }
+        }
+        @media (max-width: 1279px) {
+            .objects-toolbar-note {
+                white-space: normal;
+            }
+        }
 
     </style>
   <link rel="stylesheet" href="theme.css">
@@ -66,7 +130,7 @@
 
     <aside class="w-64 glass-sidebar min-h-screen text-gray-300 p-6 flex flex-col gap-6 shadow-2xl">
         <div class="text-2xl font-bold flex items-center gap-2 text-white">
-            <img src="Sans%20titre-2.png" alt="IntelliBuild" class="h-10 w-10 rounded-full object-contain">
+            <img src="intellibuild-mark.svg" alt="IntelliBuild" class="h-10 w-10 rounded-full object-contain">
             <span>IntelliBuild</span>
         </div>
         <select class="lang w-full bg-gray-800 text-gray-200 rounded-lg p-2 text-sm">
@@ -98,7 +162,10 @@
             </a>
 
             <a href="notifications-admin.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
-                <i class="fas fa-bell"></i> <span>Notifications</span>
+                <i class="fas fa-bell"></i> <span data-key="nav_notifications">Notifications</span>
+            </a>
+            <a href="documatation.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
+                <i class="fas fa-book-open"></i> <span data-key="nav_documentation">Documentation</span>
             </a>
             
             <a href="parametres.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition mt-auto">
@@ -108,10 +175,57 @@
     </aside>
 
     <main class="flex-1 p-8">
-        <div class="flex justify-between items-center mb-8">
-            <div class="relative w-1/2">
-                <input type="text" id="objSearch" placeholder="Rechercher un objet..." data-key="search_objects" data-attr="placeholder" class="w-full p-2 pl-10 rounded-xl border-none shadow-sm bg-white/90 focus:ring-2 focus:ring-emerald-600 outline-none">
-                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+        <section class="page-hero glass-main">
+            <div class="hero-copy">
+                <span class="page-kicker">Catalogue objets</span>
+                <h1>Supervisez tout l’inventaire connecté</h1>
+                <p>Retrouvez, filtrez et administrez rapidement chaque objet du bâtiment depuis un catalogue plus visuel et plus fluide.</p>
+                <div class="page-badges">
+                    <span class="page-badge">Recherche rapide</span>
+                    <span class="page-badge">Edition immédiate</span>
+                    <span class="page-badge">Vue centralisée</span>
+                </div>
+            </div>
+            <div class="page-actions">
+                <a href="ajouter-objet.html" class="quick-link quick-link-primary">Créer un nouvel objet</a>
+                <a href="localisations.html" class="quick-link">Ouvrir la carte 3D</a>
+                <button type="button" id="showAllObjectsBtn" class="quick-link">Réinitialiser la recherche</button>
+            </div>
+        </section>
+
+        <section class="page-stat-grid mb-8">
+            <article class="page-stat-card">
+                <p class="page-stat-label">Objets affichés</p>
+                <p id="objMetricTotal" class="page-stat-value">0</p>
+                <p id="objMetricTotalNote" class="page-stat-note">Inventaire visible à l’écran.</p>
+            </article>
+            <article class="page-stat-card">
+                <p class="page-stat-label">Disponibles</p>
+                <p id="objMetricActive" class="page-stat-value">0</p>
+                <p class="page-stat-note">Objets actifs ou disponibles.</p>
+            </article>
+            <article class="page-stat-card">
+                <p class="page-stat-label">À surveiller</p>
+                <p id="objMetricInactive" class="page-stat-value">0</p>
+                <p class="page-stat-note">Objets inactifs ou hors service.</p>
+            </article>
+            <article class="page-stat-card">
+                <p class="page-stat-label">Salles couvertes</p>
+                <p id="objMetricLocations" class="page-stat-value">0</p>
+                <p class="page-stat-note">Localisations distinctes trouvées.</p>
+            </article>
+        </section>
+
+        <div class="page-toolbar mb-8">
+            <div class="objects-toolbar-shell">
+                <div class="objects-search relative">
+                    <input type="text" id="objSearch" placeholder="Rechercher un objet..." data-key="search_objects" data-attr="placeholder" class="w-full p-2 pl-10 rounded-xl border-none shadow-sm bg-white/90 focus:ring-2 focus:ring-emerald-600 outline-none">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+                <div id="objQuickFilters" class="objects-filter-row">
+                    <button type="button" class="filter-chip is-active" data-quick-query="">Tout</button>
+                </div>
+                <p id="objResultHint" class="page-stat-note objects-toolbar-note">Chargement du catalogue...</p>
             </div>
         </div>
 
@@ -129,7 +243,7 @@
 
         <footer class="glass-main mt-8 p-3 rounded-2xl flex items-center justify-between text-[11px] text-gray-700">
             <div class="flex items-center gap-2 font-semibold text-gray-800">
-                <img src="Sans%20titre-2.png" alt="IntelliBuild" class="h-6 w-6 rounded-full object-contain">
+                <img src="intellibuild-mark.svg" alt="IntelliBuild" class="h-6 w-6 rounded-full object-contain">
                 <span>IntelliBuild</span>
             </div>
             <div>(c) 2026 IntelliBuild. All rights reserved.</div>
@@ -161,7 +275,16 @@
         const overlayBody = document.getElementById('overlayBody');
         const objGrid = document.getElementById('objGrid');
         const objSearch = document.getElementById('objSearch');
+        const objMetricTotal = document.getElementById('objMetricTotal');
+        const objMetricActive = document.getElementById('objMetricActive');
+        const objMetricInactive = document.getElementById('objMetricInactive');
+        const objMetricLocations = document.getElementById('objMetricLocations');
+        const objMetricTotalNote = document.getElementById('objMetricTotalNote');
+        const objResultHint = document.getElementById('objResultHint');
+        const objQuickFilters = document.getElementById('objQuickFilters');
+        const showAllObjectsBtn = document.getElementById('showAllObjectsBtn');
         const objectCacheById = {};
+        let objectTypeFilters = [];
         let editingThingId = '';
 
         // --- FONCTIONS DE L'OVERLAY ---
@@ -285,6 +408,14 @@
             `;
         }
 
+        function normalizeText(value) {
+            return String(value || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .trim();
+        }
+
         function escapeHtml(value) {
             return String(value || '').replace(/[&<>"']/g, function (ch) {
                 if (ch === '&') return '&amp;';
@@ -293,6 +424,100 @@
                 if (ch === '"') return '&quot;';
                 return '&#39;';
             });
+        }
+
+        function extractRoomLabel(item) {
+            return String(item && item.location && item.location.room ? item.location.room : item && item.location ? item.location : '').trim();
+        }
+
+        function extractTypeFilters(list) {
+            const labelsByKey = new Map();
+            list.forEach(function (item) {
+                const typeLabel = String(item && (item.type || item['@type']) ? (item.type || item['@type']) : '').trim();
+                const typeKey = normalizeText(typeLabel);
+                if (!typeKey || labelsByKey.has(typeKey)) return;
+                labelsByKey.set(typeKey, typeLabel);
+            });
+            return Array.from(labelsByKey.values()).sort(function (a, b) {
+                return a.localeCompare(b, 'fr', { sensitivity: 'base' });
+            });
+        }
+
+        function renderQuickFilters() {
+            if (!objQuickFilters) return;
+            const activeQuery = objSearch ? String(objSearch.value || '') : '';
+            const buttons = [{ label: 'Tout', query: '' }].concat(
+                objectTypeFilters.map(function (label) {
+                    return { label: label, query: label };
+                })
+            );
+
+            objQuickFilters.innerHTML = buttons.map(function (button) {
+                return `<button type="button" class="filter-chip" data-quick-query="${escapeHtml(button.query)}">${escapeHtml(button.label)}</button>`;
+            }).join('');
+
+            setActiveFilterChip(activeQuery);
+        }
+
+        function syncQuickFilters(list, query) {
+            const discoveredTypes = extractTypeFilters(list);
+            if (!objectTypeFilters.length || !String(query || '').trim()) {
+                objectTypeFilters = discoveredTypes;
+            } else {
+                const known = new Map(objectTypeFilters.map(function (label) {
+                    return [normalizeText(label), label];
+                }));
+                discoveredTypes.forEach(function (label) {
+                    const key = normalizeText(label);
+                    if (!known.has(key)) {
+                        known.set(key, label);
+                        objectTypeFilters.push(label);
+                    }
+                });
+                objectTypeFilters.sort(function (a, b) {
+                    return a.localeCompare(b, 'fr', { sensitivity: 'base' });
+                });
+            }
+            renderQuickFilters();
+        }
+
+        function setActiveFilterChip(query) {
+            const normalizedQuery = normalizeText(query);
+            const quickFilterButtons = Array.from(document.querySelectorAll('#objQuickFilters [data-quick-query]'));
+            quickFilterButtons.forEach(function (button) {
+                const candidate = normalizeText(button.getAttribute('data-quick-query') || '');
+                button.classList.toggle('is-active', candidate === normalizedQuery);
+            });
+        }
+
+        function updateObjectInsights(list, query) {
+            const normalizedQuery = String(query || '').trim();
+            const activeCount = list.filter(function (item) {
+                const raw = String(item.availability || item.status || '').toLowerCase();
+                return raw === 'disponible' || raw === 'active';
+            }).length;
+            const inactiveCount = Math.max(list.length - activeCount, 0);
+            const uniqueRooms = new Set(
+                list.map(function (item) { return extractRoomLabel(item); }).filter(Boolean)
+            );
+
+            if (objMetricTotal) objMetricTotal.textContent = String(list.length);
+            if (objMetricActive) objMetricActive.textContent = String(activeCount);
+            if (objMetricInactive) objMetricInactive.textContent = String(inactiveCount);
+            if (objMetricLocations) objMetricLocations.textContent = String(uniqueRooms.size);
+
+            if (objMetricTotalNote) {
+                objMetricTotalNote.textContent = normalizedQuery
+                    ? `Résultats visibles pour la recherche "${normalizedQuery}".`
+                    : 'Inventaire visible à l’écran.';
+            }
+            if (objResultHint) {
+                objResultHint.textContent = normalizedQuery
+                    ? `${list.length} résultat(s) trouvés pour "${normalizedQuery}".`
+                    : `${list.length} objet(s) chargés dans le catalogue.`;
+            }
+
+            setActiveFilterChip(normalizedQuery);
         }
 
         // --- LOGIQUE EXISTANTE DES OBJETS ---
@@ -307,6 +532,21 @@
                 const list = Array.isArray(items) ? items : [];
 
                 Object.keys(objectCacheById).forEach(function (key) { delete objectCacheById[key]; });
+                syncQuickFilters(list, query);
+                updateObjectInsights(list, query);
+
+                if (!list.length) {
+                    objGrid.innerHTML = `
+                        <div class="col-span-full rounded-[28px] border border-dashed border-slate-300 bg-white/70 p-10 text-center shadow-sm">
+                            <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
+                                <i class="fas fa-cube text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-black text-slate-800">Aucun objet trouvé</h3>
+                            <p class="mx-auto mt-2 max-w-xl text-sm text-slate-600">Essayez un autre mot-clé, ou créez un nouvel objet pour enrichir l’inventaire.</p>
+                        </div>
+                    `;
+                    return;
+                }
 
                 objGrid.innerHTML = list.map(function (item) {
                     const itemId = String(item.id || '').trim();
@@ -314,6 +554,7 @@
                     const objectType = String(item.type || item['@type'] || 'Objet Inconnu');
                     const availability = (item.availability || item.status || '').toString().toLowerCase();
                     const isAvailable = availability === 'disponible' || availability === 'active';
+                    const roomLabel = extractRoomLabel(item) || 'N/A';
 
                     return `
                         <div class="object-card bg-white/90 p-5 rounded-2xl border border-gray-200 hover:shadow-xl transition" role="button" tabindex="0" data-id="${escapeHtml(itemId)}">
@@ -335,7 +576,7 @@
                             </div>
                             <div class="mt-4 flex items-center gap-2 text-xs text-gray-600">
                                 <i class="fas fa-map-marker-alt text-gray-400"></i>
-                                <span>${escapeHtml(item.location && item.location.room ? item.location.room : item.location || 'N/A')}</span>
+                                <span>${escapeHtml(roomLabel)}</span>
                             </div>
                             <div class="mt-4 flex items-center gap-2">
                                 <button onclick="openEditObjet('${escapeHtml(item.id || '')}')" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-blue-700 transition">
@@ -350,13 +591,18 @@
                 }).join('');
             } catch (error) { 
                 console.error("Erreur backend:", error); 
+                updateObjectInsights([], query);
+                if (objResultHint) {
+                    objResultHint.textContent = 'Impossible de charger le catalogue pour le moment.';
+                }
                 objGrid.innerHTML = '<div class="col-span-full text-center text-red-600 py-10">Erreur de chargement des objets.</div>';
             }
         }
 
         async function deleteObjet(id) {
             if (!id) return;
-            if (!confirm('Supprimer cet objet ?')) return;
+            const confirmed = await window.appUiConfirm('Supprimer cet objet ?');
+            if (!confirmed) return;
             const token = localStorage.getItem('userToken');
             try {
                 const response = await fetch(`${apiBase}/things/${encodeURIComponent(id)}`, {
@@ -464,6 +710,21 @@
         });
         overlayBackdrop.addEventListener('click', closeOverlay);
         overlayClose.addEventListener('click', closeOverlay);
+        if (showAllObjectsBtn) {
+            showAllObjectsBtn.addEventListener('click', function () {
+                objSearch.value = '';
+                fetchObjets('');
+            });
+        }
+        if (objQuickFilters) {
+            objQuickFilters.addEventListener('click', function (event) {
+                const button = event.target.closest('[data-quick-query]');
+                if (!button) return;
+                const query = String(button.getAttribute('data-quick-query') || '').trim();
+                objSearch.value = query;
+                fetchObjets(query);
+            });
+        }
 
         objGrid.addEventListener('click', function (event) {
             const card = event.target.closest('.object-card');

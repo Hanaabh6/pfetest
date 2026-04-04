@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-key="login_doc_title">Connexion – IntelliBuild</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="theme.css">
@@ -29,7 +30,7 @@
 <header class="topbar">
   <h2>
     <div class="logo">
-      <img class="brand-logo-lg" src="Sans%20titre-2.png" alt="IntelliBuild">
+      <img class="brand-logo-lg" src="intellibuild-mark.svg" alt="IntelliBuild">
       <span data-key="brand">IntelliBuild</span>
     </div>
   </h2>
@@ -44,6 +45,28 @@
 </header>
 
 <section class="auth-container">
+  <div class="auth-showcase" aria-hidden="true">
+    <div class="auth-showcase-card">
+      <span class="showcase-kicker">Plateforme Smart Building</span>
+      <h3>Un cockpit plus élégant pour gérer vos objets connectés.</h3>
+      <p>Connectez-vous à une interface pensée pour aller plus vite, mieux voir et agir sans friction.</p>
+      <div class="showcase-grid">
+        <div class="showcase-item">
+          <strong>Dashboard</strong>
+          <span>clair et impactant</span>
+        </div>
+        <div class="showcase-item">
+          <strong>Recherche</strong>
+          <span>plus rapide</span>
+        </div>
+        <div class="showcase-item">
+          <strong>Parcours</strong>
+          <span>plus fluide</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="auth-box">
     <h2 data-key="login_title">Connexion</h2>
     <p data-key="login_sub">Accédez à votre plateforme Smart Building</p>
@@ -64,7 +87,7 @@
 
 <footer class="site-footer">
   <div class="brand">
-    <img src="Sans%20titre-2.png" alt="IntelliBuild">
+    <img src="intellibuild-mark.svg" alt="IntelliBuild">
     <span>IntelliBuild</span>
   </div>
   <div>(c) 2026 IntelliBuild. All rights reserved.</div>
@@ -116,7 +139,6 @@
                 localStorage.setItem('userToken', token);
               localStorage.setItem('userRole', role);
               localStorage.setItem('userEmail', result.email || email);
-                alert("Connexion réussie !");
               if (role === "admin") {
                 window.location.href = "index.html";
               } else {
@@ -132,6 +154,4 @@
 </script>
 </body>
 </html>
-
-
 

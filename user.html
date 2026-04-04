@@ -5,14 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-key="p1_doc_title">IntelliBuild - User</title>
 <script src="config.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
   --bg-overlay: rgba(15, 23, 42, 0.48);
   --sidebar-bg: rgba(0, 0, 0, 0.92);
   --text-light: #ffffff;
+  --menu-link: #d1d5db;
+  --menu-hover-bg: #1f2937;
+  --menu-active-bg: #047857;
+  --menu-active-ring: rgba(16, 185, 129, 0.45);
   --main-glass-bg: rgba(255, 255, 255, 0.78);
   --card-bg: rgba(255, 255, 255, 0.8);
-  --hover-bg: rgba(16, 185, 129, 0.18);
   --status-ok-bg: #dcfce7;
   --status-ok-text: #065f46;
   --status-off-bg: #ffe4e6;
@@ -37,16 +41,20 @@ body {
 .logo { display: flex; align-items: center; gap: 10px; }
 .logo img { width: 40px; }
 .sidebar nav a {
-  display: block; padding: 13px 14px; margin: 10px 0; text-decoration: none; color: var(--text-light);
-  border-radius: 10px; transition: background 0.25s ease; cursor: pointer;
+  display: block; padding: 13px 14px; margin: 10px 0; text-decoration: none; color: var(--menu-link);
+  border-radius: 10px; transition: background 0.25s ease, color 0.25s ease; cursor: pointer;
 }
 .sidebar nav i {
   width: 18px;
   text-align: center;
   margin-right: 10px;
 }
-.sidebar nav a:hover, .sidebar nav .nav-active { background: var(--hover-bg); }
-.sidebar nav .nav-active { box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.45); }
+.sidebar nav a:hover { background: var(--menu-hover-bg); color: #fff; }
+.sidebar nav .nav-active {
+  background: var(--menu-active-bg);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px var(--menu-active-ring);
+}
 .sidebar-bottom { display: grid; gap: 12px; }
 .lang { background: rgba(255, 255, 255, 0.08); padding: 10px; border-radius: 10px; }
 .lang-title { margin-bottom: 8px; font-size: 13px; font-weight: 700; }
@@ -111,6 +119,100 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
   border: none; width: 36px; height: 36px; border-radius: 999px; background: #e2e8f0; color: #0f172a; font-size: 18px; cursor: pointer;
 }
 .overlay-close:hover { background: #cbd5e1; }
+
+.app-toast {
+  position: fixed;
+  right: 18px;
+  top: 18px;
+  z-index: 1600;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  min-width: 280px;
+  max-width: min(420px, calc(100vw - 36px));
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 20px 38px rgba(2, 6, 23, 0.26);
+  transform: translateY(-8px);
+  opacity: 0;
+  transition: all 0.24s ease;
+}
+
+.app-toast.show {
+  display: flex;
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.app-toast-thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #ecfeff;
+  border: 1px solid #bae6fd;
+  overflow: hidden;
+  flex: 0 0 46px;
+}
+
+.app-toast-thumb img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.app-toast-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.app-toast-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.app-toast-text {
+  margin: 0;
+  line-height: 1.5;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.app-toast.success {
+  border-color: rgba(16, 185, 129, 0.42);
+  background: rgba(240, 253, 250, 0.98);
+}
+
+.app-toast.success .app-toast-thumb {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+.app-toast.error {
+  border-color: rgba(244, 63, 94, 0.4);
+  background: rgba(255, 241, 242, 0.98);
+}
+
+.app-toast.error .app-toast-thumb {
+  background: #ffe4e6;
+  border-color: #fda4af;
+}
+
+.app-toast.info {
+  border-color: rgba(59, 130, 246, 0.36);
+  background: rgba(239, 246, 255, 0.98);
+}
+
+.app-toast.info .app-toast-thumb {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
 
 .profile-shell {
   display: grid;
@@ -201,6 +303,105 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
 .profile-btn.light { background: #e2e8f0; color: #0f172a; }
 .profile-btn.warn { background: #fee2e2; color: #b91c1c; }
 
+.object-sheet {
+  display: grid;
+  gap: 18px;
+}
+
+.object-sheet-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(14, 165, 164, 0.16));
+  border: 1px solid rgba(20, 184, 166, 0.16);
+}
+
+.object-sheet-title {
+  margin: 0;
+  font-size: 1.7rem;
+  color: #0f172a;
+}
+
+.object-sheet-sub {
+  margin: 10px 0 0;
+  color: #475569;
+  line-height: 1.7;
+}
+
+.object-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.object-action-box {
+  padding: 18px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.object-action-box strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #0f172a;
+}
+
+.object-action-box p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.7;
+}
+
+.object-action-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.object-action-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 11px 14px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.object-action-btn.primary {
+  background: linear-gradient(135deg, #0f766e, #0ea5a4);
+  color: #fff;
+}
+
+.object-action-btn.light {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.object-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.object-status-pill.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.object-status-pill.inactive {
+  background: #ffe4e6;
+  color: #be123c;
+}
+
 @media (max-width: 900px) {
   .container { flex-direction: column; width: 100%; }
   .sidebar { width: 100%; }
@@ -209,6 +410,8 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
   .profile { align-self: flex-end; }
   .profile-shell { grid-template-columns: 1fr; }
   .profile-grid { grid-template-columns: 1fr; }
+  .object-detail-grid { grid-template-columns: 1fr; }
+  .object-sheet-head { flex-direction: column; }
 }
 </style>
   <link rel="stylesheet" href="theme.css">
@@ -236,16 +439,17 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
   <div class="sidebar">
     <div>
       <div class="logo">
-        <img src="Sans titre-2.png" alt="Logo IntelliBuild">
+        <img src="intellibuild-mark.svg" alt="Logo IntelliBuild">
         <h2 data-key="brand">IntelliBuild</h2>
       </div>
 
       <nav id="sideNav">
         <a href="#" class="nav-active"><i class="fas fa-home"></i><span data-key="nav_dashboard">Dashboard</span></a>
         <a href="#" id="openObjectsSection"><i class="fas fa-cube"></i><span data-key="nav_objects">Objets</span></a>
-        <a href="mesobjet.html"><i class="fas fa-box-open"></i><span>Mes objets</span></a>
+        <a href="mesobjet.html"><i class="fas fa-box-open"></i><span data-key="nav_my_objects">Mes objets</span></a>
         <a href="localisations-user.html"><i class="fas fa-map-marker-alt"></i><span data-key="nav_locations">Localisations</span></a>
-        <a href="notifications-user.html"><i class="fas fa-bell"></i><span>Notifications</span></a>
+        <a href="notifications-user.html"><i class="fas fa-bell"></i><span data-key="nav_notifications">Notifications</span></a>
+        <a href="documatation.html"><i class="fas fa-book-open"></i><span data-key="nav_documentation">Documentation</span></a>
         <a href="#" id="openHistoryOverlay"><i class="fas fa-clock-rotate-left"></i><span data-key="nav_history">Historique</span></a>
         <a href="#" id="openRoleOverlay"><i class="fas fa-user-shield"></i><span data-key="nav_role">Role</span></a>
         <a href="parametres-user.html"><i class="fas fa-cog"></i><span data-key="nav_settings">Parametres</span></a>
@@ -266,7 +470,25 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
   </div>
 
   <div class="main">
-    <div class="topbar">
+    <section class="user-hero">
+      <div class="hero-copy">
+        <span class="hero-kicker">Espace utilisateur</span>
+        <h1>Retrouvez vos objets plus vite</h1>
+        <p>Une expérience plus lisible pour chercher, consulter et suivre les objets du bâtiment sans perdre de temps.</p>
+        <div class="hero-badges">
+          <span class="hero-badge">Recherche rapide</span>
+          <span class="hero-badge">Objets récents</span>
+          <span class="hero-badge">Actions utiles</span>
+        </div>
+      </div>
+      <div class="dashboard-actions">
+        <a href="mesobjet.html" class="quick-link quick-link-primary" data-key="nav_my_objects">Mes objets</a>
+        <a href="localisations-user.html" class="quick-link">Localisations</a>
+        <a href="notifications-user.html" class="quick-link" data-key="nav_notifications">Notifications</a>
+      </div>
+    </section>
+
+    <div class="topbar user-toolbar">
       <input id="mainSearch" class="search" type="search" placeholder="Rechercher un objet..." data-key="search_objects" data-attr="placeholder" aria-label="Rechercher un objet">
       <div class="profile">
         <button class="avatar" id="profileButton" type="button" aria-haspopup="menu" aria-controls="menu" aria-expanded="false">A</button>
@@ -285,7 +507,7 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
       <div class="card"><h3 data-key="stat_inactive">Inactifs</h3><p id="statInactifs">0</p></div>
     </div>
 
-    <div class="table-box" id="objectsSection">
+    <div class="table-box dashboard-table" id="objectsSection">
       <h3 class="section-head" data-key="user_recent_objects">Objets recents</h3>
       <table>
         <thead>
@@ -315,6 +537,16 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
   </div>
 </div>
 
+<div class="app-toast" id="appToast" role="status" aria-live="polite" aria-atomic="true">
+  <div class="app-toast-thumb">
+    <img src="intellibuild-mark.svg" alt="IntelliBuild">
+  </div>
+  <div class="app-toast-copy">
+    <p class="app-toast-title" id="appToastTitle">Notification</p>
+    <p class="app-toast-text" id="appToastText">Operation terminee</p>
+  </div>
+</div>
+
 <script src="translations.js"></script>
 <script>
 const profileButton = document.getElementById("profileButton");
@@ -335,17 +567,22 @@ const overlayBackdrop = document.getElementById("overlayBackdrop");
 const overlayClose = document.getElementById("overlayClose");
 const overlayTitle = document.getElementById("overlayTitle");
 const overlayBody = document.getElementById("overlayBody");
+const appToast = document.getElementById("appToast");
+const appToastTitle = document.getElementById("appToastTitle");
+const appToastText = document.getElementById("appToastText");
 const statTotal = document.getElementById("statTotal");
 const statActifs = document.getElementById("statActifs");
 const statInactifs = document.getElementById("statInactifs");
 const apiBase = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "http://127.0.0.1:8000";
 const userToken = localStorage.getItem("userToken");
+let appToastTimer = null;
 const PROFILE_NAME_KEY = "userDisplayName";
 const NEARBY_NOTIFY_CACHE_KEY = "nearbyThingNotificationCache";
 let historyEntries = [];
 let selectedObjectDetails = null;
 let userProfileData = null;
 let roomCoordsCache = {};
+const objectDetailsCache = new Map();
 
 if (!userToken) window.location.href = "login.html";
 
@@ -444,6 +681,23 @@ function closeOverlay() {
   infoOverlay.hidden = true;
   infoOverlay.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
+}
+
+function showAppToast(message, type = "info", title) {
+  if (!appToast || !appToastText || !appToastTitle) return;
+  if (appToastTimer) {
+    clearTimeout(appToastTimer);
+    appToastTimer = null;
+  }
+  appToast.classList.remove("success", "error", "info", "show");
+  appToast.classList.add(type);
+  appToastTitle.textContent = title || (type === "error" ? "Erreur" : (type === "success" ? "Succes" : "Information"));
+  appToastText.textContent = String(message || "Operation terminee");
+  appToast.classList.add("show");
+
+  appToastTimer = setTimeout(function () {
+    appToast.classList.remove("show");
+  }, 2600);
 }
 
 function scopedKey(base, userId) {
@@ -752,6 +1006,7 @@ async function loadUserThings(query) {
 
     const items = await response.json();
     const list = Array.isArray(items) ? items : [];
+    objectDetailsCache.clear();
 
     objectsBody.innerHTML = list.map(function (item) {
       const objectId = String(item.id || item._id || "").trim();
@@ -781,15 +1036,31 @@ async function loadUserThings(query) {
       }
 
       const distanceText = sameRoom ? "0m (MÊME SALLE)" : `${Math.round(Number(distanceValue || 0))}m`;
+      const objectName = String(item.name || "Objet");
+      const objectType = String(item.type || item["@type"] || "-");
+      const objectLocation = String(itemLocation || "-");
+      const objectDescription = String(item.description || item.details || item.note || "Aucune description disponible.");
+      const safeObjectId = objectId.replace(/"/g, "&quot;");
+      objectDetailsCache.set(objectId, {
+        id: objectId,
+        name: objectName,
+        type: objectType,
+        location: objectLocation,
+        description: objectDescription,
+        statusCode: statusCode,
+        statusText: statusText,
+        distanceText: distanceText,
+        sameRoom: sameRoom
+      });
 
       return `
-        <tr class="object-row" tabindex="0" role="button" aria-label="Voir le detail de ${item.name || "objet"}" data-obj-id="${objectId.replace(/"/g, "&quot;")}" data-obj-name="${(item.name || "Objet").replace(/"/g, "&quot;")}" data-obj-status="${statusCode}">
-          <td>${item.name || "-"}</td>
-          <td>${item.type || item["@type"] || "-"}</td>
-          <td>${item.location?.room || item.location || "-"}</td>
-          <td>${distanceText}</td>
+        <tr class="object-row" tabindex="0" role="button" aria-label="Voir le detail de ${sanitizeText(objectName)}" data-obj-id="${safeObjectId}" data-obj-name="${sanitizeText(objectName)}" data-obj-status="${statusCode}">
+          <td>${sanitizeText(objectName)}</td>
+          <td>${sanitizeText(objectType)}</td>
+          <td>${sanitizeText(objectLocation)}</td>
+          <td>${sanitizeText(distanceText)}</td>
           <td><span class="badge ${statusClass}" data-status="${statusCode}">${statusText}</span></td>
-          <td>Cliquez sur l'objet</td>
+          <td>Voir les details</td>
         </tr>
       `;
     }).join("");
@@ -815,7 +1086,7 @@ async function loadUserThings(query) {
 async function prendreObjet(objId, objName) {
   const safeObjId = String(objId || "").trim();
   if (!safeObjId) {
-    alert("Identifiant objet introuvable");
+    showAppToast("Identifiant objet introuvable", "error", "Erreur");
     return;
   }
   try {
@@ -828,41 +1099,103 @@ async function prendreObjet(objId, objName) {
     );
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      alert(data.detail || `Impossible de prendre ${objName}`);
+      showAppToast(data.detail || `Impossible de prendre ${objName}`, "error", "Echec de prise");
       return;
     }
     await logUserAction("Objet", `Prise de ${objName}`, "Succes");
-    alert(data.message || `${objName} pris`);
+    showAppToast(data.message || `${objName} pris`, "success", "Objet pris");
     await loadUserThings(mainSearch.value || "");
   } catch (error) {
     console.error("Erreur prendre:", error);
-    alert("Erreur reseau");
+    showAppToast("Erreur reseau", "error", "Connexion");
   }
 }
 
 function openObjectDecision(row) {
   const objId = row?.dataset?.objId || "";
-  const objName = row?.dataset?.objName || "Objet";
-  const objStatus = row?.dataset?.objStatus || "inactive";
+  const detail = objectDetailsCache.get(objId);
+  const objName = detail?.name || row?.dataset?.objName || "Objet";
+  const objStatus = detail?.statusCode || row?.dataset?.objStatus || "inactive";
   if (!objId) return;
 
-  selectedObjectDetails = { id: objId, name: objName, status: objStatus };
+  selectedObjectDetails = detail || {
+    id: objId,
+    name: objName,
+    type: "-",
+    location: "-",
+    description: "Aucune description disponible.",
+    statusCode: objStatus,
+    statusText: objStatus === "active" ? tr("status_active_label", "Actif") : tr("status_inactive_label", "Inactif"),
+    distanceText: "-",
+    sameRoom: false
+  };
 
-  const isAvailable = objStatus === "active";
-  const message = isAvailable
-    ? `Voulez-vous prendre <strong>${objName}</strong> ?`
-    : `<strong>${objName}</strong> n'est pas disponible pour la prise.`;
+  const isAvailable = selectedObjectDetails.statusCode === "active";
+  const actionTitle = isAvailable
+    ? "Voulez-vous prendre cet objet ?"
+    : "Cet objet n'est pas disponible pour la prise pour le moment.";
+  const actionCopy = isAvailable
+    ? "Consultez ses détails puis confirmez si vous souhaitez l'emprunter maintenant."
+    : "Vous pouvez consulter sa fiche complète, mais la prise est momentanément désactivée.";
+  const statusClass = isAvailable ? "active" : "inactive";
+  const proximityNote = selectedObjectDetails.sameRoom
+    ? "Objet disponible dans votre salle actuelle."
+    : `Distance estimée: ${sanitizeText(selectedObjectDetails.distanceText || "-")}.`;
 
   const actions = isAvailable
-    ? `<div style="display:flex; gap:10px; margin-top:14px;">
-         <button type="button" onclick="confirmTakeSelectedObject()" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;">Oui, je le prends</button>
-         <button type="button" onclick="closeOverlay()" style="background:#e2e8f0;color:#0f172a;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;">Non</button>
+    ? `<div class="object-action-row">
+         <button type="button" onclick="confirmTakeSelectedObject()" class="object-action-btn primary">Oui, je le prends</button>
+         <button type="button" onclick="closeOverlay()" class="object-action-btn light">Pas maintenant</button>
        </div>`
-    : `<div style="display:flex; gap:10px; margin-top:14px;">
-         <button type="button" onclick="closeOverlay()" style="background:#e2e8f0;color:#0f172a;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;">Fermer</button>
+    : `<div class="object-action-row">
+         <button type="button" onclick="closeOverlay()" class="object-action-btn light">Fermer</button>
        </div>`;
 
-  openOverlay("Decision objet", `<p>${message}</p>${actions}`);
+  openOverlay(
+    tr("detail_overlay_title", "Detail de l'objet"),
+    `
+      <div class="object-sheet">
+        <div class="object-sheet-head">
+          <div>
+            <span class="hero-kicker">Fiche objet</span>
+            <h4 class="object-sheet-title">${sanitizeText(selectedObjectDetails.name || "Objet")}</h4>
+            <p class="object-sheet-sub">${sanitizeText(proximityNote)}</p>
+          </div>
+          <span class="object-status-pill ${statusClass}">${sanitizeText(selectedObjectDetails.statusText || "-")}</span>
+        </div>
+
+        <div class="object-detail-grid">
+          <div class="detail-row">
+            <span class="detail-label">Nom</span>
+            <span class="detail-value">${sanitizeText(selectedObjectDetails.name || "-")}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Type</span>
+            <span class="detail-value">${sanitizeText(selectedObjectDetails.type || "-")}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Localisation</span>
+            <span class="detail-value">${sanitizeText(selectedObjectDetails.location || "-")}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Distance</span>
+            <span class="detail-value">${sanitizeText(selectedObjectDetails.distanceText || "-")}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Description</span>
+          <span class="detail-value">${sanitizeText(selectedObjectDetails.description || "Aucune description disponible.")}</span>
+        </div>
+
+        <div class="object-action-box">
+          <strong>${actionTitle}</strong>
+          <p>${actionCopy}</p>
+          ${actions}
+        </div>
+      </div>
+    `
+  );
 }
 
 async function confirmTakeSelectedObject() {
@@ -874,7 +1207,7 @@ async function confirmTakeSelectedObject() {
 async function retournerObjet(objId) {
   const safeObjId = String(objId || "").trim();
   if (!safeObjId) {
-    alert("Identifiant objet introuvable");
+    showAppToast("Identifiant objet introuvable", "error", "Erreur");
     return;
   }
   try {
@@ -887,15 +1220,15 @@ async function retournerObjet(objId) {
     );
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      alert(data.detail || "Retour impossible");
+      showAppToast(data.detail || "Retour impossible", "error", "Echec du retour");
       return;
     }
     await logUserAction("Objet", `Retour de l'objet ${safeObjId}`, "Succes");
-    alert(data.message || "Objet retourne");
+    showAppToast(data.message || "Objet retourne", "success", "Objet retourne");
     await loadUserThings(mainSearch.value || "");
   } catch (error) {
     console.error("Erreur retourner:", error);
-    alert("Erreur reseau");
+    showAppToast("Erreur reseau", "error", "Connexion");
   }
 }
 
@@ -955,7 +1288,7 @@ openProfileOverlay.addEventListener("click", async (event) => {
     saveBtn.addEventListener("click", function () {
       const value = String(input.value || "").trim();
       if (!value) {
-        alert("Veuillez saisir un nom valide.");
+        showAppToast("Veuillez saisir un nom valide.", "error", "Profil");
         return;
       }
       const uid = getCurrentUserId();
@@ -964,7 +1297,7 @@ openProfileOverlay.addEventListener("click", async (event) => {
       }
       localStorage.setItem(PROFILE_NAME_KEY, value);
       applyDisplayName(value);
-      alert("Nom affiche mis a jour.");
+      showAppToast("Nom affiche mis a jour.", "success", "Profil");
     });
   }
 

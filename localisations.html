@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IntelliBuild - Architecture 3D Interactive</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -16,7 +17,40 @@
             margin: 0;
             overflow-x: hidden;
         }
-        .glass-sidebar { background: rgba(0, 0, 0, 0.92); backdrop-filter: blur(10px); }
+        .glass-sidebar {
+            width: 280px !important;
+            flex: 0 0 280px !important;
+            padding: 24px !important;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(10px);
+        }
+        .glass-sidebar nav {
+            gap: 0 !important;
+            margin-top: 40px !important;
+        }
+        .glass-sidebar nav a {
+            gap: 10px !important;
+            padding: 13px 14px !important;
+            margin: 10px 0 !important;
+            border-radius: 10px !important;
+            color: #d1d5db !important;
+            font-weight: 600;
+            transition: background 0.25s ease, color 0.25s ease;
+        }
+        .glass-sidebar nav a i {
+            width: 18px;
+            text-align: center;
+            flex: 0 0 18px;
+        }
+        .glass-sidebar nav a:hover {
+            background: #1f2937 !important;
+            color: #fff !important;
+        }
+        .glass-sidebar nav a.bg-emerald-700 {
+            background: #047857 !important;
+            color: #fff !important;
+            box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.45);
+        }
         .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
         
         .floor-card { 
@@ -177,7 +211,7 @@
 
     <aside class="w-64 glass-sidebar min-h-screen text-gray-300 p-6 flex flex-col gap-6 shadow-2xl">
         <div class="text-2xl font-bold flex items-center gap-2 text-white">
-            <img src="Sans%20titre-2.png" alt="IntelliBuild" class="h-10 w-10 rounded-full object-contain">
+            <img src="intellibuild-mark.svg" alt="IntelliBuild" class="h-10 w-10 rounded-full object-contain">
             <span>IntelliBuild</span>
         </div>
         
@@ -213,7 +247,10 @@
             </a>
 
             <a href="notifications-admin.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
-                <i class="fas fa-bell"></i> <span>Notifications</span>
+                <i class="fas fa-bell"></i> <span data-key="nav_notifications">Notifications</span>
+            </a>
+            <a href="documatation.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
+                <i class="fas fa-book-open"></i> <span data-key="nav_documentation">Documentation</span>
             </a>
 
             <a href="parametres.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition mt-auto">
@@ -226,37 +263,27 @@
         <header class="glass-header sticky top-0 z-40 px-8 py-4 flex justify-between items-center border-b border-gray-200">
             <div id="currentPos" class="bg-emerald-600 text-white px-5 py-2 rounded-full font-bold shadow-md">
                 <i class="fas fa-street-view mr-2"></i> Ma Position : <span id="posName">Chargement...</span>
-                <span id="roomNowChip" class="ml-3 inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-xs font-bold">-</span>
+                <span id="currentRoomBadgeHeader" class="ml-3 inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-xs font-bold">-</span>
             </div>
         </header>
 
         <main class="p-8">
-            <div class="mb-10">
-                <h1 class="text-5xl font-black text-white mb-2 drop-shadow-lg">Architecture Interactive</h1>
-                <p class="text-emerald-50 text-lg font-medium">Cliquez sur un bureau pour mettre à jour votre localisation.</p>
-            </div>
-
-            <section class="control-panel max-w-5xl mx-auto mb-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-                    <div>
-                        <label class="text-xs font-bold uppercase text-slate-600">Recherche salle</label>
-                        <input id="roomSearchInput" class="control-input" type="text" placeholder="Ex: Labo, Bureau, Auditorium">
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold uppercase text-slate-600">Selection rapide</label>
-                        <select id="roomQuickSelect" class="control-select">
-                            <option value="">Choisir une salle...</option>
-                        </select>
-                    </div>
-                    <div class="flex gap-2">
-                        <button id="goRoomBtn" type="button" class="flex-1 px-3 py-2 rounded-lg bg-emerald-700 text-white font-bold hover:bg-emerald-800">Definir position</button>
-                        <button id="resetRoomFilterBtn" type="button" class="px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 font-bold hover:bg-slate-50">Reset</button>
+            <section class="page-hero glass-main mb-8">
+                <div class="hero-copy">
+                    <span class="page-kicker">Navigation 3D</span>
+                    <h1>Visualisez chaque étage en un coup d’œil</h1>
+                    <p>Choisissez une salle, parcourez les niveaux du bâtiment et mettez à jour votre position avec une vue plus immersive.</p>
+                    <div class="page-badges">
+                        <span class="page-badge">Architecture interactive</span>
+                        <span class="page-badge">Repérage visuel</span>
+                        <span class="page-badge">Position en direct</span>
                     </div>
                 </div>
-                <div class="mt-3 flex flex-wrap gap-2">
-                    <span class="tiny-chip"><i class="fas fa-layer-group"></i> Etages: <span id="floorCount">0</span></span>
-                    <span class="tiny-chip"><i class="fas fa-door-open"></i> Salles: <span id="roomCount">0</span></span>
-                    <span class="tiny-chip"><i class="fas fa-location-dot"></i> Actuelle: <span id="roomNowChip">-</span></span>
+                <div class="hero-note-card">
+                    <h3 class="side-panel-title">Position active</h3>
+                    <p id="mapHeroRoom" class="page-stat-value text-3xl">Chargement...</p>
+                    <p class="page-stat-note">Étage détecté: <span id="mapHeroFloor" class="font-bold text-slate-800">-</span></p>
+                    <p class="page-stat-note">Cliquez directement sur un bureau en 3D pour définir la position.</p>
                 </div>
             </section>
 
@@ -288,6 +315,10 @@
         const overlayTitle = document.getElementById('overlayTitle');
         const overlayBody = document.getElementById('overlayBody');
         const posToast = document.getElementById('posToast');
+        const posName = document.getElementById('posName');
+        const currentRoomBadgeHeader = document.getElementById('currentRoomBadgeHeader');
+        const mapHeroRoom = document.getElementById('mapHeroRoom');
+        const mapHeroFloor = document.getElementById('mapHeroFloor');
 
         function tr(key, fallback) {
             const locale = (localStorage.getItem('lang') || 'fr').toLowerCase();
@@ -413,52 +444,38 @@
             }, 1800);
         }
 
+        function findFloorByRoom(room) {
+            const normalizedRoom = normalizeText(room);
+            const matchedFloor = ARCHI_DATA.find(function (floor) {
+                return Array.isArray(floor.rooms) && floor.rooms.some(function (candidate) {
+                    return normalizeText(candidate) === normalizedRoom;
+                });
+            });
+            return matchedFloor ? matchedFloor.name : 'Non defini';
+        }
+
+        function updateCurrentRoomDisplays(room) {
+            const label = String(room || 'Non definie').trim() || 'Non definie';
+            const floorName = findFloorByRoom(label);
+
+            if (posName) posName.textContent = label;
+            if (currentRoomBadgeHeader) currentRoomBadgeHeader.textContent = label;
+            if (mapHeroRoom) mapHeroRoom.textContent = label;
+            if (mapHeroFloor) mapHeroFloor.textContent = floorName;
+        }
+
         function setMyPos(room) {
             localStorage.setItem('user_room', room);
             const coords = ROOM_COORDS[room] || { x: 0, y: 0, z: 0 };
             localStorage.setItem('user_x', String(coords.x));
             localStorage.setItem('user_y', String(coords.y));
             localStorage.setItem('user_z', String(coords.z));
-            document.getElementById('posName').textContent = room;
+            updateCurrentRoomDisplays(room);
             showPosToast(`Localisation mise a jour: ${room}`);
         }
 
         function normalizeText(value) {
             return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-        }
-
-        function allRooms() {
-            return ARCHI_DATA.flatMap(function (floor) {
-                return Array.isArray(floor.rooms) ? floor.rooms : [];
-            });
-        }
-
-        function populateRoomQuickSelect() {
-            const roomQuickSelect = document.getElementById('roomQuickSelect');
-            const floorCount = document.getElementById('floorCount');
-            const roomCount = document.getElementById('roomCount');
-            const roomNowChip = document.getElementById('roomNowChip');
-            if (!roomQuickSelect) return;
-
-            const rooms = allRooms().slice().sort(function (a, b) { return a.localeCompare(b, 'fr'); });
-            roomQuickSelect.innerHTML = '<option value="">Choisir une salle...</option>' + rooms.map(function (room) {
-                return `<option value="${room}">${room}</option>`;
-            }).join('');
-
-            if (floorCount) floorCount.textContent = String(ARCHI_DATA.length);
-            if (roomCount) roomCount.textContent = String(rooms.length);
-            if (roomNowChip) roomNowChip.textContent = localStorage.getItem('user_room') || 'Non definie';
-        }
-
-        function applyRoomFilter() {
-            const roomSearchInput = document.getElementById('roomSearchInput');
-            const q = normalizeText(roomSearchInput ? roomSearchInput.value : '');
-            document.querySelectorAll('[data-floor-name]').forEach(function (card) {
-                const floorName = normalizeText(card.getAttribute('data-floor-name') || '');
-                const roomsText = normalizeText(card.getAttribute('data-floor-rooms') || '');
-                const visible = !q || floorName.includes(q) || roomsText.includes(q);
-                card.style.display = visible ? '' : 'none';
-            });
         }
 
         function createFloor3D(containerId, rooms, floorColor) {
@@ -558,38 +575,10 @@
 
             ARCHI_DATA.forEach(floor => createFloor3D(`canvas-${floor.id}`, floor.rooms, floor.color));
             const currentRoom = localStorage.getItem('user_room') || "Non definie";
-            document.getElementById('posName').textContent = currentRoom;
-            const roomNowChip = document.getElementById('roomNowChip');
-            if (roomNowChip) roomNowChip.textContent = currentRoom;
-            populateRoomQuickSelect();
-            applyRoomFilter();
+            updateCurrentRoomDisplays(currentRoom);
         }
 
         window.onload = init;
-
-        const roomSearchInput = document.getElementById('roomSearchInput');
-        const roomQuickSelect = document.getElementById('roomQuickSelect');
-        const goRoomBtn = document.getElementById('goRoomBtn');
-        const resetRoomFilterBtn = document.getElementById('resetRoomFilterBtn');
-
-        if (roomSearchInput) roomSearchInput.addEventListener('input', applyRoomFilter);
-        if (goRoomBtn) {
-            goRoomBtn.addEventListener('click', function () {
-                const room = String(roomQuickSelect && roomQuickSelect.value || '').trim();
-                if (!room) {
-                    showPosToast('Selectionnez une salle');
-                    return;
-                }
-                setMyPos(room);
-            });
-        }
-        if (resetRoomFilterBtn) {
-            resetRoomFilterBtn.addEventListener('click', function () {
-                if (roomSearchInput) roomSearchInput.value = '';
-                if (roomQuickSelect) roomQuickSelect.value = '';
-                applyRoomFilter();
-            });
-        }
     </script>
 </body>
 </html>
