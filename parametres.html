@@ -734,7 +734,7 @@
 
     async function loadUserActivity() {
       try {
-        const response = await fetch(`${apiBase}/admin/user-activity?limit=250`, { method: "GET", headers: authHeaders() });
+        const response = await fetch(`${apiBase}/admin/user-activity?limit=100`, { method: "GET", headers: authHeaders() });
         const data = await response.json().catch(function () { return []; });
         const list = Array.isArray(data) ? data : [];
 
@@ -743,13 +743,14 @@
           const statusClass = status.toLowerCase().includes("succes") || status.toLowerCase().includes("disponible") || status.toLowerCase().includes("en_utilisation")
             ? "style='color:#166534;font-weight:700;'"
             : "style='color:#be123c;font-weight:700;'";
-          const email = String(entry.email || "-");
+          const email = String(entry.email || (entry.user_id ? (`user:${String(entry.user_id).slice(0, 8)}`) : "-"));
           const action = normalizeUserActionLabel(entry.action, entry.detail);
           const thing = String(entry.thing_name || entry.thing_id || "-");
+          const dateValue = String(entry.date || entry.created_at || "-");
 
           return `
             <tr>
-              <td>${entry.date || "-"}</td>
+              <td>${dateValue}</td>
               <td style="font-weight:700;color:#0f172a;">${email}</td>
               <td>${action}</td>
               <td>${thing}</td>

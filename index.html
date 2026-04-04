@@ -441,11 +441,12 @@
                 const statusClass = status.toLowerCase().includes('succes') || status.toLowerCase().includes('disponible') || status.toLowerCase().includes('en_utilisation')
                     ? 'style="color:#166534;font-weight:700;"'
                     : 'style="color:#be123c;font-weight:700;"';
-                const email = String(entry.email || '-');
+                const email = String(entry.email || (entry.user_id ? ('user:' + String(entry.user_id).slice(0, 8)) : '-'));
                 const thing = String(entry.thing_name || entry.thing_id || '-');
+                const dateValue = String(entry.date || entry.created_at || '-');
                 return `
                     <tr>
-                        <td class="p-3 text-sm text-slate-600 whitespace-nowrap">${entry.date || '-'}</td>
+                        <td class="p-3 text-sm text-slate-600 whitespace-nowrap">${dateValue}</td>
                         <td class="p-3 text-sm font-semibold text-slate-700">${email}</td>
                         <td class="p-3 text-sm">${entry.action || '-'}</td>
                         <td class="p-3 text-sm">${thing}</td>
@@ -507,7 +508,7 @@
         }
 
         async function fetchUserActivity() {
-            const response = await fetch(`${apiBase}/admin/user-activity?limit=250`, { method: 'GET', headers: authHeaders() });
+            const response = await fetch(`${apiBase}/admin/user-activity?limit=100`, { method: 'GET', headers: authHeaders() });
             const data = await response.json().catch(function () { return []; });
             return Array.isArray(data) ? data : [];
         }

@@ -12,6 +12,10 @@ from notifications_service import create_notification
 
 auth_router = APIRouter()
 
+HISTORY_RETENTION_DAYS = 45
+HISTORY_MAX_ENTRIES_PER_USER = 120
+HISTORY_PRUNE_SCAN_BUFFER = 5000
+
 
 def _get_frontend_base_url() -> str:
     configured = os.getenv(
@@ -126,6 +130,46 @@ def _display_name_from_profile(email: str, profile_row: dict | None = None) -> s
 
     local_part = local_part.replace(".", " ").replace("_", " ").replace("-", " ")
     return " ".join(piece.capitalize() for piece in local_part.split() if piece)
+
+
+def _history_retention_cutoff_iso() -> str:
+    cutoff = datetime.now(timezone.utc).timestamp() - (HISTORY_RETENTION_DAYS * 24 * 60 * 60)
+    return datetime.fromtimestamp(cutoff, tz=timezone.utc).isoformat()
+
+
+def _prune_user_history(user_id: str | None = None) -> None:
+    try:
+        # Keep the collection from growing indefinitely by trimming old rows globally.
+        user_history_collection.delete_many({"created_at": {"$lt": _history_retention_cutoff_iso()}})
+
+        if user_id:
+            rows = list(
+                user_history_collection.find({"user_id": str(user_id)}, {"_id": 1})
+                .sort("created_at", -1)
+                .limit(HISTORY_MAX_ENTRIES_PER_USER + HISTORY_PRUNE_SCAN_BUFFER)
+            )
+            if len(rows) > HISTORY_MAX_ENTRIES_PER_USER:
+                stale_ids = [row.get("_id") for row in rows[HISTORY_MAX_ENTRIES_PER_USER:] if row.get("_id")]
+                if stale_ids:
+                    user_history_collection.delete_many({"_id": {"$in": stale_ids}})
+    except Exception as e:
+        print(f"Erreur purge historique: {e}")
+
+
+def _format_history_date(raw_date: str, raw_created_at: str) -> str:
+    date_value = str(raw_date or "").strip()
+    if date_value:
+        return date_value
+
+    created_value = str(raw_created_at or "").strip()
+    if not created_value:
+        return "-"
+
+    try:
+        parsed = datetime.fromisoformat(created_value.replace("Z", "+00:00"))
+        return parsed.astimezone(timezone.utc).strftime("%d/%m/%Y %H:%M:%S")
+    except Exception:
+        return created_value
 
 
 @auth_router.post("/login")
@@ -247,7 +291,8 @@ def get_user_profile(request: Request):
 @auth_router.get("/user/history")
 def get_user_history(request: Request):
     user = _get_authenticated_user(request)
-    rows = list(user_history_collection.find({"user_id": str(user.id)}).sort("created_at", -1).limit(200))
+    _prune_user_history(str(user.id))
+    rows = list(user_history_collection.find({"user_id": str(user.id)}).sort("created_at", -1).limit(HISTORY_MAX_ENTRIES_PER_USER))
     result = []
     for row in rows:
         row["_id"] = str(row.get("_id"))
@@ -269,6 +314,7 @@ def add_user_history(request: Request, data: UserHistoryRequest = Body(...)):
         "created_at": now.isoformat(),
     }
     inserted = user_history_collection.insert_one(doc)
+    _prune_user_history(str(user.id))
     return {"success": True, "id": str(inserted.inserted_id)}
 
 
@@ -293,6 +339,8 @@ def get_admin_users(request: Request):
 def get_admin_user_activity(request: Request, limit: int = 200):
     require_admin(request)
 
+    _prune_user_history()
+
     safe_limit = max(20, min(int(limit or 200), 500))
 
     # Focus admin supervision on object lifecycle and key user activity.
@@ -303,7 +351,6 @@ def get_admin_user_activity(request: Request, limit: int = 200):
                     "$in": [
                         "EMPRUNT_DEBUT",
                         "EMPRUNT_FIN",
-                        "Objet",
                         "Session",
                     ]
                 }
@@ -317,23 +364,32 @@ def get_admin_user_activity(request: Request, limit: int = 200):
     for row in rows:
         action = str(row.get("action", "") or "")
         detail = str(row.get("detail", "") or "")
+        user_id = str(row.get("user_id", "") or "")
+        email = str(row.get("email", "") or "")
+        created_at = str(row.get("created_at", "") or "")
+        date_value = _format_history_date(str(row.get("date", "") or ""), created_at)
 
         # Skip explicit admin-labelled logs to keep this table user-centric.
         if action.lower().startswith("admin -"):
             continue
 
+        # Remove low-value consultation spam from admin activity table.
+        detail_lower = detail.lower()
+        if action.lower() == "objet" and "consultation" in detail_lower:
+            continue
+
         result.append(
             {
                 "_id": str(row.get("_id")),
-                "user_id": str(row.get("user_id", "") or ""),
-                "email": str(row.get("email", "") or ""),
+                "user_id": user_id,
+                "email": email or (f"user:{user_id[:8]}" if user_id else "-"),
                 "action": action,
                 "detail": detail,
                 "status": str(row.get("status", "") or ""),
                 "thing_id": str(row.get("thing_id", "") or ""),
                 "thing_name": str(row.get("thing_name", "") or ""),
-                "date": str(row.get("date", "") or ""),
-                "created_at": str(row.get("created_at", "") or ""),
+                "date": date_value,
+                "created_at": created_at,
             }
         )
 

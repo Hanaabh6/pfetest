@@ -4,7 +4,7 @@ import sys
 from fastapi import APIRouter, HTTPException, Request
 
 from base import things_collection, user_history_collection
-from main_auth import _get_user_from_token, extract_bearer_token
+from main_auth import _get_user_from_token, _prune_user_history, extract_bearer_token
 from notifications_service import create_notification
 
 borrow_router = APIRouter(tags=["borrow"])
@@ -139,6 +139,7 @@ def prendre_objet(thing_id: str, request: Request):
             "returned": False,
         }
     )
+    _prune_user_history(user_id)
 
     things.update_one(
         {"id": thing_id},
@@ -229,6 +230,7 @@ def retourner_objet(thing_id: str, request: Request):
             "duree_minutes": duration_min,
         }
     )
+    _prune_user_history(user_id)
 
     things.update_one(
         {"id": thing_id},
