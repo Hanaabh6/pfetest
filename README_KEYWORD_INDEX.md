@@ -109,7 +109,7 @@ Application Frontend
 ```python
 from base import Index_Mots_Cles_collection
 
-results = Index_Mots_Cles_collection.find({"mot": "lampe"})
+results = Index_Mots_Cles_collection.find({"mot": "ECLAIRAGE"})
 for doc in results:
     print(f"{doc['object_name']}: pertinence {doc['poids']}")
 ```
@@ -118,7 +118,7 @@ for doc in results:
 
 ```python
 pipeline = [
-    {"$match": {"mot": {"$in": ["lampe", "bureau", "led"]}}},
+    {"$match": {"mot": {"$in": ["ECLAIRAGE", "bureau", "led"]}}},
     {"$group": {
         "_id": "$thingId",
         "name": {"$first": "$object_name"},
@@ -227,10 +227,10 @@ Sections:
 
 ## 🎓 Cas d'Usage Couverts
 
-✅ **Recherche simple**: "lampe"
-✅ **Recherche multi-mots**: "lampe bureau"
+✅ **Recherche simple**: "ECLAIRAGE"
+✅ **Recherche multi-mots**: "ECLAIRAGE bureau"
 ✅ **Autocomplétion**: "lam" → suggestions
-✅ **Filtrage géographique**: "lampe" + localisation
+✅ **Filtrage géographique**: "ECLAIRAGE" + localisation
 ✅ **Tri par pertinence**: résultats par poids
 ✅ **Recherche textuelle fuzzy**: similarité
 

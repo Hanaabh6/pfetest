@@ -78,7 +78,7 @@ const translations = {
     ph_email: 'exemple@mail.com',
     ph_password: '••••••••',
     ph_confirm_password: '••••••••',
-    ph_object_name: 'Ex: Lampe Bureau...',
+    ph_object_name: 'Ex: ECLAIRAGE Bureau...',
     ph_object_location: 'Bureau 101',
 
     about_title: 'Pourquoi IntelliBuild ?',

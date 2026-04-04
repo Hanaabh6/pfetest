@@ -18,9 +18,9 @@ class SearchRequest(BaseModel):
 
 
 SYNONYMS = {
-    "light": "lampe",
-    "lights": "lampe",
-    "lamp": "lampe",
+    "light": "eclairage",
+    "lights": "eclairage",
+    "lamp": "eclairage",
     "printer": "imprimante",
     "projector": "projecteur",
     "sensor": "capteur",

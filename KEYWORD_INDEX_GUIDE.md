@@ -17,7 +17,7 @@ La collection `Index_Mots_Cles` est une **collection denormalisée d'index** con
 ```javascript
 {
   "_id": ObjectId,           // ID auto-généré
-  "mot": "lampe",           // Mot clé normalisé
+  "mot": "ECLAIRAGE",           // Mot clé normalisé
   "thingId": "507f...",     // ID de l'objet
   "poids": 10,              // Pertinence (1-100)
   "frequence": 1,           // Nombre d'occurrences
@@ -77,9 +77,9 @@ python populate_keywords.py stats
 ### 1. Recherche Simple par Mot
 
 ```python
-# Chercher tous les objets contenant le mot "lampe"
+# Chercher tous les objets contenant le mot "ECLAIRAGE"
 results = Index_Mots_Cles_collection.find(
-    {"mot": "lampe"}
+    {"mot": "ECLAIRAGE"}
 ).limit(10)
 
 for doc in results:
@@ -89,9 +89,9 @@ for doc in results:
 ### 2. Recherche avec Tri par Pertinence
 
 ```python
-# Trouver "lampe" et trier par pertinence décroissante
+# Trouver "ECLAIRAGE" et trier par pertinence décroissante
 results = Index_Mots_Cles_collection.find(
-    {"mot": "lampe"}
+    {"mot": "ECLAIRAGE"}
 ).sort([("poids", -1)]).limit(20)
 ```
 
@@ -101,7 +101,7 @@ results = Index_Mots_Cles_collection.find(
 # Chercher les objets contenant PLUSIEURS mots clés
 from collections import Counter
 
-mots = ["lampe", "bureau", "led"]
+mots = ["ECLAIRAGE", "bureau", "led"]
 query = {"mot": {"$in": mots}}
 
 # Agréger par thingId et compter les occurrences
@@ -126,7 +126,7 @@ results = Index_Mots_Cles_collection.aggregate(pipeline)
 ```python
 # Recherche textuelle avec index text
 results = Index_Mots_Cles_collection.find(
-    {"$text": {"$search": "lampe bureau"}},
+    {"$text": {"$search": "ECLAIRAGE bureau"}},
     {"score": {"$meta": "textScore"}}
 ).sort([("score", {"$meta": "textScore"})])
 ```
@@ -142,7 +142,7 @@ suggestions = Index_Mots_Cles_collection.distinct(
     "mot",
     {"mot": {"$regex": f"^{re.escape(prefix)}", "$options": "i"}}
 )
-print(suggestions)  # ["lampe", "lambda", ...]
+print(suggestions)  # ["ECLAIRAGE", "lambda", ...]
 ```
 
 ### 6. Récupérer tous les mots d'un objet

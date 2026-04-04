@@ -136,7 +136,7 @@ C'est tout! 🎉
 ```json
 {
   "id": "obj123",
-  "name": "Lampe Bureau",
+  "name": "ECLAIRAGE Bureau",
   "type": "Éclairage",
   "status": "active",           // ← CHANGÉ PAR PATCH
   "availability": "disponible",  // ← AUTO-CHANGÉ AUSSI

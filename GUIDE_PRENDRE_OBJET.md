@@ -21,7 +21,7 @@ def update_thing_status(thing_id: str, data: dict = Body(...)):
     "message": "Statut changé en 'inactive'",
     "thing": {
         "id": "obj123",
-        "name": "Lampe Bureau",
+        "name": "ECLAIRAGE Bureau",
         "status": "inactive",
         "availability": "indisponible"
     }
@@ -48,7 +48,7 @@ Interface complète avec:
 2️⃣ FRONTEND APPELLE: GET /api/things/search?search_query=""
    ↓
 3️⃣ BACKEND RETOURNE: [
-        {id: "obj1", name: "Lampe", status: "active", ...},
+        {id: "obj1", name: "ECLAIRAGE", status: "active", ...},
         {id: "obj2", name: "Bureau", status: "inactive", ...}
      ]
    ↓
@@ -56,11 +56,11 @@ Interface complète avec:
    ┌─────────────┬──────┬─────────────┬──────────┬─────────┐
    │ Nom         │ Type │ Local       │ Statut   │ Action  │
    ├─────────────┼──────┼─────────────┼──────────┼─────────┤
-   │ Lampe       │ Lum  │ Bureau 3A   │ ✅ active│ Prendre │
+   │ ECLAIRAGE       │ Lum  │ Bureau 3A   │ ✅ active│ Prendre │
    │ Bureau      │ Mobil│ Bureau 3B   │ ❌ inact │    -    │
    └─────────────┴──────┴─────────────┴──────────┴─────────┘
    ↓
-5️⃣ UTILISATEUR CLIQUE "Prendre" (sur Lampe)
+5️⃣ UTILISATEUR CLIQUE "Prendre" (sur ECLAIRAGE)
    ↓
 6️⃣ MODAL S'AFFICHE:
    "Êtes-vous sûr de vouloir prendre cet objet?"
@@ -85,13 +85,13 @@ Interface complète avec:
      "thing": {...updated...}
    }
    ↓
-1️⃣1️⃣ FRONTEND AFFICHE: ✓ Succès! L'objet "Lampe" est maintenant indisponible.
+1️⃣1️⃣ FRONTEND AFFICHE: ✓ Succès! L'objet "ECLAIRAGE" est maintenant indisponible.
    ↓
 1️⃣2️⃣ FRONTEND RECHARGE LA LISTE:
    GET /api/things/search
    ↓
 1️⃣3️⃣ TABLEAU MIS À JOUR:
-   Lampe maintenant avec status "inactive" et bouton "Prendre" disparu
+   ECLAIRAGE maintenant avec status "inactive" et bouton "Prendre" disparu
 ```
 
 ---
@@ -151,7 +151,7 @@ curl -X POST http://127.0.0.1:8000/things/search \
 **Réponse exemple:**
 ```json
 [
-  {"id": "abc123", "name": "Lampe Bureau", "status": "active"},
+  {"id": "abc123", "name": "ECLAIRAGE Bureau", "status": "active"},
   {"id": "def456", "name": "Chaise", "status": "inactive"}
 ]
 ```
@@ -170,7 +170,7 @@ curl -X PATCH http://127.0.0.1:8000/api/things/abc123/status \
   "message": "Statut changé en 'inactive'",
   "thing": {
     "id": "abc123",
-    "name": "Lampe Bureau",
+    "name": "ECLAIRAGE Bureau",
     "status": "inactive",
     "availability": "indisponible"
   }
@@ -181,10 +181,10 @@ curl -X PATCH http://127.0.0.1:8000/api/things/abc123/status \
 ```bash
 curl -X POST http://127.0.0.1:8000/things/search \
   -H "Content-Type: application/json" \
-  -d '{"search_query": "lampe"}'
+  -d '{"search_query": "ECLAIRAGE"}'
 ```
 
-La lampe devrait maintenant avoir `"status": "inactive"` ! ✅
+La ECLAIRAGE devrait maintenant avoir `"status": "inactive"` ! ✅
 
 ---
 
@@ -195,7 +195,7 @@ Vos objets dans MongoDB doivent avoir cette structure:
 ```json
 {
   "id": "abc123",
-  "name": "Lampe Bureau",
+  "name": "ECLAIRAGE Bureau",
   "type": "Éclairage",
   "status": "active",
   "availability": "disponible",
@@ -205,7 +205,7 @@ Vos objets dans MongoDB doivent avoir cette structure:
     "y": 70,
     "z": 12
   },
-  "description": "Lampe LED 60W"
+  "description": "ECLAIRAGE LED 60W"
 }
 ```
 

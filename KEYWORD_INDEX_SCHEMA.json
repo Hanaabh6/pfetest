@@ -92,11 +92,11 @@
   "example_documents": [
     {
       "_id": "ObjectId('...')",
-      "mot": "lampe",
+      "mot": "ECLAIRAGE",
       "thingId": "507f1f77bcf86cd799439011",
       "poids": 10,
       "frequence": 1,
-      "object_name": "Lampe LED Bureau",
+      "object_name": "ECLAIRAGE LED Bureau",
       "created_at": "2024-01-15T10:30:00Z"
     },
     {
@@ -105,7 +105,7 @@
       "thingId": "507f1f77bcf86cd799439011",
       "poids": 8,
       "frequence": 1,
-      "object_name": "Lampe LED Bureau"
+      "object_name": "ECLAIRAGE LED Bureau"
     },
     {
       "_id": "ObjectId('...')",
@@ -113,7 +113,7 @@
       "thingId": "507f1f77bcf86cd799439011",
       "poids": 6,
       "frequence": 1,
-      "object_name": "Lampe LED Bureau"
+      "object_name": "ECLAIRAGE LED Bureau"
     }
   ]
 }

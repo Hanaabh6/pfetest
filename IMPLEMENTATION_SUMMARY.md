@@ -38,7 +38,7 @@ def update_thing_status(thing_id: str, data: dict):
 <!-- Tableau -->
 <table>
   <tr>
-    <td>Lampe Bureau</td>
+    <td>ECLAIRAGE Bureau</td>
     <td>✅ Disponible</td>
     <td><button onclick="openTakeModal(...)">Prendre</button></td>
   </tr>
@@ -133,35 +133,35 @@ Même chose pour Linux/WSL
 
 2️⃣ TABLEAU AFFICHÉ
    Montre 10 objets:
-   [Lampe ✅] [Bureau ❌] [Chaise ✅] etc.
+   [ECLAIRAGE ✅] [Bureau ❌] [Chaise ✅] etc.
 
-3️⃣ UTILISATEUR CLIQUE "Prendre" (sur Lampe)
-   → openTakeModal('lampe-id')
+3️⃣ UTILISATEUR CLIQUE "Prendre" (sur ECLAIRAGE)
+   → openTakeModal('ECLAIRAGE-id')
 
 4️⃣ MODAL APPARAÎT
-   "Êtes-vous sûr de vouloir prendre Lampe?"
+   "Êtes-vous sûr de vouloir prendre ECLAIRAGE?"
    [Non, annuler]  [Oui, prendre]
 
 5️⃣ UTILISATEUR CLIQUE "Oui, prendre"
    → confirmTakeObject()
 
 6️⃣ FRONTEND APPELLE API
-   PATCH /api/things/lampe-id/status
+   PATCH /api/things/ECLAIRAGE-id/status
    {status: "inactive"}
 
 7️⃣ BACKEND REÇOIT
-   Cherche document avec id="lampe-id"
+   Cherche document avec id="ECLAIRAGE-id"
    Met à jour: status="inactive", availability="indisponible"
    Réindexe
    Retourne: {success: true, thing: {...}}
 
 8️⃣ FRONTEND REÇOIT RÉPONSE
-   Affiche: "✓ Succès! L'objet Lampe est indisponible"
+   Affiche: "✓ Succès! L'objet ECLAIRAGE est indisponible"
    Ferme modal
    Appelle GET /things/search
 
 9️⃣ TABLEAU SE RECHARGE
-   Lampe maintenant: ❌ indisponible
+   ECLAIRAGE maintenant: ❌ indisponible
    Bouton "Prendre" disparu
 
 🔟 UTILISATEUR VOIT RÉSULTAT FINAL

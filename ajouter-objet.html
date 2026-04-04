@@ -317,7 +317,7 @@
 
                 <div class="step-banner">
                     <div class="flex items-center justify-between gap-3 flex-wrap">
-                        <p class="m-0 text-sm font-black text-slate-800">Etape 1: Choisissez d'abord un type (Lampe, Climatiseur, Camera...)</p>
+                        <p class="m-0 text-sm font-black text-slate-800">Etape 1: Choisissez d'abord un type (ECLAIRAGE, Climatiseur, Camera...)</p>
                         <span id="selectedTypePill" class="selected-type-pill">Aucun type choisi</span>
                     </div>
                     <div id="typeShowcase" class="type-showcase"></div>
@@ -328,7 +328,7 @@
 
                     <div class="field-card">
                         <label class="field-label" for="objName" data-key="add_object_name"><i class="fas fa-tag text-emerald-700"></i> Nom de l'objet</label>
-                        <input type="text" id="objName" maxlength="80" placeholder="Ex: Lampe Bureau C-12" data-key="ph_object_name" data-attr="placeholder" required class="field-input">
+                        <input type="text" id="objName" maxlength="80" placeholder="Ex: ECLAIRAGE Bureau C-12" data-key="ph_object_name" data-attr="placeholder" required class="field-input">
                         <p class="field-help">Nom court, clair et unique pour retrouver rapidement l'objet.</p>
                     </div>
 
@@ -391,7 +391,7 @@
 
                     <div class="field-card">
                         <label class="field-label" for="objDesc" data-key="add_object_description"><i class="fas fa-align-left text-emerald-700"></i> Description</label>
-                        <textarea id="objDesc" rows="3" placeholder="Ex: Lampe connectee LED, pilotable a distance, zone open space." class="field-textarea"></textarea>
+                        <textarea id="objDesc" rows="3" placeholder="Ex: ECLAIRAGE connectee LED, pilotable a distance, zone open space." class="field-textarea"></textarea>
                         <div class="desc-actions">
                             <button type="button" id="generateDescBtn" class="tiny-btn">Generer une description</button>
                             <button type="button" id="clearDescBtn" class="tiny-btn">Effacer description</button>
@@ -503,7 +503,7 @@
         const addSummaryDesc = document.getElementById('addSummaryDesc');
 
         const TYPE_PRESETS = [
-            { value: 'Lampe', icon: 'fas fa-lightbulb', hint: 'Ex: Lampe Bureau Connectee' },
+            { value: 'ECLAIRAGE', icon: 'fas fa-lightbulb', hint: 'Ex: ECLAIRAGE Bureau Connectee' },
             { value: 'Climatiseur', icon: 'fas fa-snowflake', hint: 'Ex: Climatiseur Zone A' },
             { value: 'Camera', icon: 'fas fa-video', hint: 'Ex: Camera Entree Principale' },
             { value: 'Capteur', icon: 'fas fa-microchip', hint: 'Ex: Capteur Temperature Salle 2' },
