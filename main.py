@@ -9,7 +9,6 @@ from main_notifications import notifications_router
 from main_recherche import recherche_router
 from dotenv import load_dotenv
 import os
-import asyncio
 from threading import Thread
 import time
 
@@ -23,55 +22,39 @@ def _cleanup_orphan_keywords_on_startup():
     """Nettoie automatiquement les mots-clés orphelins au démarrage."""
     try:
         all_keyword_thing_ids = list(keyword_index_collection.distinct("thingId"))
-        print(f"🔍 Démarrage - Total keywords par thingId: {len(all_keyword_thing_ids)}")
-        
         orphan_thing_ids = []
         
         for thing_id in all_keyword_thing_ids:
             thing_id_clean = str(thing_id).strip()
-            exists = things_collection.find_one({"id": thing_id_clean})
-            if not exists:
-                print(f"   ⚠️  Orphelin trouvé: {thing_id_clean}")
+            if not things_collection.find_one({"id": thing_id_clean}):
                 orphan_thing_ids.append(thing_id_clean)
-        
-        print(f"🧹 Total orphelins au démarrage: {len(orphan_thing_ids)}")
         
         if orphan_thing_ids:
             result = keyword_index_collection.delete_many({"thingId": {"$in": orphan_thing_ids}})
             print(f"🧹 Nettoyage au démarrage: {result.deleted_count} mots-clés supprimés")
-        else:
-            print(f"✅ Pas d'orphelins au démarrage")
     except Exception as e:
-        print(f"⚠️  Erreur lors du nettoyage des mots-clés: {e}")
+        print(f"⚠️  Erreur nettoyage: {e}")
 
 
 def _background_cleanup_task():
     """Tâche de fond qui nettoie les mots-clés orphelins toutes les 5 minutes."""
     while True:
         try:
-            time.sleep(300)  # Attendre 5 minutes
+            time.sleep(300)
             
             all_keyword_thing_ids = list(keyword_index_collection.distinct("thingId"))
-            print(f"🔍 Vérification - Total keywords par thingId: {len(all_keyword_thing_ids)}")
-            
             orphan_thing_ids = []
             
             for thing_id in all_keyword_thing_ids:
                 thing_id_clean = str(thing_id).strip()
-                exists = things_collection.find_one({"id": thing_id_clean})
-                if not exists:
-                    print(f"   ⚠️  Orphelin trouvé: {thing_id_clean}")
+                if not things_collection.find_one({"id": thing_id_clean}):
                     orphan_thing_ids.append(thing_id_clean)
-            
-            print(f"🧹 Total orphelins trouvés: {len(orphan_thing_ids)}")
             
             if orphan_thing_ids:
                 result = keyword_index_collection.delete_many({"thingId": {"$in": orphan_thing_ids}})
-                print(f"🧹 Nettoyage automatique: {result.deleted_count} mots-clés suppressés")
-            else:
-                print(f"✅ Aucun mots-clés orphelins à supprimer")
+                print(f"🧹 Nettoyage ({result.deleted_count} keywords)")
         except Exception as e:
-            print(f"⚠️  Erreur lors du nettoyage en arrière-plan: {e}")
+            print(f"⚠️  Erreur nettoyage: {e}")
 
 
 def _get_origins() -> list[str]:
