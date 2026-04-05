@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from base import keyword_index_collection
+from base import keyword_index_collection, things_collection
 from main_auth import auth_router
 from main_localisation import localisation_router
 from main_borrow import borrow_router
@@ -16,6 +16,23 @@ index_mot_cle_collection = keyword_index_collection
 
 app = FastAPI()
 
+def _cleanup_orphan_keywords_on_startup():
+    """Nettoie automatiquement les mots-clés orphelins au démarrage."""
+    try:
+        all_keyword_thing_ids = list(keyword_index_collection.distinct("thingId"))
+        orphan_thing_ids = []
+        
+        for thing_id in all_keyword_thing_ids:
+            thing_id_clean = str(thing_id).strip()
+            if not things_collection.find_one({"id": thing_id_clean}):
+                orphan_thing_ids.append(thing_id_clean)
+        
+        if orphan_thing_ids:
+            result = keyword_index_collection.delete_many({"thingId": {"$in": orphan_thing_ids}})
+            print(f"🧹 Nettoyage au démarrage: {result.deleted_count} mots-clés orphelins supprimés")
+    except Exception as e:
+        print(f"⚠️  Erreur lors du nettoyage des mots-clés: {e}")
+
 def _get_origins() -> list[str]:
     configured = os.getenv(
         "FRONTEND_ORIGINS",
@@ -30,6 +47,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Nettoyage automatique au démarrage
+_cleanup_orphan_keywords_on_startup()
 
 app.include_router(localisation_router)
 app.include_router(recherche_router)
