@@ -286,18 +286,70 @@ def update_thing(thing_id: str, request: Request, data: UpdateThingRequest = Bod
         raise HTTPException(status_code=500, detail="Erreur MongoDB")
 
 
+def _cleanup_orphan_keywords() -> int:
+    """Supprime tous les mots-clés orphelins (dont le thingId n'existe plus)."""
+    things = _things_collection()
+    index_collection = _index_collection()
+    
+    # Récupérer tous les thingId uniques dans keyword_index
+    orphan_thing_ids = []
+    try:
+        all_keyword_thing_ids = list(index_collection.distinct("thingId"))
+        
+        # Pour chaque thingId, vérifier s'il existe dans things
+        for thing_id in all_keyword_thing_ids:
+            if not things.find_one({"id": str(thing_id).strip()}):
+                orphan_thing_ids.append(str(thing_id).strip())
+        
+        # Supprimer tous les mots-clés orphelins
+        if orphan_thing_ids:
+            result = index_collection.delete_many({"thingId": {"$in": orphan_thing_ids}})
+            return result.deleted_count
+    except Exception as e:
+        print(f"Erreur cleanup keywords: {e}")
+    
+    return 0
+
+
 @crud_router.delete("/things/{thing_id}")
 def delete_thing(thing_id: str, request: Request):
     require_admin(request)
     things = _things_collection()
-    if things.delete_one({"id": thing_id}).deleted_count == 0:
+    thing_id_clean = str(thing_id).strip()
+    
+    if things.delete_one({"id": thing_id_clean}).deleted_count == 0:
         raise HTTPException(status_code=404, detail="Non trouve")
-    _index_collection().delete_many({"thingId": thing_id})
+    
+    # Supprimer tous les mots-clés associés à cet objet
+    index_collection = _index_collection()
+    deleted_keywords = index_collection.delete_many({"thingId": thing_id_clean}).deleted_count
+    
+    # Nettoyer aussi les mots-clés orphelins si besoin
+    orphain_count = _cleanup_orphan_keywords()
+    
     create_notification(
         target_role="admin",
         title="Objet supprime",
-        message=f"Objet supprime: {thing_id}.",
+        message=f"Objet supprime: {thing_id}. {deleted_keywords} mots-cles supprimes.",
         notif_type="warning",
-        metadata={"thing_id": thing_id, "action": "delete"},
+        metadata={"thing_id": thing_id, "action": "delete", "keywords_deleted": deleted_keywords, "orphans_cleaned": orphain_count},
     )
-    return {"success": True}
+    return {"success": True, "keywords_deleted": deleted_keywords, "orphans_cleaned": orphain_count}
+
+
+@crud_router.post("/maintenance/cleanup-orphan-keywords")
+def cleanup_orphan_keywords_endpoint(request: Request):
+    """Endpoint de maintenance pour nettoyer les mots-clés orphelins."""
+    require_admin(request)
+    
+    cleaned_count = _cleanup_orphan_keywords()
+    
+    create_notification(
+        target_role="admin",
+        title="Maintenance: Nettoyage des mots-clés",
+        message=f"{cleaned_count} mots-clés orphelins supprimes.",
+        notif_type="info",
+        metadata={"action": "cleanup_keywords", "count": cleaned_count},
+    )
+    
+    return {"success": True, "orphan_keywords_deleted": cleaned_count}
