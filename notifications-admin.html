@@ -34,30 +34,29 @@
       min-height: 100vh;
       font-family: "Segoe UI", sans-serif;
       color: var(--text);
-      background:
-        radial-gradient(1200px 700px at 10% 0%, rgba(20, 184, 166, 0.18), transparent 60%),
-        radial-gradient(1000px 600px at 90% 100%, rgba(59, 130, 246, 0.18), transparent 55%),
-        linear-gradient(145deg, var(--bg-1), var(--bg-2));
+      background: url('https://images.pexels.com/photos/4040649/pexels-photo-4040649.jpeg') no-repeat center center fixed;
+      background-size: cover;
       padding: 0;
       display: flex;
     }
 
     .admin-sidebar {
       width: 280px;
+      flex: 0 0 280px;
       background: var(--sidebar-bg);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(4px);
       color: var(--menu-link);
-      padding: 24px;
+      padding: 18px 16px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 16px;
       min-height: 100vh;
       z-index: 50;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
 
     .sidebar-logo {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
       color: #fff;
       display: flex;
@@ -86,16 +85,16 @@
     .sidebar-nav {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-top: 16px;
+      gap: 0;
+      margin-top: 12px;
     }
 
     .sidebar-nav a {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 13px 14px;
-      margin: 10px 0;
+      padding: 11px 12px;
+      margin: 4px 0;
       border-radius: 10px;
       color: var(--menu-link);
       text-decoration: none;
