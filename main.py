@@ -23,16 +23,24 @@ def _cleanup_orphan_keywords_on_startup():
     """Nettoie automatiquement les mots-clés orphelins au démarrage."""
     try:
         all_keyword_thing_ids = list(keyword_index_collection.distinct("thingId"))
+        print(f"🔍 Démarrage - Total keywords par thingId: {len(all_keyword_thing_ids)}")
+        
         orphan_thing_ids = []
         
         for thing_id in all_keyword_thing_ids:
             thing_id_clean = str(thing_id).strip()
-            if not things_collection.find_one({"id": thing_id_clean}):
+            exists = things_collection.find_one({"id": thing_id_clean})
+            if not exists:
+                print(f"   ⚠️  Orphelin trouvé: {thing_id_clean}")
                 orphan_thing_ids.append(thing_id_clean)
+        
+        print(f"🧹 Total orphelins au démarrage: {len(orphan_thing_ids)}")
         
         if orphan_thing_ids:
             result = keyword_index_collection.delete_many({"thingId": {"$in": orphan_thing_ids}})
-            print(f"🧹 Nettoyage au démarrage: {result.deleted_count} mots-clés orphelins supprimés")
+            print(f"🧹 Nettoyage au démarrage: {result.deleted_count} mots-clés supprimés")
+        else:
+            print(f"✅ Pas d'orphelins au démarrage")
     except Exception as e:
         print(f"⚠️  Erreur lors du nettoyage des mots-clés: {e}")
 
@@ -44,17 +52,24 @@ def _background_cleanup_task():
             time.sleep(300)  # Attendre 5 minutes
             
             all_keyword_thing_ids = list(keyword_index_collection.distinct("thingId"))
+            print(f"🔍 Vérification - Total keywords par thingId: {len(all_keyword_thing_ids)}")
+            
             orphan_thing_ids = []
             
             for thing_id in all_keyword_thing_ids:
                 thing_id_clean = str(thing_id).strip()
-                if not things_collection.find_one({"id": thing_id_clean}):
+                exists = things_collection.find_one({"id": thing_id_clean})
+                if not exists:
+                    print(f"   ⚠️  Orphelin trouvé: {thing_id_clean}")
                     orphan_thing_ids.append(thing_id_clean)
+            
+            print(f"🧹 Total orphelins trouvés: {len(orphan_thing_ids)}")
             
             if orphan_thing_ids:
                 result = keyword_index_collection.delete_many({"thingId": {"$in": orphan_thing_ids}})
-                if result.deleted_count > 0:
-                    print(f"🧹 Nettoyage automatique (arrière-plan): {result.deleted_count} mots-clés orphelins supprimés")
+                print(f"🧹 Nettoyage automatique: {result.deleted_count} mots-clés suppressés")
+            else:
+                print(f"✅ Aucun mots-clés orphelins à supprimer")
         except Exception as e:
             print(f"⚠️  Erreur lors du nettoyage en arrière-plan: {e}")
 
