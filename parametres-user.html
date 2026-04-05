@@ -47,6 +47,7 @@
       background-size: cover;
       color: #0f172a;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     .sidebar {
@@ -59,6 +60,9 @@
       justify-content: space-between;
       min-height: 100vh;
       position: fixed;
+      inset: 0 auto 0 0;
+      height: 100vh;
+      overflow-y: auto;
       z-index: 50;
     }
 
@@ -87,6 +91,8 @@
       margin-left: 280px;
       min-height: 100vh;
       padding: 30px;
+      width: calc(100% - 280px);
+      max-width: calc(100% - 280px);
     }
 
     .glass {

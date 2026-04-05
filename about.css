@@ -16,6 +16,10 @@
 .about-hero-shell {
   overflow: hidden;
   position: relative;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(244, 248, 251, 0.92));
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 22px 44px rgba(8, 17, 31, 0.16);
+  backdrop-filter: blur(16px);
 }
 
 .about-hero-shell::after {
@@ -32,6 +36,8 @@
 .about-note-card {
   display: grid;
   gap: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.94));
+  border: 1px solid rgba(226, 232, 240, 0.92);
 }
 
 .about-note-stats {
@@ -43,8 +49,8 @@
 .about-kpi {
   padding: 14px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(148, 163, 184, 0.28);
 }
 
 .about-kpi span {
@@ -52,14 +58,47 @@
   font-size: 0.74rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.72);
+  color: #475569;
 }
 
 .about-kpi strong {
   display: block;
   margin-top: 8px;
   font-size: 1.08rem;
+  color: #08111f;
+}
+
+.about-hero-shell .page-kicker {
+  background: #0f172a;
+  border-color: #0f172a;
   color: #fff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.24);
+}
+
+.about-hero-shell .hero-copy h1 {
+  color: #08111f;
+  text-shadow: none;
+}
+
+.about-hero-shell .hero-copy p {
+  color: #24344f;
+  font-weight: 600;
+}
+
+.about-hero-shell .page-badge {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(100, 116, 139, 0.42);
+  color: #0f172a;
+  font-weight: 800;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1);
+}
+
+.about-note-card .side-panel-title {
+  color: #08111f;
+}
+
+.about-note-card .side-panel-copy {
+  color: #334155;
 }
 
 .about-overview-grid {

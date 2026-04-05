@@ -743,11 +743,20 @@ select:focus {
   color: var(--accent-strong);
 }
 
+:root {
+  --app-sidebar-bg: rgba(10, 16, 24, 0.94);
+}
+
 body.flex aside,
-.container .sidebar {
-  background: linear-gradient(180deg, rgba(7, 10, 18, 0.88), rgba(9, 30, 44, 0.78)) !important;
+.container .sidebar,
+body > aside.sidebar,
+body > aside.admin-sidebar,
+body > aside.doc-user-sidebar,
+body > aside.doc-admin-sidebar {
+  background: var(--app-sidebar-bg) !important;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 18px 48px rgba(8, 17, 31, 0.3);
+  backdrop-filter: blur(12px);
 }
 
 body.flex aside nav a,
@@ -1396,5 +1405,52 @@ footer.glass-main {
   .table-box,
   .dashboard-table {
     border-radius: 24px !important;
+  }
+}
+
+@media (min-width: 901px) {
+  :root {
+    --app-sidebar-width: 280px;
+  }
+
+  body.flex {
+    display: block !important;
+    overflow-x: hidden;
+  }
+
+  body.flex > aside.glass-sidebar,
+  body.flex > aside.sidebar,
+  body > aside.sidebar,
+  body > aside.admin-sidebar,
+  body > .container > .sidebar {
+    position: fixed !important;
+    inset: 0 auto 0 0 !important;
+    width: var(--app-sidebar-width) !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    z-index: 70 !important;
+  }
+
+  body.flex > main,
+  body.flex > .flex-1,
+  body > main.main-area,
+  body > .content-area,
+  body > .main-wrap,
+  body > .container > .main,
+  body > .container > .main-area,
+  body > .container > .content-area {
+    margin-left: var(--app-sidebar-width) !important;
+    width: calc(100% - var(--app-sidebar-width)) !important;
+    max-width: calc(100% - var(--app-sidebar-width)) !important;
+    min-width: 0 !important;
+  }
+
+  body > .container {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
   }
 }
