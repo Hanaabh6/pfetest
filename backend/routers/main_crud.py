@@ -78,7 +78,6 @@ def _extract_keywords(text: str) -> list[str]:
 
 def _build_keyword_docs(item: dict) -> list[dict]:
     thing_id = str(item.get("id", "")).strip()
-    id_obj = _to_index_id(thing_id)
     fields = [
         ("TITRE", 3, item.get("name", "")),
         ("TYPE", 2, item.get("type", "")),
@@ -97,7 +96,6 @@ def _build_keyword_docs(item: dict) -> list[dict]:
         docs.append(
             {
                 "mot": token,
-                "idObjet": id_obj,
                 "thingId": thing_id,
                 "poids": 3 if source == "TITRE" else (2 if source in {"TYPE", "SALLE"} else 1),
                 "source": source,

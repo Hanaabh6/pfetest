@@ -56,13 +56,11 @@ def _build_index_docs_for_object(obj: dict) -> list[dict]:
             else:
                 table_frequences[key] = {"poids": poids_base, "frequence": 1}
 
-    id_objet_numerique = _to_index_id(thing_id)
     docs = []
     for (mot, source), values in table_frequences.items():
         docs.append(
             {
                 "mot": mot,
-                "idObjet": id_objet_numerique,
                 "thingId": thing_id,
                 "poids": int(values["poids"]),
                 "source": source,
