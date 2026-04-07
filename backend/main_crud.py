@@ -6,10 +6,10 @@ import uuid
 from fastapi import APIRouter, Body, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from base import keyword_index_collection, things_collection
-from main_auth import require_admin
-from main_localisation import canonical_room_name as _canonical_room_name, coords_from_room as _coords_from_room
-from notifications_service import create_notification
+from ..base import keyword_index_collection, things_collection
+from .main_auth import require_admin
+from .main_localisation import canonical_room_name as _canonical_room_name, coords_from_room as _coords_from_room
+from ..notifications_service import create_notification
 
 crud_router = APIRouter(tags=["crud"])
 

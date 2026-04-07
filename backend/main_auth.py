@@ -4,10 +4,10 @@ from datetime import datetime, timezone
 import os
 import httpx
 
-from base import user_history_collection
+from ..base import user_history_collection, notifications_collection
 
-from supabase_client import reset_password_email, signup_user, supabase
-from notifications_service import create_notification
+from ..supabase_client import reset_password_email, signup_user, supabase
+from ..notifications_service import create_notification
 
 
 auth_router = APIRouter()
@@ -430,3 +430,46 @@ def update_admin_user_role(target_user_id: str, request: Request, data: UpdateUs
         "email": recipient_email,
         "display_name": _display_name_from_profile(recipient_email, row),
     }
+
+
+@auth_router.delete("/admin/users/{target_user_id}")
+def delete_admin_user(target_user_id: str, request: Request):
+    require_admin(request)
+    actor = _get_authenticated_user(request)
+
+    row = _get_user_profile_row(target_user_id)
+    if not row:
+        raise HTTPException(status_code=404, detail="Utilisateur introuvable")
+
+    recipient_email = str(row.get("email", "") or "")
+
+    # Try to remove the auth account from Supabase (best-effort).
+    try:
+        if getattr(supabase, "auth", None):
+            admin_api = getattr(supabase.auth, "admin", None) or getattr(supabase.auth, "api", None)
+            if admin_api and hasattr(admin_api, "delete_user"):
+                try:
+                    admin_api.delete_user(target_user_id)
+                except TypeError:
+                    # some implementations may expect different args
+                    admin_api.delete_user(target_user_id, False)
+    except Exception as e:
+        print(f"Erreur suppression auth supabase: {e}")
+
+    # Remove profile row from utilisateur table
+    try:
+        supabase.table("utilisateur").delete().eq("id", target_user_id).execute()
+    except Exception as e:
+        print(f"Erreur suppression ligne utilisateur: {e}")
+
+    # Remove related MongoDB documents (history, notifications)
+    try:
+        user_history_collection.delete_many({"user_id": target_user_id})
+    except Exception as e:
+        print(f"Erreur suppression historique utilisateur: {e}")
+    try:
+        notifications_collection.delete_many({"$or": [{"recipient_user_id": target_user_id}, {"actor_user_id": target_user_id}]})
+    except Exception as e:
+        print(f"Erreur suppression notifications utilisateur: {e}")
+
+    return {"success": True, "id": target_user_id, "email": recipient_email}

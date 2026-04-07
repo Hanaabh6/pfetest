@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 import sys
 from typing import Any
 
-from base import notifications_collection
+from backend.base import notifications_collection
 
 
 def _main_module():

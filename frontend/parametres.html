@@ -348,7 +348,7 @@
         </div>
       </article>
 
-      <article class="glass p-5 xl:col-span-1">
+      <article id="profileSection" class="glass p-5 xl:col-span-1">
         <h2 class="text-xl font-black text-slate-800 mb-3">Session admin</h2>
         <div class="text-sm text-slate-700 space-y-2">
           <p class="m-0"><strong>Nom:</strong> <span id="adminName">-</span></p>
@@ -673,12 +673,12 @@
         const role = String(profile.role || "admin");
         const userId = String(profile.id || localStorage.getItem("userId") || "");
         const scopedName = String(localStorage.getItem(scopedKey("userDisplayName", userId)) || "").trim();
-        const displayName = scopedName || String(localStorage.getItem("userDisplayName") || "").trim() || String(profile.display_name || "").trim() || displayNameFromEmail(email);
+        // Prefer explicit profile.display_name, then scoped per-user name, then fallback to email-derived name.
+        const displayName = String(profile.display_name || "").trim() || scopedName || displayNameFromEmail(email);
         const bio = getAdminBio(profile);
 
         localStorage.setItem("userEmail", email);
         localStorage.setItem("userRole", role);
-        localStorage.setItem("userDisplayName", displayName);
         if (userId) {
           localStorage.setItem("userId", userId);
           localStorage.setItem(scopedKey("userDisplayName", userId), displayName);
@@ -693,6 +693,9 @@
         if (sessionHeroName) sessionHeroName.textContent = displayName;
         if (sessionHeroEmail) sessionHeroEmail.textContent = email || "-";
         if (sessionHeroRole) sessionHeroRole.textContent = String(role || "admin").toUpperCase();
+        if (window.refreshSidebarProfileCards) {
+          window.refreshSidebarProfileCards(currentAdminProfile);
+        }
       } catch (error) {
         console.error("Erreur profil admin:", error);
       }
@@ -714,6 +717,7 @@
               <td>${role}</td>
               <td>
                 <button class="btn btn-outline" onclick="changeUserRole('${user.id}', '${nextRole}', '${user.email || ""}')">Passer ${nextRole}</button>
+                <button class="btn btn-danger" onclick="(function(){ if (String(localStorage.getItem('userId')||'') === '${user.id}') { alert('Vous ne pouvez pas supprimer votre propre compte.'); return; } deleteUser('${user.id}', '${user.email || ""}'); })()" style="margin-left:8px;">Supprimer</button>
               </td>
             </tr>
           `;
@@ -818,6 +822,39 @@
       }
     }
 
+    async function deleteUser(userId, email) {
+      if (!userId) return;
+      const currentUserId = String(localStorage.getItem("userId") || "");
+      if (currentUserId && currentUserId === String(userId)) {
+        alert("Vous ne pouvez pas supprimer votre propre compte connecté.");
+        return;
+      }
+
+      const ok = await window.appUiConfirm(`Confirmer la suppression définitive de ${email || userId} ? Cette action est irréversible.`);
+      if (!ok) return;
+
+      try {
+        const response = await fetch(`${apiBase}/admin/users/${encodeURIComponent(userId)}`, {
+          method: "DELETE",
+          headers: authHeaders()
+        });
+
+        const data = await response.json().catch(function () { return {}; });
+        if (!response.ok) {
+          alert(data.detail || "Impossible de supprimer l'utilisateur.");
+          return;
+        }
+
+        await logAction("Gestion utilisateurs", `Suppression utilisateur ${data.email || userId}`, "Succes");
+        await loadUsers();
+        await loadHistory();
+        alert("Utilisateur supprimé.");
+      } catch (err) {
+        console.error("Erreur suppression utilisateur:", err);
+        alert("Erreur suppression utilisateur.");
+      }
+    }
+
     document.getElementById("refreshUsersBtn").addEventListener("click", loadUsers);
     document.getElementById("refreshActivityBtn").addEventListener("click", loadUserActivity);
     document.getElementById("refreshHistoryBtn").addEventListener("click", loadHistory);
@@ -866,6 +903,14 @@
       }
       localStorage.setItem("userDisplayName", name);
       setAdminBio(currentAdminProfile, bio);
+      if (window.refreshSidebarProfileCards) {
+        window.refreshSidebarProfileCards({
+          id: (currentAdminProfile && currentAdminProfile.id) || uid,
+          email: currentAdminProfile && currentAdminProfile.email,
+          role: "admin",
+          display_name: name
+        });
+      }
 
       await logAction("Profil", "Edition profil admin", "Succes");
       closeEditAdmin();
@@ -882,6 +927,7 @@
     loadHistory();
 
     window.changeUserRole = changeUserRole;
+    window.deleteUser = deleteUser;
   </script>
 </body>
 </html>

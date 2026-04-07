@@ -503,27 +503,98 @@
         const addSummaryDesc = document.getElementById('addSummaryDesc');
 
         const TYPE_PRESETS = [
-            { value: 'ECLAIRAGE', icon: 'fas fa-lightbulb', hint: 'Ex: ECLAIRAGE Bureau Connectee' },
-            { value: 'Climatiseur', icon: 'fas fa-snowflake', hint: 'Ex: Climatiseur Zone A' },
-            { value: 'Camera', icon: 'fas fa-video', hint: 'Ex: Camera Entree Principale' },
-            { value: 'Capteur', icon: 'fas fa-microchip', hint: 'Ex: Capteur Temperature Salle 2' },
-            { value: 'Television', icon: 'fas fa-tv', hint: 'Ex: Ecran Salle Reunion' },
-            { value: 'Imprimante', icon: 'fas fa-print', hint: 'Ex: Imprimante Bureau RH' },
-            { value: 'Serrure connectee', icon: 'fas fa-lock', hint: 'Ex: Serrure Porte Serveurs' },
-            { value: 'Routeur / Reseau', icon: 'fas fa-wifi', hint: 'Ex: Routeur Etage 3' },
-            { value: 'Machine connectee', icon: 'fas fa-gears', hint: 'Ex: Machine Cafe IoT' }
+            { value: 'Éclairage', icon: 'fas fa-lightbulb', hint: 'Ex: Lampe LED Bureau' },
+            { value: 'Capteur', icon: 'fas fa-microchip', hint: 'Ex: Capteur Température' },
+            { value: 'Capteur Température', icon: 'fas fa-thermometer-half', hint: 'Ex: Sonde de température' },
+            { value: 'Sonde Humidité', icon: 'fas fa-droplet', hint: 'Ex: Capteur humidité' },
+            { value: 'Capteur Présence', icon: 'fas fa-person', hint: 'Ex: Détecteur mouvement' },
+            { value: 'Capteur Inondation', icon: 'fas fa-water', hint: 'Ex: Capteur d\'eau' },
+            { value: 'Capteur Luminosité', icon: 'fas fa-sun', hint: 'Ex: Capteur lumière' },
+            { value: 'Capteur CO2', icon: 'fas fa-gas-pump', hint: 'Ex: Sonde CO2' },
+            { value: 'Détecteur Fumée', icon: 'fas fa-fire', hint: 'Ex: Détecteur incendie' },
+            { value: 'Sonde Bruit', icon: 'fas fa-volume-high', hint: 'Ex: Mesureur bruit' },
+            { value: 'Caméra', icon: 'fas fa-video', hint: 'Ex: Caméra surveillance' },
+            { value: 'Camera Surveillance', icon: 'fas fa-video', hint: 'Ex: Caméra surveillance' },
+            { value: 'Camera', icon: 'fas fa-camera', hint: 'Ex: Camera connectée' },
+            { value: 'Serrure Intelligente', icon: 'fas fa-lock', hint: 'Ex: Serrure biométrique' },
+            { value: 'Serrure connectee', icon: 'fas fa-key', hint: 'Ex: Serrure connectée' },
+            { value: 'Contrôle Accès', icon: 'fas fa-badge', hint: 'Ex: Badgeuse entrée' },
+            { value: 'Contrôle d\'Accès', icon: 'fas fa-badge', hint: 'Ex: Badgeuse entrée' },
+            { value: 'Prise Connectée', icon: 'fas fa-plug', hint: 'Ex: Prise intelligente' },
+            { value: 'Prise Réseau', icon: 'fas fa-ethernet', hint: 'Ex: Prise réseau' },
+            { value: 'Interrupteur Connecte', icon: 'fas fa-toggle-on', hint: 'Ex: Interrupteur IoT' },
+            { value: 'Interrupteur Intelligent', icon: 'fas fa-toggle-on', hint: 'Ex: Interrupteur IoT' },
+            { value: 'Thermostat', icon: 'fas fa-snowflake', hint: 'Ex: Thermostat intelligent' },
+            { value: 'Climatiseur', icon: 'fas fa-fan', hint: 'Ex: Climatisation' },
+            { value: 'Ventilation', icon: 'fas fa-wind', hint: 'Ex: Ventilateur connecté' },
+            { value: 'Projecteur', icon: 'fas fa-projector', hint: 'Ex: Vidéoprojecteur' },
+            { value: 'Afficheur Mural', icon: 'fas fa-rectangle-portrait', hint: 'Ex: Écran mural' },
+            { value: 'Television', icon: 'fas fa-tv', hint: 'Ex: Écran TV' },
+            { value: 'Borne Recharge', icon: 'fas fa-charging-station', hint: 'Ex: Borne recharge' },
+            { value: 'Imprimante', icon: 'fas fa-print', hint: 'Ex: Imprimante réseau' },
+            { value: 'Imprimante 3D', icon: 'fas fa-cube', hint: 'Ex: Imprimante 3D' },
+            { value: 'Routeur / Reseau', icon: 'fas fa-wifi', hint: 'Ex: Routeur WiFi' },
+            { value: 'Serveur', icon: 'fas fa-server', hint: 'Ex: Serveur physique' },
+            { value: 'Machine connectee', icon: 'fas fa-gears', hint: 'Ex: Machine à café' },
+            { value: 'Communication', icon: 'fas fa-phone', hint: 'Ex: Téléphone VoIP' },
+            { value: 'Microphone', icon: 'fas fa-microphone', hint: 'Ex: Microphone ambiant' },
+            { value: 'Haut-parleur', icon: 'fas fa-volume-up', hint: 'Ex: Haut-parleur WiFi' },
+            { value: 'Système Audiovisuel', icon: 'fas fa-headphones', hint: 'Ex: Équipement AV' },
+            { value: 'Scanner', icon: 'fas fa-barcode', hint: 'Ex: Scanner documents' },
+            { value: 'Bouton', icon: 'fas fa-circle-dot', hint: 'Ex: Bouton d\'urgence' },
+            { value: 'Stockage Connecté', icon: 'fas fa-box', hint: 'Ex: Armoire connectée' },
+            { value: 'Mobilier Connecté', icon: 'fas fa-couch', hint: 'Ex: Table interactive' },
+            { value: 'Équipement Collaboratif', icon: 'fas fa-chalkboard', hint: 'Ex: Tableau blanc numérique' },
+            { value: 'Équipement Atelier', icon: 'fas fa-wrench', hint: 'Ex: Établi connecté' },
+            { value: 'Système Automatisé', icon: 'fas fa-robot', hint: 'Ex: Système rayonnage' },
+            { value: 'Robotic', icon: 'fas fa-robot', hint: 'Ex: Bras robotique' },
+            { value: 'Lecteur RFID', icon: 'fas fa-rfid-badge', hint: 'Ex: Portail RFID' },
+            { value: 'Outil Diagnostic', icon: 'fas fa-stethoscope', hint: 'Ex: Analyseur code' },
+            { value: 'Pointeuse', icon: 'fas fa-fingerprint', hint: 'Ex: Système pointage' },
+            { value: 'Équipement de Bureau', icon: 'fas fa-file-lines', hint: 'Ex: Déchiqueteuse' },
+            { value: 'Lampe Extérieure Connectée', icon: 'fas fa-street-view', hint: 'Ex: Lampadaire' },
+            { value: 'Passerelle IoT', icon: 'fas fa-bridge', hint: 'Ex: Gateway réseau' },
+            { value: 'Autre', icon: 'fas fa-cube', hint: 'Ex: Autre équipement' }
         ];
 
         function iconForType(typeValue) {
             const n = normalizeText(typeValue);
             if (n.includes('eclair') || n.includes('lamp') || n.includes('luminaire')) return 'fas fa-lightbulb';
             if (n.includes('climat') || n.includes('hvac')) return 'fas fa-snowflake';
-            if (n.includes('camera') || n.includes('video')) return 'fas fa-video';
-            if (n.includes('capteur') || n.includes('sensor')) return 'fas fa-microchip';
-            if (n.includes('television') || n.includes('tv') || n.includes('ecran')) return 'fas fa-tv';
-            if (n.includes('serrure') || n.includes('lock')) return 'fas fa-lock';
-            if (n.includes('routeur') || n.includes('reseau') || n.includes('wifi')) return 'fas fa-wifi';
-            if (n.includes('machine')) return 'fas fa-gears';
+            if (n.includes('ventil')) return 'fas fa-wind';
+            if (n.includes('camera') || n.includes('surveillance') || n.includes('video') || n === 'camera') return 'fas fa-video';
+            if (n === 'camera') return 'fas fa-camera';
+            if (n.includes('capteur') || n.includes('sensor') || n.includes('sonde') || n.includes('temperature') || n.includes('humidite') || n.includes('presence') || n.includes('luminosite') || n.includes('co2') || n.includes('detecteur')) return 'fas fa-microchip';
+            if (n.includes('television') || n.includes('tv') || n.includes('ecran') || n.includes('afficheur') || n.includes('projecteur')) return 'fas fa-tv';
+            if (n.includes('serrure') || n.includes('lock') || n.includes('acces') || n.includes('badge')) return 'fas fa-lock';
+            if (n.includes('routeur') || n.includes('reseau') || n.includes('wifi') || n.includes('serveur')) return 'fas fa-wifi';
+            if (n.includes('machine') || n.includes('cafe')) return 'fas fa-gears';
+            if (n.includes('imprimante') || n.includes('print')) return 'fas fa-print';
+            if (n.includes('prise') || n.includes('plug')) return 'fas fa-plug';
+            if (n.includes('interrupteur') || n.includes('toggle')) return 'fas fa-toggle-on';
+            if (n.includes('thermostat')) return 'fas fa-thermometer-half';
+            if (n.includes('communication') || n.includes('telephone') || n.includes('phone')) return 'fas fa-phone';
+            if (n.includes('microphone') || n.includes('mic')) return 'fas fa-microphone';
+            if (n.includes('haut-parleur') || n.includes('speaker') || n.includes('volume-up')) return 'fas fa-volume-up';
+            if (n.includes('audiovisuel') || n.includes('headphone')) return 'fas fa-headphones';
+            if (n.includes('scanner') || n.includes('barcode')) return 'fas fa-barcode';
+            if (n.includes('bouton') || n.includes('button') || n.includes('panique')) return 'fas fa-circle-dot';
+            if (n.includes('stockage') || n.includes('armoire') || n.includes('box')) return 'fas fa-box';
+            if (n.includes('mobilier') || n.includes('table') || n.includes('couch')) return 'fas fa-couch';
+            if (n.includes('collaboratif') || n.includes('tableau') || n.includes('chalkboard')) return 'fas fa-chalkboard';
+            if (n.includes('atelier') || n.includes('etabli') || n.includes('wrench')) return 'fas fa-wrench';
+            if (n.includes('automatise') || n.includes('robot') || n.includes('rayonnage')) return 'fas fa-robot';
+            if (n.includes('lecteur') || n.includes('rfid')) return 'fas fa-rfid-badge';
+            if (n.includes('diagnostic') || n.includes('analyseur')) return 'fas fa-stethoscope';
+            if (n.includes('pointeuse') || n.includes('fingerprint')) return 'fas fa-fingerprint';
+            if (n.includes('inondation') || n.includes('eau') || n.includes('water')) return 'fas fa-water';
+            if (n.includes('fumee') || n.includes('incendie') || n.includes('fire')) return 'fas fa-fire';
+            if (n.includes('bruit') || n.includes('sound') || n.includes('volume')) return 'fas fa-volume-high';
+            if (n.includes('lampadaire') || n.includes('exterieur') || n.includes('street')) return 'fas fa-street-view';
+            if (n.includes('passerelle') || n.includes('gateway') || n.includes('bridge')) return 'fas fa-bridge';
+            if (n.includes('borne') || n.includes('recharge') || n.includes('charging')) return 'fas fa-charging-station';
+            if (n.includes('3d')) return 'fas fa-cube';
+            if (n.includes('bureau') || n.includes('dechiqueteuse')) return 'fas fa-file-lines';
             return 'fas fa-cube';
         }
 
@@ -754,7 +825,12 @@
                 return a.value.localeCompare(b.value, 'fr', { sensitivity: 'base' });
             });
 
-            typeShowcase.innerHTML = cards.map(function (card) {
+            // Afficher seulement les types avec au moins 1 existant
+            const visibleCards = cards.filter(function (card) {
+                return card.count > 0;
+            });
+
+            typeShowcase.innerHTML = visibleCards.map(function (card) {
                 return `
                     <button type="button" class="type-card" data-type-value="${card.value}" data-type-hint="${card.hint}">
                         <div class="type-icon"><i class="${card.icon}"></i></div>

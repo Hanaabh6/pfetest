@@ -3,9 +3,9 @@ import sys
 
 from fastapi import APIRouter, HTTPException, Request
 
-from base import things_collection, user_history_collection
-from main_auth import _get_user_from_token, _prune_user_history, extract_bearer_token
-from notifications_service import create_notification
+from ..base import things_collection, user_history_collection
+from .main_auth import _get_user_from_token, _prune_user_history, extract_bearer_token
+from ..notifications_service import create_notification
 
 borrow_router = APIRouter(tags=["borrow"])
 

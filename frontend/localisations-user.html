@@ -344,6 +344,9 @@
 
                 menuName.textContent = displayName;
                 profileButton.textContent = (displayName[0] || "U").toUpperCase();
+                if (window.refreshSidebarProfileCards) {
+                    window.refreshSidebarProfileCards(profile);
+                }
             } catch (error) {
                 console.error("Erreur profil:", error);
             }

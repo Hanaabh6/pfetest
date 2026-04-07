@@ -5,9 +5,9 @@ from bson import ObjectId
 from fastapi import APIRouter, Body, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 
-from base import notifications_collection
-from main_auth import _get_user_from_token, extract_bearer_token, get_role_from_token, require_admin
-from notifications_service import create_notification
+from ..base import notifications_collection
+from .main_auth import _get_user_from_token, extract_bearer_token, get_role_from_token, require_admin
+from ..notifications_service import create_notification
 
 notifications_router = APIRouter(tags=["notifications"])
 

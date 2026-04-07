@@ -5,8 +5,8 @@ Ce module fournit des hooks pour mettre à jour automatiquement l'index des mots
 lors de la création ou modification d'objets.
 """
 
-from base import things_collection, keyword_index_collection
-from populate_keywords import extract_keywords_from_object, update_keyword_for_object
+from backend.base import things_collection, keyword_index_collection
+from backend.populate_keywords import extract_keywords_from_object, update_keyword_for_object
 from pymongo import InsertOne
 from typing import Optional, Dict, Any
 from bson import ObjectId

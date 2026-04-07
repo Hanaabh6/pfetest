@@ -772,6 +772,9 @@ async function loadUserProfile() {
     localStorage.setItem("userEmail", email);
 
     applyDisplayName(displayName);
+    if (window.refreshSidebarProfileCards) {
+      window.refreshSidebarProfileCards(profile);
+    }
   } catch (error) { console.error("Erreur profil:", error); }
 }
 
@@ -1297,6 +1300,14 @@ openProfileOverlay.addEventListener("click", async (event) => {
       }
       localStorage.setItem(PROFILE_NAME_KEY, value);
       applyDisplayName(value);
+      if (window.refreshSidebarProfileCards) {
+        window.refreshSidebarProfileCards({
+          id: uid,
+          email: (userProfileData && userProfileData.email) || localStorage.getItem("userEmail") || "",
+          role: "user",
+          display_name: value
+        });
+      }
       showAppToast("Nom affiche mis a jour.", "success", "Profil");
     });
   }

@@ -519,6 +519,9 @@
 
       localStorage.setItem("userEmail", email);
       localStorage.setItem("userRole", "user");
+      if (window.refreshSidebarProfileCards) {
+        window.refreshSidebarProfileCards(currentProfile);
+      }
 
       nameLabel.textContent = displayName;
       nameMini.textContent = displayName;
@@ -591,6 +594,14 @@
 
       setDisplayName(currentProfile, name);
       setBio(currentProfile, bio);
+      if (window.refreshSidebarProfileCards) {
+        window.refreshSidebarProfileCards({
+          id: currentProfile && currentProfile.id,
+          email: currentProfile && currentProfile.email,
+          role: "user",
+          display_name: name
+        });
+      }
       await logAction("Profil", "Edition du profil utilisateur", "Succes");
       closeEdit();
       await loadProfile();

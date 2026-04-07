@@ -5,80 +5,83 @@ avec les mots clés extraits des objets (things).
 Utilise une stratégie de tokenization et de poids pour optimiser la recherche.
 """
 
-from base import things_collection, keyword_index_collection
-from main_localisation import normalize_text
-from pymongo import InsertOne, UpdateOne, ReplaceOne
+from backend.base import things_collection, keyword_index_collection
+from backend.routers.main_localisation import normalize_text
+from pymongo import InsertOne
 from collections import Counter
 import re
 
 
 def tokenize_text(text: str) -> list[str]:
-    """Tokenize le texte en mots individuels."""
+    """Tokenize le texte en mots (avec repetitions pour conserver la frequence)."""
     if not text:
         return []
-    
-    # Normaliser et convertir en minuscules
+
     text = normalize_text(text)
-    
-    # Diviser par espaces et caractères spéciaux
-    tokens = re.findall(r'\b[a-zàâäæçéèêëïîôöœùûüçñáéíóúâêô]+\b', text)
-    
-    # Filtrer les tokens trop courts (< 3 caractères) et trop longs (> 50)
-    tokens = [t for t in tokens if 3 <= len(t) <= 50]
-    
-    return list(set(tokens))  # Retourner les tokens uniques
+    tokens = re.findall(r"[a-z0-9]+", text)
+    return [t for t in tokens if 2 <= len(t) <= 50]
+
+
+def _to_index_id(thing_id: str) -> int:
+    """ConvertirIdentifiant(objet.id) vers un entier stable."""
+    try:
+        return int((thing_id or "").replace("-", "")[:8], 16)
+    except Exception:
+        return 0
+
+
+def _build_index_docs_for_object(obj: dict) -> list[dict]:
+    """Construit les documents keyword_index selon l'algo (mot, source, frequence)."""
+    thing_id = str(obj.get("id") or "").strip()
+    if not thing_id:
+        return []
+
+    champs_indexables = [
+        (str(obj.get("name") or ""), "TITRE", 3),
+        (str(obj.get("type") or ""), "TYPE", 2),
+        (str(obj.get("description") or ""), "DESCRIPTION", 1),
+        (str((obj.get("location") or {}).get("room") or "") if isinstance(obj.get("location"), dict) else "", "SALLE", 2),
+    ]
+
+    table_frequences: dict[tuple[str, str], dict[str, int]] = {}
+
+    for valeur, source, poids_base in champs_indexables:
+        valeur_norm = normalize_text(valeur)
+        liste_mots = tokenize_text(valeur_norm)
+
+        for mot in liste_mots:
+            key = (mot, source)
+            if key in table_frequences:
+                table_frequences[key]["frequence"] += 1
+            else:
+                table_frequences[key] = {"poids": poids_base, "frequence": 1}
+
+    id_objet_numerique = _to_index_id(thing_id)
+    docs = []
+    for (mot, source), values in table_frequences.items():
+        docs.append(
+            {
+                "mot": mot,
+                "idObjet": id_objet_numerique,
+                "thingId": thing_id,
+                "poids": int(values["poids"]),
+                "source": source,
+                "frequence": int(values["frequence"]),
+            }
+        )
+
+    return docs
 
 
 def extract_keywords_from_object(obj: dict) -> dict[str, int]:
-    """
-    Extrait les mots clés d'un objet avec des poids différents selon l'importance.
-    
-    Retourne: {mot: poids}
-    """
-    keywords_weight = {}
-    
-    # Poids des différents champs (nom est plus important que description)
-    FIELD_WEIGHTS = {
-        "name": 10,           # Très important
-        "type": 8,            # Important
-        "room": 5,            # Important
-        "description": 3,     # Modéré
-        "status": 2,          # Faible
-    }
-    
-    # Traiter le nom (très important)
-    if obj.get("name"):
-        tokens = tokenize_text(obj["name"])
-        for token in tokens:
-            keywords_weight[token] = keywords_weight.get(token, 0) + FIELD_WEIGHTS["name"]
-    
-    # Traiter le type
-    if obj.get("type"):
-        tokens = tokenize_text(obj["type"])
-        for token in tokens:
-            keywords_weight[token] = keywords_weight.get(token, 0) + FIELD_WEIGHTS["type"]
-    
-    # Traiter la localisation
-    location = obj.get("location", {})
-    if isinstance(location, dict):
-        if location.get("room"):
-            tokens = tokenize_text(str(location["room"]))
-            for token in tokens:
-                keywords_weight[token] = keywords_weight.get(token, 0) + FIELD_WEIGHTS["room"]
-    
-    # Traiter la description (moins important)
-    if obj.get("description"):
-        tokens = tokenize_text(obj["description"])
-        for token in tokens:
-            keywords_weight[token] = keywords_weight.get(token, 0) + FIELD_WEIGHTS["description"]
-    
-    # Traiter le statut
-    if obj.get("status"):
-        tokens = tokenize_text(obj["status"])
-        for token in tokens:
-            keywords_weight[token] = keywords_weight.get(token, 0) + FIELD_WEIGHTS["status"]
-    
-    return keywords_weight
+    """Compat: retourne un map mot->poids max (non utilise par l'algo principal)."""
+    res: dict[str, int] = {}
+    for doc in _build_index_docs_for_object(obj):
+        mot = str(doc.get("mot") or "")
+        poids = int(doc.get("poids") or 0)
+        if mot:
+            res[mot] = max(res.get(mot, 0), poids)
+    return res
 
 
 def rebuild_keyword_index():
@@ -86,10 +89,6 @@ def rebuild_keyword_index():
     print("🔄 Reconstruction de l'index des mots clés...")
     
     try:
-        # Effacer l'index existant
-        print("  📊 Suppression de l'index existant...")
-        keyword_index_collection.delete_many({})
-        
         # Récupérer tous les objets
         things = list(things_collection.find({}))
         print(f"  📦 {len(things)} objets à traiter")
@@ -99,19 +98,16 @@ def rebuild_keyword_index():
         keyword_stats = Counter()
         
         for thing in things:
-            thing_id = str(thing.get("_id"))
-            keywords_weight = extract_keywords_from_object(thing)
-            
-            for mot, poids in keywords_weight.items():
-                keyword_stats[mot] += 1
-                
-                doc = {
-                    "mot": mot,
-                    "thingId": thing_id,
-                    "poids": poids,
-                    "frequence": 1,  # Commencer à 1
-                    "object_name": thing.get("name", ""),
-                }
+            thing_id = str(thing.get("id") or "").strip()
+            if not thing_id:
+                continue
+
+            # Aligne exactement l'algo: supprimer l'ancien index pour cet objet puis recalculer.
+            keyword_index_collection.delete_many({"thingId": thing_id})
+
+            docs = _build_index_docs_for_object(thing)
+            for doc in docs:
+                keyword_stats[str(doc.get("mot") or "")] += 1
                 operations.append(InsertOne(doc))
         
         # Exécuter les insertions par batch
@@ -146,17 +142,12 @@ def update_keyword_for_object(thing_id: str, thing_data: dict):
         print(f"  🗑️  {deleted.deleted_count} anciens mots clés supprimés")
         
         # Extraire et insérer les nouveaux
-        keywords_weight = extract_keywords_from_object(thing_data)
+        thing_data = dict(thing_data or {})
+        thing_data["id"] = thing_id
+        docs = _build_index_docs_for_object(thing_data)
         operations = []
-        
-        for mot, poids in keywords_weight.items():
-            doc = {
-                "mot": mot,
-                "thingId": thing_id,
-                "poids": poids,
-                "frequence": 1,
-                "object_name": thing_data.get("name", ""),
-            }
+
+        for doc in docs:
             operations.append(InsertOne(doc))
         
         if operations:

@@ -10,10 +10,10 @@ Usage:
 import sys
 import os
 
-# Ajouter le répertoire actuel au path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Ajouter le répertoire parent au path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from base import keyword_index_collection, things_collection
+from backend.base import keyword_index_collection, things_collection
 
 
 def print_header(text: str):
@@ -71,7 +71,7 @@ def create_indexes():
     print_header("🔧 Création des Index MongoDB")
     
     try:
-        from create_keyword_indexes import create_keyword_indexes
+        from backend.create_keyword_indexes import create_keyword_indexes
         return create_keyword_indexes()
         
     except Exception as e:
@@ -84,7 +84,7 @@ def populate_keywords():
     print_header("📝 Peuplement de la Collection")
     
     try:
-        from populate_keywords import rebuild_keyword_index
+        from backend.populate_keywords import rebuild_keyword_index
         return rebuild_keyword_index()
         
     except Exception as e:
@@ -97,7 +97,7 @@ def show_statistics():
     print_header("📈 Statistiques Finales")
     
     try:
-        from populate_keywords import get_index_statistics
+        from backend.populate_keywords import get_index_statistics
         return get_index_statistics()
         
     except Exception as e:

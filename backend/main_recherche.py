@@ -3,8 +3,8 @@ from pydantic import BaseModel
 from rapidfuzz import fuzz
 import re
 
-from base import keyword_index_collection, things_collection
-from main_localisation import compute_distance_and_room_flags, normalize_text
+from ..base import keyword_index_collection, things_collection
+from .main_localisation import compute_distance_and_room_flags, normalize_text
 
 recherche_router = APIRouter(tags=["recherche"])
 
@@ -199,4 +199,3 @@ def search_things(data: SearchRequest = Body(...)):
     except Exception as e:
         print(f"Erreur search: {e}")
         raise HTTPException(status_code=500, detail="Erreur recherche")
-

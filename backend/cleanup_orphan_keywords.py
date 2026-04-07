@@ -4,7 +4,7 @@ Script pour nettoyer les mots-clés orphelins de la collection keyword_index.
 Usage: python cleanup_orphan_keywords.py
 """
 
-from base import things_collection, keyword_index_collection
+from backend.base import things_collection, keyword_index_collection
 
 
 def cleanup_orphans():

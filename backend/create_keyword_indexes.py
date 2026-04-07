@@ -4,7 +4,7 @@ pour une recherche rapide et optimisée des mots clés.
 """
 
 from pymongo import ASCENDING, DESCENDING, TEXT
-from base import keyword_index_collection
+from backend.base import keyword_index_collection
 import sys
 
 
