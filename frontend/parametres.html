@@ -673,8 +673,8 @@
         const role = String(profile.role || "admin");
         const userId = String(profile.id || localStorage.getItem("userId") || "");
         const scopedName = String(localStorage.getItem(scopedKey("userDisplayName", userId)) || "").trim();
-        // Prefer explicit profile.display_name, then scoped per-user name, then fallback to email-derived name.
-        const displayName = String(profile.display_name || "").trim() || scopedName || displayNameFromEmail(email);
+        // Prefer scoped per-user name (for local edits), then explicit profile.display_name, then fallback to email-derived name.
+        const displayName = scopedName || String(profile.display_name || "").trim() || displayNameFromEmail(email);
         const bio = getAdminBio(profile);
 
         localStorage.setItem("userEmail", email);
