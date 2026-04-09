@@ -91,6 +91,17 @@
             white-space: nowrap;
             z-index: 10;
         }
+        .you-are-here-marker {
+            position: absolute;
+            color: #dc2626;
+            font-size: 24px;
+            line-height: 1;
+            text-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+            transform: translate(-50%, -100%);
+            z-index: 25;
+            pointer-events: none;
+            display: none;
+        }
 
         /* --- STYLES OVERLAY AJOUTÉS --- */
         .overlay-modal { position: fixed; inset: 0; display: grid; place-items: center; z-index: 1200; }
@@ -143,6 +154,41 @@
             color: #0f172a;
             font-size: 11px;
             font-weight: 800;
+        }
+        .top-locator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto auto;
+            gap: 10px;
+            align-items: end;
+        }
+        .control-btn {
+            border: 1px solid #10b981;
+            background: #10b981;
+            color: #ffffff;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .control-btn:hover {
+            background: #059669;
+            border-color: #059669;
+        }
+        .control-btn.ghost {
+            background: #ffffff;
+            color: #0f172a;
+            border-color: #cbd5e1;
+        }
+        .control-btn.ghost:hover {
+            border-color: #10b981;
+            color: #065f46;
+        }
+        @media (max-width: 900px) {
+            .top-locator-grid {
+                grid-template-columns: 1fr;
+            }
         }
         .toast-pos {
             position: fixed;
@@ -288,6 +334,21 @@
                 </div>
             </section>
 
+            <section class="control-panel max-w-6xl mx-auto mb-6">
+                <div class="top-locator-grid">
+                    <div>
+                        <label for="quickFloorSelect" class="text-xs font-bold text-slate-600 uppercase">Etage</label>
+                        <select id="quickFloorSelect" class="control-select mt-1"></select>
+                    </div>
+                    <div>
+                        <label for="quickRoomSelect" class="text-xs font-bold text-slate-600 uppercase">Salle</label>
+                        <select id="quickRoomSelect" class="control-select mt-1"></select>
+                    </div>
+                    <button type="button" id="quickSetPositionBtn" class="control-btn"><i class="fas fa-location-dot mr-1"></i> Je suis ici</button>
+                    <button type="button" id="quickGoFloorBtn" class="control-btn ghost"><i class="fas fa-arrow-down mr-1"></i> Aller a l'etage</button>
+                </div>
+            </section>
+
             <div id="floorContainer" class="grid grid-cols-1 gap-12 max-w-6xl mx-auto"></div>
         </main>
     </div>
@@ -320,6 +381,10 @@
         const currentRoomBadgeHeader = document.getElementById('currentRoomBadgeHeader');
         const mapHeroRoom = document.getElementById('mapHeroRoom');
         const mapHeroFloor = document.getElementById('mapHeroFloor');
+        const quickFloorSelect = document.getElementById('quickFloorSelect');
+        const quickRoomSelect = document.getElementById('quickRoomSelect');
+        const quickSetPositionBtn = document.getElementById('quickSetPositionBtn');
+        const quickGoFloorBtn = document.getElementById('quickGoFloorBtn');
 
         function tr(key, fallback) {
             const locale = (localStorage.getItem('lang') || 'fr').toLowerCase();
@@ -394,6 +459,13 @@
 
         // --- TA LOGIQUE THREE.JS ORIGINALE ---
         const ARCHI_DATA = [
+            { id: 11, name: "Étage 11 - Sky Lab", color: 0x7c3aed, rooms: ["Observatoire IA", "Salle Drone", "Bureau Innovation", "War Room 11", "Studio XR", "Terrasse Technique"] },
+            { id: 10, name: "Étage 10 - Exécutif", color: 0xdc2626, rooms: ["Direction Produit", "Direction Ops", "Direction Tech", "Board Room", "Lounge 10", "Archives Exécutif"] },
+            { id: 9, name: "Étage 9 - Data Center", color: 0x2563eb, rooms: ["NOC 9A", "NOC 9B", "Réseau Core", "Salle UPS", "Stock Fibre", "Monitoring 24-7"] },
+            { id: 8, name: "Étage 8 - R&D", color: 0x0ea5e9, rooms: ["Lab IoT A", "Lab IoT B", "Prototype Hub", "Test CEM", "QA Hardware", "Atelier R&D"] },
+            { id: 7, name: "Étage 7 - Formation", color: 0x14b8a6, rooms: ["Classe 7A", "Classe 7B", "Salle Exam", "Media Room", "Cowork 7", "Coaching"] },
+            { id: 6, name: "Étage 6 - Opérations", color: 0x22c55e, rooms: ["Support N1", "Support N2", "Incident Room", "SRE Hub", "Planning", "Salle Briefing"] },
+            { id: 5, name: "Étage 5 - Collaboration", color: 0x84cc16, rooms: ["Open Space 5A", "Open Space 5B", "Salle Sprint", "Design Studio", "Salle Produit", "Archives 5"] },
             { id: 4, name: "Étage 4 - Direction", color: 0xef4444, rooms: ["Bureau PDG", "Salle Conseil", "Salon VIP", "Terrasse", "Secrétariat", "Archives Dir."] },
             { id: 3, name: "Étage 3 - Tech", color: 0x3b82f6, rooms: ["Open Space", "Labo Robotique", "Bureau Lead", "Réunion 3A", "Debug Zone", "Serveurs 3"] },
             { id: 2, name: "Étage 2 - Marketing", color: 0xa855f7, rooms: ["Studio Graph.", "Bureau RH", "Compta", "Presse", "Réunion 2B", "Bureau Com"] },
@@ -434,6 +506,21 @@
             "Détente": { x: 60, y: 10, z: 0 }
         };
 
+        let activeRoomName = '';
+
+        function ensureRoomCoordinates() {
+            ARCHI_DATA.forEach(function (floor) {
+                floor.rooms.forEach(function (room, index) {
+                    if (ROOM_COORDS[room]) return;
+                    ROOM_COORDS[room] = {
+                        x: ((index % 3) + 1) * 12,
+                        y: (floor.id + 1) * 20,
+                        z: Math.max(0, floor.id * 4)
+                    };
+                });
+            });
+        }
+
         let toastTimer = null;
 
         function showPosToast(message) {
@@ -455,14 +542,61 @@
             return matchedFloor ? matchedFloor.name : 'Non defini';
         }
 
+        function findFloorDataByRoom(room) {
+            const normalizedRoom = normalizeText(room);
+            return ARCHI_DATA.find(function (floor) {
+                return floor.rooms.some(function (candidate) {
+                    return normalizeText(candidate) === normalizedRoom;
+                });
+            }) || null;
+        }
+
+        function updateQuickRoomOptions(preferredRoom) {
+            if (!quickFloorSelect || !quickRoomSelect) return;
+
+            const floorId = Number(quickFloorSelect.value);
+            const floorData = ARCHI_DATA.find(function (floor) { return floor.id === floorId; }) || ARCHI_DATA[0];
+            const targetRoom = String(preferredRoom || '').trim();
+
+            quickRoomSelect.innerHTML = floorData.rooms.map(function (room) {
+                const isSelected = normalizeText(room) === normalizeText(targetRoom);
+                return `<option value="${room}" ${isSelected ? 'selected' : ''}>${room}</option>`;
+            }).join('');
+        }
+
+        function populateQuickSelectors(currentRoom) {
+            if (!quickFloorSelect || !quickRoomSelect) return;
+
+            quickFloorSelect.innerHTML = ARCHI_DATA.map(function (floor) {
+                return `<option value="${floor.id}">${floor.name}</option>`;
+            }).join('');
+
+            const matchedFloor = findFloorDataByRoom(currentRoom) || ARCHI_DATA[0];
+            quickFloorSelect.value = String(matchedFloor.id);
+            updateQuickRoomOptions(currentRoom);
+        }
+
+        function scrollToFloorById(floorId) {
+            const floorCard = document.querySelector(`[data-floor-id="${floorId}"]`);
+            if (!floorCard) return;
+            floorCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
         function updateCurrentRoomDisplays(room) {
             const label = String(room || 'Non definie').trim() || 'Non definie';
             const floorName = findFloorByRoom(label);
+            activeRoomName = label;
 
             if (posName) posName.textContent = label;
             if (currentRoomBadgeHeader) currentRoomBadgeHeader.textContent = label;
             if (mapHeroRoom) mapHeroRoom.textContent = label;
             if (mapHeroFloor) mapHeroFloor.textContent = floorName;
+
+            const matchedFloor = findFloorDataByRoom(label);
+            if (matchedFloor && quickFloorSelect) {
+                quickFloorSelect.value = String(matchedFloor.id);
+                updateQuickRoomOptions(label);
+            }
         }
 
         function setMyPos(room) {
@@ -502,6 +636,12 @@
 
             const clickableObjects = [];
             const labels = [];
+            const roomAnchors = {};
+
+            const roomMarker = document.createElement('div');
+            roomMarker.className = 'you-are-here-marker';
+            roomMarker.innerHTML = '<i class="fas fa-location-dot"></i>';
+            container.appendChild(roomMarker);
 
             rooms.forEach((roomName, index) => {
                 const group = new THREE.Group();
@@ -522,6 +662,7 @@
                 
                 scene.add(group);
                 clickableObjects.push(cube);
+                roomAnchors[normalizeText(roomName)] = group.position.clone();
 
                 const label = document.createElement('div');
                 label.className = 'room-tag';
@@ -557,18 +698,31 @@
                     l.element.style.top = `${(vector.y * -0.5 + 0.5) * height}px`;
                     l.element.style.display = vector.z > 1 ? "none" : "block";
                 });
+
+                const activeAnchor = roomAnchors[normalizeText(activeRoomName)];
+                if (activeAnchor) {
+                    const markerVector = activeAnchor.clone();
+                    markerVector.project(camera);
+                    roomMarker.style.left = `${(markerVector.x * 0.5 + 0.5) * width}px`;
+                    roomMarker.style.top = `${(markerVector.y * -0.5 + 0.5) * height - 4}px`;
+                    roomMarker.style.display = markerVector.z > 1 ? 'none' : 'block';
+                } else {
+                    roomMarker.style.display = 'none';
+                }
+
                 renderer.render(scene, camera);
             }
             animate();
         }
 
         function init() {
+            ensureRoomCoordinates();
             const container = document.getElementById('floorContainer');
             container.innerHTML = ARCHI_DATA.map(floor => `
-                <div class="floor-card" data-floor-name="${floor.name}" data-floor-rooms="${floor.rooms.join(' | ')}">
+                <div class="floor-card" data-floor-id="${floor.id}" data-floor-name="${floor.name}" data-floor-rooms="${floor.rooms.join(' | ')}">
                     <div class="px-8 py-6 flex justify-between items-center bg-white border-b">
                         <h2 class="text-3xl font-black text-gray-900 uppercase italic"><i class="fas fa-layer-group mr-2 text-emerald-500"></i> ${floor.name}</h2>
-                        <span class="text-xs font-bold text-gray-400">6 UNITÉS DISPONIBLES</span>
+                        <span class="text-xs font-bold text-gray-400">${floor.rooms.length} UNITES DISPONIBLES</span>
                     </div>
                     <div id="canvas-${floor.id}" class="canvas-container"></div>
                 </div>
@@ -577,6 +731,21 @@
             ARCHI_DATA.forEach(floor => createFloor3D(`canvas-${floor.id}`, floor.rooms, floor.color));
             const currentRoom = localStorage.getItem('user_room') || "Non definie";
             updateCurrentRoomDisplays(currentRoom);
+            populateQuickSelectors(currentRoom);
+
+            quickFloorSelect.addEventListener('change', function () {
+                updateQuickRoomOptions('');
+            });
+            quickSetPositionBtn.addEventListener('click', function () {
+                const selectedRoom = String(quickRoomSelect.value || '').trim();
+                if (!selectedRoom) return;
+                setMyPos(selectedRoom);
+            });
+            quickGoFloorBtn.addEventListener('click', function () {
+                const selectedFloor = String(quickFloorSelect.value || '').trim();
+                if (!selectedFloor) return;
+                scrollToFloorById(selectedFloor);
+            });
         }
 
         window.onload = init;

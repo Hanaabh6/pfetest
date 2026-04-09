@@ -1,7 +1,14 @@
 window.APP_CONFIG = window.APP_CONFIG || {};
 
 if (!window.APP_CONFIG.API_BASE) {
-  window.APP_CONFIG.API_BASE = "https://pfetest-api.onrender.com";
+  // En DEV local (localhost ou 127.0.0.1) : utiliser l'origine actuelle
+  if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+    window.APP_CONFIG.API_BASE = window.location.origin;
+  } else {
+    // En PROD (GitHub Pages ou autre) : utiliser l'API distante
+    // À remplacer par ton vrai domaine backend en production
+    window.APP_CONFIG.API_BASE = "https://pfetest-api.onrender.com";
+  }
 }
 
 (function () {
