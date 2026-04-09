@@ -1,7 +1,7 @@
 window.APP_CONFIG = window.APP_CONFIG || {};
 
 if (!window.APP_CONFIG.API_BASE) {
-  window.APP_CONFIG.API_BASE = "http://127.0.0.1:8000";
+  window.APP_CONFIG.API_BASE = "https://pfetest-api.onrender.com";
 }
 
 (function () {
@@ -398,7 +398,7 @@ if (!window.APP_CONFIG.API_BASE) {
     var token = String(localStorage.getItem("userToken") || "").trim();
     if (!token) return Promise.resolve(null);
 
-    var apiBase = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "http://127.0.0.1:8000";
+    var apiBase = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "https://pfetest-api.onrender.com";
     profileRequest = fetch(apiBase + "/user/profile", {
       method: "GET",
       headers: {

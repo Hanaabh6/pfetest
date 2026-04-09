@@ -367,7 +367,7 @@
         }
 
         async function fetchAdminHistory() {
-            const response = await fetch(`${window.APP_CONFIG?.API_BASE || 'http://127.0.0.1:8000'}/user/history`, { method: 'GET', headers: authHeaders() });
+            const response = await fetch(`${window.APP_CONFIG?.API_BASE || 'https://pfetest-api.onrender.com'}/user/history`, { method: 'GET', headers: authHeaders() });
             const data = await response.json().catch(function () { return []; });
             const list = Array.isArray(data) ? data : [];
             return list.filter(isAdminHistoryEntry);

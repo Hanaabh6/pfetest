@@ -573,7 +573,7 @@ const appToastText = document.getElementById("appToastText");
 const statTotal = document.getElementById("statTotal");
 const statActifs = document.getElementById("statActifs");
 const statInactifs = document.getElementById("statInactifs");
-const apiBase = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "http://127.0.0.1:8000";
+const apiBase = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "https://pfetest-api.onrender.com";
 const userToken = localStorage.getItem("userToken");
 let appToastTimer = null;
 const PROFILE_NAME_KEY = "userDisplayName";
@@ -1119,7 +1119,7 @@ function openObjectDecision(row) {
   
   // Incrémenter le view_count
   if (objId) {
-    fetch(`http://127.0.0.1:8000/things/${encodeURIComponent(objId)}/view`, { method: 'POST' }).catch(err => console.error('View count error:', err));
+    fetch(`https://pfetest-api.onrender.com/things/${encodeURIComponent(objId)}/view`, { method: 'POST' }).catch(err => console.error('View count error:', err));
   }
   
   const detail = objectDetailsCache.get(objId);
