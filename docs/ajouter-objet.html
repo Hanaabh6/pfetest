@@ -321,6 +321,17 @@
                         <span id="selectedTypePill" class="selected-type-pill">Aucun type choisi</span>
                     </div>
                     <div id="typeShowcase" class="type-showcase"></div>
+                    <div id="customTypeBox" class="hidden mt-3 field-card">
+                        <label class="field-label" for="customTypeInput"><i class="fas fa-pen-to-square text-emerald-700"></i> Nouveau type d'objet</label>
+                        <div class="flex flex-col md:flex-row gap-2">
+                            <input type="text" id="customTypeInput" maxlength="80" class="field-input" placeholder="Ex: Scanner Laser" aria-label="Nouveau type">
+                            <div class="flex gap-2">
+                                <button type="button" id="customTypeApplyBtn" class="tiny-btn">Valider le type</button>
+                                <button type="button" id="customTypeCancelBtn" class="tiny-btn">Annuler</button>
+                            </div>
+                        </div>
+                        <p class="field-help">Ce type sera utilise pour l'objet en cours et enregistre comme categorie definie.</p>
+                    </div>
                 </div>
 
                 <form id="addForm" class="space-y-4">
@@ -363,8 +374,8 @@
                                     <option value="Bureau RH">Bureau RH</option>
                                     <option value="Comptabilité">Comptabilité</option>
                                     <option value="Salle de Presse">Salle de Presse</option>
+                                    <option value="Réunion 2B">Réunion 2B</option>
                                     <option value="Bureau Com">Bureau Com</option>
-                                    <option value="Archives">Archives</option>
                                 </optgroup>
 
                                 <optgroup label="3ème étage">
@@ -383,6 +394,69 @@
                                     <option value="Terrasse Privée">Terrasse Privée</option>
                                     <option value="Secrétariat">Secrétariat</option>
                                     <option value="Archives Dir.">Archives Dir.</option>
+                                </optgroup>
+
+                                <optgroup label="Étage 5">
+                                    <option value="Open Space 5A">Open Space 5A</option>
+                                    <option value="Open Space 5B">Open Space 5B</option>
+                                    <option value="Salle Sprint">Salle Sprint</option>
+                                    <option value="Design Studio">Design Studio</option>
+                                    <option value="Salle Produit">Salle Produit</option>
+                                    <option value="Archives 5">Archives 5</option>
+                                </optgroup>
+
+                                <optgroup label="Étage 6">
+                                    <option value="Support N1">Support N1</option>
+                                    <option value="Support N2">Support N2</option>
+                                    <option value="Incident Room">Incident Room</option>
+                                    <option value="SRE Hub">SRE Hub</option>
+                                    <option value="Planning">Planning</option>
+                                    <option value="Salle Briefing">Salle Briefing</option>
+                                </optgroup>
+
+                                <optgroup label="Étage 7">
+                                    <option value="Classe 7A">Classe 7A</option>
+                                    <option value="Classe 7B">Classe 7B</option>
+                                    <option value="Salle Exam">Salle Exam</option>
+                                    <option value="Media Room">Media Room</option>
+                                    <option value="Cowork 7">Cowork 7</option>
+                                    <option value="Coaching">Coaching</option>
+                                </optgroup>
+
+                                <optgroup label="Étage 8">
+                                    <option value="Lab IoT A">Lab IoT A</option>
+                                    <option value="Lab IoT B">Lab IoT B</option>
+                                    <option value="Prototype Hub">Prototype Hub</option>
+                                    <option value="Test CEM">Test CEM</option>
+                                    <option value="QA Hardware">QA Hardware</option>
+                                    <option value="Atelier R&D">Atelier R&D</option>
+                                </optgroup>
+
+                                <optgroup label="Étage 9">
+                                    <option value="NOC 9A">NOC 9A</option>
+                                    <option value="NOC 9B">NOC 9B</option>
+                                    <option value="Réseau Core">Réseau Core</option>
+                                    <option value="Salle UPS">Salle UPS</option>
+                                    <option value="Stock Fibre">Stock Fibre</option>
+                                    <option value="Monitoring 24-7">Monitoring 24-7</option>
+                                </optgroup>
+
+                                <optgroup label="Étage 10">
+                                    <option value="Direction Produit">Direction Produit</option>
+                                    <option value="Direction Ops">Direction Ops</option>
+                                    <option value="Direction Tech">Direction Tech</option>
+                                    <option value="Board Room">Board Room</option>
+                                    <option value="Lounge 10">Lounge 10</option>
+                                    <option value="Archives Exécutif">Archives Exécutif</option>
+                                </optgroup>
+
+                                <optgroup label="Étage 11">
+                                    <option value="Observatoire IA">Observatoire IA</option>
+                                    <option value="Salle Drone">Salle Drone</option>
+                                    <option value="Bureau Innovation">Bureau Innovation</option>
+                                    <option value="War Room 11">War Room 11</option>
+                                    <option value="Studio XR">Studio XR</option>
+                                    <option value="Terrasse Technique">Terrasse Technique</option>
                                 </optgroup>
                             </select>
                             <p class="field-help">Choisissez la salle principale ou l'equipement est installe.</p>
@@ -494,6 +568,10 @@
         const objectPreview = document.getElementById('objectPreview');
         const generateDescBtn = document.getElementById('generateDescBtn');
         const clearDescBtn = document.getElementById('clearDescBtn');
+        const customTypeBox = document.getElementById('customTypeBox');
+        const customTypeInput = document.getElementById('customTypeInput');
+        const customTypeApplyBtn = document.getElementById('customTypeApplyBtn');
+        const customTypeCancelBtn = document.getElementById('customTypeCancelBtn');
         const addProgressValue = document.getElementById('addProgressValue');
         const addProgressBar = document.getElementById('addProgressBar');
         const addProgressText = document.getElementById('addProgressText');
@@ -501,6 +579,7 @@
         const addSummaryType = document.getElementById('addSummaryType');
         const addSummaryRoom = document.getElementById('addSummaryRoom');
         const addSummaryDesc = document.getElementById('addSummaryDesc');
+        const CUSTOM_TYPE_TRIGGER_VALUE = '__custom_type__';
 
         const TYPE_PRESETS = [
             { value: 'Éclairage', icon: 'fas fa-lightbulb', hint: 'Ex: Lampe LED Bureau' },
@@ -675,6 +754,50 @@
             return String(typeSelect.value || '').trim();
         }
 
+        function isAutreType(typeValue) {
+            return normalizeText(typeValue) === 'autre';
+        }
+
+        function hasKnownTypeInCards(typeValue) {
+            const target = normalizeText(typeValue);
+            if (!target) return false;
+
+            let found = false;
+            typeShowcase.querySelectorAll('[data-type-value]').forEach(function (btn) {
+                const raw = String(btn.getAttribute('data-type-value') || '').trim();
+                if (!raw || raw === CUSTOM_TYPE_TRIGGER_VALUE) return;
+                if (normalizeText(raw) === target) {
+                    found = true;
+                }
+            });
+            return found;
+        }
+
+        function showCustomTypeInput(prefillValue) {
+            if (!customTypeBox) return;
+            customTypeBox.classList.remove('hidden');
+
+            const prefill = String(prefillValue || '').trim();
+            if (prefill && customTypeInput) {
+                customTypeInput.value = prefill;
+            }
+
+            if (customTypeInput) {
+                window.setTimeout(function () {
+                    customTypeInput.focus();
+                    customTypeInput.select();
+                }, 0);
+            }
+        }
+
+        function hideCustomTypeInput(clearValue) {
+            if (!customTypeBox) return;
+            customTypeBox.classList.add('hidden');
+            if (clearValue && customTypeInput) {
+                customTypeInput.value = '';
+            }
+        }
+
         function setSelectedTypePill() {
             const current = getCurrentType();
             if (!current) {
@@ -688,16 +811,51 @@
 
         function updateActiveTypeCard() {
             const current = normalizeText(getCurrentType());
+            let hasMatchedPreset = false;
+
             typeShowcase.querySelectorAll('[data-type-value]').forEach(function (btn) {
-                const val = normalizeText(btn.getAttribute('data-type-value') || '');
-                btn.classList.toggle('active', current && val === current);
+                const raw = String(btn.getAttribute('data-type-value') || '').trim();
+                if (!raw) return;
+
+                if (raw === CUSTOM_TYPE_TRIGGER_VALUE) {
+                    return;
+                }
+
+                const val = normalizeText(raw);
+                const isMatch = Boolean(current && val === current);
+                btn.classList.toggle('active', isMatch);
+                if (isMatch) {
+                    hasMatchedPreset = true;
+                }
             });
+
+            const customTrigger = typeShowcase.querySelector('[data-type-value="' + CUSTOM_TYPE_TRIGGER_VALUE + '"]');
+            if (customTrigger) {
+                const customOpen = customTypeBox && !customTypeBox.classList.contains('hidden');
+                const customSelected = Boolean(current && !hasMatchedPreset);
+                customTrigger.classList.toggle('active', customOpen || customSelected);
+            }
         }
 
         function applyTypeSelection(typeValue, autoHint) {
             const clean = String(typeValue || '').trim();
             if (!clean) return;
+
+            if (isAutreType(clean)) {
+                typeSelect.value = '';
+                showCustomTypeInput('');
+                setSelectedTypePill();
+                updateActiveTypeCard();
+                updatePreview();
+                return;
+            }
+
             typeSelect.value = clean;
+            hideCustomTypeInput(false);
+
+            if (customTypeInput && customTypeInput.value.trim() !== clean) {
+                customTypeInput.value = clean;
+            }
 
             const nameInput = document.getElementById('objName');
             if (nameInput && !String(nameInput.value || '').trim() && autoHint) {
@@ -828,6 +986,14 @@
                 return card.count > 0;
             });
 
+            const customTypeCard = `
+                <button type="button" class="type-card" data-type-value="${CUSTOM_TYPE_TRIGGER_VALUE}" data-custom-trigger="true">
+                    <div class="type-icon"><i class="fas fa-plus"></i></div>
+                    <p class="type-title">Ajouter un autre type</p>
+                    <p class="type-meta">Type non present dans la liste</p>
+                </button>
+            `;
+
             typeShowcase.innerHTML = visibleCards.map(function (card) {
                 return `
                     <button type="button" class="type-card" data-type-value="${card.value}" data-type-hint="${card.hint}">
@@ -836,11 +1002,18 @@
                         <p class="type-meta">${card.count} existant(s)</p>
                     </button>
                 `;
-            }).join('');
+            }).join('') + customTypeCard;
 
             typeShowcase.querySelectorAll('[data-type-value]').forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     const value = String(btn.getAttribute('data-type-value') || '').trim();
+                    if (value === CUSTOM_TYPE_TRIGGER_VALUE) {
+                        const current = getCurrentType();
+                        const prefill = current && !hasKnownTypeInCards(current) ? current : '';
+                        showCustomTypeInput(prefill);
+                        updateActiveTypeCard();
+                        return;
+                    }
                     const hint = String(btn.getAttribute('data-type-hint') || '').trim();
                     applyTypeSelection(value, hint);
                 });
@@ -948,6 +1121,28 @@
             updateCreationStatus();
         });
 
+        customTypeApplyBtn.addEventListener('click', function () {
+            const customType = String(customTypeInput.value || '').trim();
+            if (!customType) {
+                alert('Veuillez saisir le nom du nouveau type.');
+                customTypeInput.focus();
+                return;
+            }
+            applyTypeSelection(customType, `Ex: ${customType} Zone A`);
+        });
+
+        customTypeCancelBtn.addEventListener('click', function () {
+            hideCustomTypeInput(true);
+            updateActiveTypeCard();
+        });
+
+        customTypeInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                customTypeApplyBtn.click();
+            }
+        });
+
         (async function initAddPage() {
             await renderTypeShowcase();
             applyPreselectedTypeFromQuery();
@@ -958,6 +1153,3 @@
     </script>
 </body>
 </html>
-
-
-
