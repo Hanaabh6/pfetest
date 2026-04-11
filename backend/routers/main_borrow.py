@@ -305,21 +305,55 @@ def trigger_remote_object_action(thing_id: str, action_name: str, request: Reque
 
     remote_cfg = _remote_action_config(thing, safe_action)
 
+    # Premier essai: appel selon la configuration fournie
+    last_exception = None
+    remote_response = None
     try:
         remote_response = requests.request(remote_cfg["method"], remote_cfg["href"], timeout=6)
     except requests.RequestException as exc:
+        last_exception = exc
+
+    # Si l'appel initial a echoue ou retourne une erreur, tenter quelques fallbacks courants
+    if not remote_response or not getattr(remote_response, "ok", False):
+        # tentatives alternatives: même method avec JSON, POST avec different payloads, puis GET
+        try:
+            resp_alt = requests.request(remote_cfg["method"], remote_cfg["href"], json={"action": safe_action}, timeout=6)
+            if getattr(resp_alt, "ok", False):
+                remote_response = resp_alt
+        except requests.RequestException as exc2:
+            last_exception = exc2
+
+        if not remote_response or not getattr(remote_response, "ok", False):
+            for body in ({"state": safe_action}, {"power": safe_action}):
+                try:
+                    resp_alt = requests.post(remote_cfg["href"], json=body, timeout=6)
+                    if getattr(resp_alt, "ok", False):
+                        remote_response = resp_alt
+                        break
+                except requests.RequestException as exc3:
+                    last_exception = exc3
+
+        if not remote_response or not getattr(remote_response, "ok", False):
+            try:
+                resp_alt = requests.get(remote_cfg["href"], timeout=6)
+                if getattr(resp_alt, "ok", False):
+                    remote_response = resp_alt
+            except requests.RequestException as exc4:
+                last_exception = exc4
+
+    if not remote_response:
         things.update_one(
             {"id": thing_id},
             {"$set": {"device_state.reachable": False}},
         )
-        raise HTTPException(status_code=502, detail=f"Objet distant injoignable: {exc}") from exc
+        raise HTTPException(status_code=502, detail=f"Objet distant injoignable: {last_exception}") from last_exception
 
     try:
         payload = remote_response.json()
     except ValueError:
         payload = {"message": remote_response.text.strip()}
 
-    if not remote_response.ok:
+    if not getattr(remote_response, "ok", False):
         detail = payload.get("detail") or payload.get("error") or payload.get("message") or "Echec action distante"
         raise HTTPException(status_code=502, detail=str(detail))
 
