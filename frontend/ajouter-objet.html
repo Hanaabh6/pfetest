@@ -473,6 +473,12 @@
                         <p class="field-help">Ajoutez des infos utiles: connectivite, usage, contraintes techniques.</p>
                     </div>
 
+                    <div class="field-card">
+                        <label class="field-label" for="objEndpoint"><i class="fas fa-wifi text-emerald-700"></i> Endpoint reseau REST</label>
+                        <input type="url" id="objEndpoint" maxlength="300" placeholder="Ex: http://192.168.100.21:3001" class="field-input">
+                        <p class="field-help">Optionnel. Ajoutez-le pour un objet reel pilotable a distance comme la lampe de demo.</p>
+                    </div>
+
                     <div class="preview-box" id="objectPreview">
                         <p class="preview-line">Apercu: Objet non complete</p>
                     </div>
@@ -565,6 +571,7 @@
         const objNameInput = document.getElementById('objName');
         const objLocSelect = document.getElementById('objLoc');
         const objDescInput = document.getElementById('objDesc');
+        const objEndpointInput = document.getElementById('objEndpoint');
         const objectPreview = document.getElementById('objectPreview');
         const generateDescBtn = document.getElementById('generateDescBtn');
         const clearDescBtn = document.getElementById('clearDescBtn');
@@ -1062,7 +1069,8 @@
                 name,
                 type,
                 location,
-                description: String(objDescInput.value || '').trim()
+                description: String(objDescInput.value || '').trim(),
+                endpoint_url: String(objEndpointInput.value || '').trim()
             };
 
             try {

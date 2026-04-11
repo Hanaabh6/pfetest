@@ -20,6 +20,7 @@ class AddThingRequest(BaseModel):
     location: str = Field(..., min_length=1, max_length=120)
     description: str = Field(default="", max_length=800)
     status: str = Field(default="active", max_length=40)
+    endpoint_url: str = Field(default="", max_length=300)
 
 
 class UpdateThingRequest(BaseModel):
@@ -28,6 +29,7 @@ class UpdateThingRequest(BaseModel):
     location: str = Field(..., min_length=1, max_length=120)
     description: str = Field(default="", max_length=800)
     status: str = Field(default="active", max_length=40)
+    endpoint_url: str = Field(default="", max_length=300)
 
 
 def _main_module():
@@ -62,6 +64,65 @@ def _canonical_availability(status: str) -> str:
     if s in {"en_utilisation", "en utilisation", "borrowed"}:
         return "en_utilisation"
     return "indisponible"
+
+
+def _clean_endpoint_url(endpoint_url: str) -> str:
+    clean = str(endpoint_url or "").strip()
+    if not clean:
+        return ""
+    if not re.match(r"^https?://", clean, flags=re.IGNORECASE):
+        raise HTTPException(status_code=400, detail="Endpoint reseau invalide")
+    return clean.rstrip("/")
+
+
+def _build_remote_control(endpoint_url: str) -> dict | None:
+    endpoint = _clean_endpoint_url(endpoint_url)
+    if not endpoint:
+        return None
+
+    on_href = f"{endpoint}/actions/on"
+    off_href = f"{endpoint}/actions/off"
+    return {
+        "@type": "EntryPoint",
+        "name": "REST Control",
+        "protocol": "REST",
+        "contentType": "application/json",
+        "endpoint": endpoint,
+        "health": f"{endpoint}/health",
+        "actions": {
+            "on": {"method": "POST", "href": on_href},
+            "off": {"method": "POST", "href": off_href},
+        },
+    }
+
+
+def _build_potential_actions(endpoint_url: str) -> list[dict]:
+    endpoint = _clean_endpoint_url(endpoint_url)
+    if not endpoint:
+        return []
+
+    return [
+        {
+            "@type": "ActivateAction",
+            "name": "on",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": f"{endpoint}/actions/on",
+                "httpMethod": "POST",
+                "contentType": "application/json",
+            },
+        },
+        {
+            "@type": "DeactivateAction",
+            "name": "off",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": f"{endpoint}/actions/off",
+                "httpMethod": "POST",
+                "contentType": "application/json",
+            },
+        },
+    ]
 
 
 def _to_index_id(thing_id: str) -> int:
@@ -123,6 +184,8 @@ def add_thing(request: Request, data: AddThingRequest = Body(...)):
         location_room = _canonical_room_name(data.location.strip())
         coords = _coords_from_room(location_room)
         availability = _canonical_availability(data.status)
+        remote_control = _build_remote_control(data.endpoint_url)
+        potential_actions = _build_potential_actions(data.endpoint_url)
 
         new_item = {
             "@context": "https://schema.org",
@@ -144,6 +207,16 @@ def add_thing(request: Request, data: AddThingRequest = Body(...)):
                 "z": coords["z"],
             },
         }
+
+        if remote_control:
+            new_item["control"] = remote_control
+            new_item["device_state"] = {
+                "power": "off",
+                "last_action_at": "",
+                "reachable": True,
+            }
+            if potential_actions:
+                new_item["potentialAction"] = potential_actions
 
         _things_collection().insert_one(new_item)
         _reindex_thing(new_item)
@@ -235,9 +308,16 @@ def update_thing_status(thing_id: str, data: dict = Body(...)):
 def update_thing(thing_id: str, request: Request, data: UpdateThingRequest = Body(...)):
     require_admin(request)
     try:
+        things = _things_collection()
+        existing = things.find_one({"id": thing_id})
+        if not existing:
+            raise HTTPException(status_code=404, detail="Objet non trouvé")
+
         location_room = _canonical_room_name(data.location.strip())
         coords = _coords_from_room(location_room)
         availability = _canonical_availability(data.status)
+        remote_control = _build_remote_control(data.endpoint_url)
+        potential_actions = _build_potential_actions(data.endpoint_url)
 
         updated_fields = {
             "name": data.name,
@@ -256,15 +336,31 @@ def update_thing(thing_id: str, request: Request, data: UpdateThingRequest = Bod
             },
         }
 
-        things = _things_collection()
+        unset_fields = {}
+        if remote_control:
+            previous_state = existing.get("device_state") if isinstance(existing.get("device_state"), dict) else {}
+            updated_fields["control"] = remote_control
+            updated_fields["device_state"] = {
+                "power": str(previous_state.get("power") or "off").lower() == "on" and "on" or "off",
+                "last_action_at": str(previous_state.get("last_action_at") or ""),
+                "reachable": bool(previous_state.get("reachable", True)),
+            }
+            if potential_actions:
+                updated_fields["potentialAction"] = potential_actions
+        else:
+            unset_fields["control"] = ""
+            unset_fields["device_state"] = ""
+            unset_fields["potentialAction"] = ""
+
+        update_doc = {"$set": updated_fields}
+        if unset_fields:
+            update_doc["$unset"] = unset_fields
+
         thing = things.find_one_and_update(
             {"id": thing_id},
-            {"$set": updated_fields},
+            update_doc,
             return_document=True,
         )
-
-        if not thing:
-            raise HTTPException(status_code=404, detail="Objet non trouvé")
 
         thing["id"] = thing_id
         if "_id" in thing:

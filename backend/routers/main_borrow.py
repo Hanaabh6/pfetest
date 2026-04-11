@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 import sys
 
+import requests
 from fastapi import APIRouter, HTTPException, Request
 
 from ..base import things_collection, user_history_collection
@@ -56,6 +57,29 @@ def _require_authenticated_user(request: Request) -> tuple[str, str]:
     return str(user.id), str(getattr(user, "email", "") or "")
 
 
+def _active_borrow_log(history, user_id: str, thing_id: str):
+    return history.find_one(
+        {
+            "thing_id": thing_id,
+            "user_id": user_id,
+            "action": "EMPRUNT_DEBUT",
+            "returned": False,
+        },
+        sort=[("created_at", -1)],
+    )
+
+
+def _remote_action_config(thing: dict, action_name: str) -> dict:
+    control = thing.get("control") if isinstance(thing.get("control"), dict) else {}
+    actions = control.get("actions") if isinstance(control.get("actions"), dict) else {}
+    action_cfg = actions.get(action_name) if isinstance(actions.get(action_name), dict) else {}
+    href = str(action_cfg.get("href") or "").strip()
+    method = str(action_cfg.get("method") or "POST").strip().upper()
+    if not href:
+        raise HTTPException(status_code=400, detail="Aucune action distante configuree pour cet objet")
+    return {"href": href, "method": method}
+
+
 @borrow_router.get("/user/mes-objets")
 def get_mes_objets(request: Request):
     user_id, _ = _require_authenticated_user(request)
@@ -95,6 +119,8 @@ def get_mes_objets(request: Request):
                     "z": loc.get("z", 0),
                 },
                 "taken_at": log.get("created_at") or "",
+                "control": thing.get("control") if isinstance(thing.get("control"), dict) else None,
+                "device_state": thing.get("device_state") if isinstance(thing.get("device_state"), dict) else {},
             }
         )
 
@@ -183,15 +209,7 @@ def retourner_objet(thing_id: str, request: Request):
     things = _things_collection()
     history = _user_history_collection()
 
-    open_log = history.find_one(
-        {
-            "thing_id": thing_id,
-            "user_id": user_id,
-            "action": "EMPRUNT_DEBUT",
-            "returned": False,
-        },
-        sort=[("created_at", -1)],
-    )
+    open_log = _active_borrow_log(history, user_id, thing_id)
     if not open_log:
         raise HTTPException(status_code=400, detail="Aucun emprunt actif pour cet objet")
 
@@ -263,4 +281,94 @@ def retourner_objet(thing_id: str, request: Request):
         "success": True,
         "message": f"Merci. Objet retourne apres {duration_min} minutes",
         "duree_minutes": duration_min,
+    }
+
+
+@borrow_router.post("/things/{thing_id}/actions/{action_name}")
+def trigger_remote_object_action(thing_id: str, action_name: str, request: Request):
+    user_id, email = _require_authenticated_user(request)
+
+    safe_action = str(action_name or "").strip().lower()
+    if safe_action not in {"on", "off"}:
+        raise HTTPException(status_code=400, detail="Action distante non supportee")
+
+    things = _things_collection()
+    history = _user_history_collection()
+
+    open_log = _active_borrow_log(history, user_id, thing_id)
+    if not open_log:
+        raise HTTPException(status_code=403, detail="Vous devez prendre cet objet avant de l'utiliser")
+
+    thing = things.find_one({"id": thing_id})
+    if not thing:
+        raise HTTPException(status_code=404, detail="Objet introuvable")
+
+    remote_cfg = _remote_action_config(thing, safe_action)
+
+    try:
+        remote_response = requests.request(remote_cfg["method"], remote_cfg["href"], timeout=6)
+    except requests.RequestException as exc:
+        things.update_one(
+            {"id": thing_id},
+            {"$set": {"device_state.reachable": False}},
+        )
+        raise HTTPException(status_code=502, detail=f"Objet distant injoignable: {exc}") from exc
+
+    try:
+        payload = remote_response.json()
+    except ValueError:
+        payload = {"message": remote_response.text.strip()}
+
+    if not remote_response.ok:
+        detail = payload.get("detail") or payload.get("error") or payload.get("message") or "Echec action distante"
+        raise HTTPException(status_code=502, detail=str(detail))
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    power_state = "on" if safe_action == "on" else "off"
+    device_state = {
+        "power": power_state,
+        "last_action_at": now_iso,
+        "reachable": True,
+        "last_result": payload,
+    }
+
+    things.update_one(
+        {"id": thing_id},
+        {"$set": {"device_state": device_state}},
+    )
+
+    history.insert_one(
+        {
+            "user_id": user_id,
+            "email": email,
+            "action": "OBJET_ACTION",
+            "detail": f"{thing.get('name', 'objet')} -> {safe_action.upper()}",
+            "status": "Succes",
+            "date": datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M:%S"),
+            "created_at": now_iso,
+            "thing_id": thing_id,
+            "thing_name": thing.get("name", ""),
+        }
+    )
+    _prune_user_history(user_id)
+
+    thing_name = str(thing.get("name") or "objet")
+    create_notification(
+        target_role="user",
+        recipient_user_id=user_id,
+        recipient_email=email,
+        actor_user_id=user_id,
+        actor_email=email,
+        title="Commande objet executee",
+        message=f"Action {safe_action.upper()} envoyee a {thing_name}.",
+        notif_type="success",
+        metadata={"thing_id": thing_id, "action": safe_action},
+    )
+
+    return {
+        "success": True,
+        "message": payload.get("message") or f"Action {safe_action.upper()} executee",
+        "thing_id": thing_id,
+        "device_state": device_state,
+        "remote_response": payload,
     }

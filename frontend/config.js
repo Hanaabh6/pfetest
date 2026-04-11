@@ -1,12 +1,12 @@
 window.APP_CONFIG = window.APP_CONFIG || {};
 
 if (!window.APP_CONFIG.API_BASE) {
-  // En DEV local (localhost ou 127.0.0.1) : utiliser l'origine actuelle
+  // En DEV local : utiliser le backend local par défaut (port 8000)
+  // Cela évite que le frontend (servi sur 5500 par ex.) pointe vers window.location.origin
   if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
-    window.APP_CONFIG.API_BASE = window.location.origin;
+    window.APP_CONFIG.API_BASE = 'http://127.0.0.1:8000';
   } else {
     // En PROD (GitHub Pages ou autre) : utiliser l'API distante
-    // À remplacer par ton vrai domaine backend en production
     window.APP_CONFIG.API_BASE = "https://pfetest-api.onrender.com";
   }
 }

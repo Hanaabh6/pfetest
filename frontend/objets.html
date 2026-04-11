@@ -497,6 +497,10 @@
                             <span class="text-slate-600 font-semibold">Description</span>
                             <textarea id="editDescription" rows="3" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">${escapeHtml(details.description || '')}</textarea>
                         </label>
+                        <label class="md:col-span-2 block">
+                            <span class="text-slate-600 font-semibold">Endpoint reseau REST</span>
+                            <input id="editEndpoint" type="url" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" value="${escapeHtml(details.endpoint_url || '')}" placeholder="Ex: http://192.168.100.21:3001">
+                        </label>
                         <div class="md:col-span-2 flex justify-end gap-2 pt-1">
                             <button type="button" onclick="closeOverlay()" class="px-4 py-2 rounded-lg bg-slate-200 text-slate-800">Annuler</button>
                             <button type="submit" class="px-4 py-2 rounded-lg bg-emerald-600 text-white">Enregistrer</button>
@@ -731,7 +735,8 @@
                 type: source.type || source['@type'] || '',
                 location: (source.location && source.location.room) || source.location || '',
                 status: source.status || source.availability || 'active',
-                description: source.description || ''
+                description: source.description || '',
+                endpoint_url: (source.control && source.control.endpoint) || ''
             };
 
             editingThingId = cleanId;
@@ -754,11 +759,12 @@
                 const newLocation = document.getElementById('editLocation').value;
                 const newStatus = document.getElementById('editStatus').value;
                 const newDescription = document.getElementById('editDescription').value;
-                await updateObjet(editingThingId, newName, newType, newLocation, newStatus, newDescription);
+                const newEndpoint = document.getElementById('editEndpoint').value;
+                await updateObjet(editingThingId, newName, newType, newLocation, newStatus, newDescription, newEndpoint);
             });
         }
 
-        async function updateObjet(id, name, type, location, status, description) {
+        async function updateObjet(id, name, type, location, status, description, endpointUrl) {
             const token = localStorage.getItem('userToken');
             if (!token) {
                 alert('Token manquant');
@@ -777,7 +783,8 @@
                         type: String(type || '').trim(),
                         location: String(location || '').trim(),
                         description: String(description || '').trim(),
-                        status: String(status || '').trim() || 'active'
+                        status: String(status || '').trim() || 'active',
+                        endpoint_url: String(endpointUrl || '').trim()
                     })
                 });
 

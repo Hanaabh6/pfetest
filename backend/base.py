@@ -69,6 +69,7 @@ class _NullDatabase:
         self.keyword_index = _NullCollection()
         self.notifications = _NullCollection()
         self.user_history = _NullCollection()
+        self.devices = _NullCollection()
 
     def __getattr__(self, name):
         collection = _NullCollection()
@@ -113,3 +114,4 @@ notifications_collection = db.notifications
 keyword_index_collection = keyword_index_collection
 keyword_index_collection = keyword_index_collection
 user_history_collection = db.user_history
+devices_collection = db.devices

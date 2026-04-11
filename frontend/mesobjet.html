@@ -277,6 +277,30 @@
 
     .return-btn:hover { background: #9f1239; }
 
+    .object-open-btn {
+      border: none;
+      background: transparent;
+      padding: 0;
+      color: #0f766e;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .object-open-btn:hover {
+      color: #115e59;
+      text-decoration: underline;
+    }
+
+    .object-open-hint {
+      display: block;
+      margin-top: 4px;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
     .empty {
       border: 1px dashed #cbd5e1;
       border-radius: 12px;
@@ -374,6 +398,257 @@
       color: #fff;
     }
 
+    .feature-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1720;
+      padding: 16px;
+    }
+
+    .feature-overlay.show { display: flex; }
+
+    .feature-overlay-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.52);
+      backdrop-filter: blur(3px);
+    }
+
+    .feature-overlay-card {
+      position: relative;
+      width: min(720px, calc(100vw - 30px));
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+      border-radius: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.96));
+      box-shadow: 0 26px 60px rgba(15, 23, 42, 0.3);
+      padding: 20px;
+    }
+
+    .feature-overlay-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .feature-overlay-kicker {
+      margin: 0 0 4px;
+      color: #0f766e;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .feature-overlay-title {
+      margin: 0;
+      color: #0f172a;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .feature-overlay-subtitle {
+      margin: 6px 0 0;
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.6;
+      font-weight: 600;
+    }
+
+    .feature-close-btn {
+      border: none;
+      background: #e2e8f0;
+      color: #0f172a;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 16px;
+      flex: 0 0 40px;
+    }
+
+    .feature-close-btn:hover { background: #cbd5e1; }
+
+    .feature-body {
+      display: grid;
+      gap: 16px;
+    }
+
+    .feature-hero {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(13, 148, 136, 0.12), rgba(14, 165, 164, 0.18));
+      border: 1px solid rgba(13, 148, 136, 0.18);
+    }
+
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.82);
+      color: #0f766e;
+      font-size: 24px;
+      flex: 0 0 56px;
+    }
+
+    .feature-hero-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .feature-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid transparent;
+    }
+
+    .feature-chip.on {
+      background: rgba(220, 252, 231, 0.98);
+      color: #166534;
+      border-color: rgba(34, 197, 94, 0.28);
+    }
+
+    .feature-chip.off {
+      background: rgba(255, 241, 242, 0.98);
+      color: #be123c;
+      border-color: rgba(244, 63, 94, 0.22);
+    }
+
+    .feature-chip.neutral {
+      background: rgba(239, 246, 255, 0.98);
+      color: #1d4ed8;
+      border-color: rgba(59, 130, 246, 0.22);
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .feature-panel {
+      border-radius: 18px;
+      border: 1px solid #dbe6f3;
+      background: rgba(255,255,255,0.9);
+      padding: 18px;
+    }
+
+    .feature-panel h4 {
+      margin: 0 0 12px;
+      font-size: 15px;
+      color: #0f172a;
+    }
+
+    .feature-info-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .feature-info-item {
+      padding: 12px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    .feature-info-item span {
+      display: block;
+      margin-bottom: 4px;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .feature-info-item strong {
+      color: #0f172a;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .feature-description {
+      margin: 0 0 16px;
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.7;
+      font-weight: 600;
+    }
+
+    .lamp-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .lamp-action-btn {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    .lamp-action-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.14);
+    }
+
+    .lamp-action-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.72;
+      box-shadow: none;
+    }
+
+    .lamp-action-btn.on {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+    }
+
+    .lamp-action-btn.off {
+      background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+      color: #0f172a;
+    }
+
+    .lamp-action-btn.active {
+      outline: 2px solid rgba(15, 118, 110, 0.28);
+      outline-offset: 2px;
+    }
+
+    .feature-placeholder {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      color: #475569;
+    }
+
+    .feature-placeholder i {
+      color: #0f766e;
+      font-size: 20px;
+    }
+
     .app-toast {
       position: fixed;
       right: 16px;
@@ -430,6 +705,10 @@
       .title-wrap h1 { font-size: 24px; }
       table { font-size: 12px; }
       th:nth-child(3), td:nth-child(3) { display: none; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .lamp-actions { grid-template-columns: 1fr; }
+      .feature-hero { align-items: flex-start; }
+      .feature-overlay-head { align-items: center; }
     }
   </style>
   <link rel="stylesheet" href="theme.css">
@@ -539,6 +818,23 @@
     </div>
   </div>
 
+  <div class="feature-overlay" id="featureOverlay" aria-hidden="true">
+    <div class="feature-overlay-backdrop" id="featureOverlayBackdrop"></div>
+    <div class="feature-overlay-card" role="dialog" aria-modal="true" aria-labelledby="featureOverlayTitle">
+      <div class="feature-overlay-head">
+        <div>
+          <p class="feature-overlay-kicker">Mes objets</p>
+          <h3 class="feature-overlay-title" id="featureOverlayTitle">Fonctionnalites de l'objet</h3>
+          <p class="feature-overlay-subtitle" id="featureOverlaySubtitle">Consultez la fiche et utilisez les commandes disponibles pour cet objet.</p>
+        </div>
+        <button type="button" class="feature-close-btn" id="featureOverlayClose" aria-label="Fermer">
+          <i class="fas fa-xmark"></i>
+        </button>
+      </div>
+      <div class="feature-body" id="featureBody"></div>
+    </div>
+  </div>
+
   <div class="app-toast" id="appToast" role="status" aria-live="polite" aria-atomic="true">
     <img src="intellibuild-mark.svg" alt="IntelliBuild">
     <p id="appToastText">Operation terminee</p>
@@ -549,6 +845,7 @@
     const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "https://pfetest-api.onrender.com";
     const token = localStorage.getItem("userToken");
 
+    const objectsTable = document.getElementById("objectsTable");
     const tableBody = document.getElementById("tableBody");
     const emptyState = document.getElementById("emptyState");
     const counter = document.getElementById("counter");
@@ -558,10 +855,18 @@
     const miniConfirmText = document.getElementById("miniConfirmText");
     const miniConfirmOk = document.getElementById("miniConfirmOk");
     const miniConfirmCancel = document.getElementById("miniConfirmCancel");
+    const featureOverlay = document.getElementById("featureOverlay");
+    const featureOverlayBackdrop = document.getElementById("featureOverlayBackdrop");
+    const featureOverlayClose = document.getElementById("featureOverlayClose");
+    const featureOverlayTitle = document.getElementById("featureOverlayTitle");
+    const featureOverlaySubtitle = document.getElementById("featureOverlaySubtitle");
+    const featureBody = document.getElementById("featureBody");
     const appToast = document.getElementById("appToast");
     const appToastText = document.getElementById("appToastText");
     let mesObjetsReady = false;
     let toastTimer = null;
+    let activeFeatureThingId = "";
+    const mesObjetsCache = new Map();
 
     if (!token) {
       window.location.href = "login.html";
@@ -644,6 +949,207 @@
       }[ch]));
     }
 
+    function getRoomName(item) {
+      return item && item.location && item.location.room ? item.location.room : "-";
+    }
+
+    function isLampObject(item) {
+      const raw = `${item && item.name ? item.name : ""} ${item && item.type ? item.type : ""}`.toLowerCase();
+      return /(lamp|lampe|light|eclair|luminaire)/.test(raw);
+    }
+
+    function hasRemoteLampControls(item) {
+      const control = item && typeof item.control === "object" ? item.control : {};
+      const actions = control && typeof control.actions === "object" ? control.actions : {};
+      return Boolean(control.endpoint && actions.on && actions.off);
+    }
+
+    function getLampPowerState(item) {
+      const raw = String(item && item.device_state && item.device_state.power ? item.device_state.power : "").toLowerCase();
+      return raw === "on" ? "on" : "off";
+    }
+
+    function closeFeatureOverlay() {
+      activeFeatureThingId = "";
+      if (!featureOverlay) return;
+      featureOverlay.classList.remove("show");
+      featureOverlay.setAttribute("aria-hidden", "true");
+    }
+
+    function renderFeatureContent(item) {
+      if (!item || !featureBody || !featureOverlayTitle || !featureOverlaySubtitle) return;
+
+      const safeId = String(item.thing_id || "").trim();
+      const itemName = item.name || tr("objects_all", "Objet");
+      const itemType = item.type || "-";
+      const room = getRoomName(item);
+      const takenAt = formatDate(item.taken_at);
+      const lampDetected = isLampObject(item);
+      const remoteLampControls = lampDetected && hasRemoteLampControls(item);
+      const lampState = lampDetected ? getLampPowerState(item) : "off";
+      const lampStateLabel = lampState === "on"
+        ? tr("my_objects_lamp_state_on", "Lampe allumee")
+        : tr("my_objects_lamp_state_off", "Lampe eteinte");
+      const chipClass = lampDetected
+        ? (remoteLampControls ? (lampState === "on" ? "on" : "off") : "neutral")
+        : "neutral";
+      const chipIcon = lampDetected
+        ? (remoteLampControls ? (lampState === "on" ? "fa-power-off" : "fa-moon") : "fa-link")
+        : "fa-cube";
+      const chipLabel = lampDetected
+        ? (remoteLampControls ? lampStateLabel : tr("my_objects_remote_not_configured", "Controle distant non configure"))
+        : tr("status_in_use", "En utilisation");
+      const featureSubtitle = lampDetected
+        ? (remoteLampControls
+            ? tr("my_objects_lamp_panel_sub", "Cette lampe peut etre allumee ou eteinte directement depuis cette fiche.")
+            : tr("my_objects_lamp_panel_missing_sub", "Cette lampe est detectee, mais aucun endpoint reseau n'a encore ete configure par l'admin."))
+        : tr("my_objects_generic_panel_sub", "Cette fiche affiche les informations de l'objet. D'autres commandes seront ajoutees selon le type.");
+
+      featureOverlayTitle.textContent = tr("my_objects_feature_title", "Fonctionnalites de l'objet");
+      featureOverlaySubtitle.textContent = featureSubtitle;
+
+      featureBody.innerHTML = `
+        <div class="feature-hero">
+          <div class="feature-icon">
+            <i class="fas ${lampDetected ? "fa-lightbulb" : "fa-cube"}"></i>
+          </div>
+          <div class="feature-hero-copy">
+            <h4 style="margin:0; font-size:22px; color:#0f172a;">${sanitize(itemName)}</h4>
+            <p class="feature-description" style="margin:6px 0 0;">${sanitize(featureSubtitle)}</p>
+          </div>
+          <span class="feature-chip ${chipClass}">
+            <i class="fas ${chipIcon}"></i>
+            ${sanitize(chipLabel)}
+          </span>
+        </div>
+
+        <div class="feature-grid">
+          <section class="feature-panel">
+            <h4>${sanitize(tr("detail_overlay_title", "Detail de l'objet"))}</h4>
+            <div class="feature-info-list">
+              <div class="feature-info-item">
+                <span>${sanitize(tr("detail_name", "Nom"))}</span>
+                <strong>${sanitize(itemName)}</strong>
+              </div>
+              <div class="feature-info-item">
+                <span>${sanitize(tr("detail_type", "Type"))}</span>
+                <strong>${sanitize(itemType)}</strong>
+              </div>
+              <div class="feature-info-item">
+                <span>${sanitize(tr("detail_location", "Localisation"))}</span>
+                <strong>${sanitize(room)}</strong>
+              </div>
+              <div class="feature-info-item">
+                <span>${sanitize(tr("table_taken_on", "Pris le"))}</span>
+                <strong>${sanitize(takenAt)}</strong>
+              </div>
+              ${item.control && item.control.endpoint ? `
+                <div class="feature-info-item">
+                  <span>Endpoint</span>
+                  <strong>${sanitize(item.control.endpoint)}</strong>
+                </div>
+              ` : ""}
+            </div>
+          </section>
+
+          <section class="feature-panel">
+            <h4>${sanitize(tr("my_objects_available_actions", "Actions disponibles"))}</h4>
+            ${lampDetected && remoteLampControls ? `
+              <p class="feature-description">${sanitize(tr("my_objects_lamp_action_help", "Choisissez si vous voulez allumer ou eteindre votre lampe."))}</p>
+              <div class="lamp-actions">
+                <button
+                  type="button"
+                  class="lamp-action-btn on ${lampState === "on" ? "active" : ""}"
+                  data-feature-action="lamp-power"
+                  data-next-state="on"
+                  data-thing-id="${sanitize(safeId)}"
+                  ${lampState === "on" ? "disabled" : ""}
+                >
+                  <i class="fas fa-lightbulb"></i> ${sanitize(tr("my_objects_lamp_turn_on", "Allumer"))}
+                </button>
+                <button
+                  type="button"
+                  class="lamp-action-btn off ${lampState === "off" ? "active" : ""}"
+                  data-feature-action="lamp-power"
+                  data-next-state="off"
+                  data-thing-id="${sanitize(safeId)}"
+                  ${lampState === "off" ? "disabled" : ""}
+                >
+                  <i class="fas fa-power-off"></i> ${sanitize(tr("my_objects_lamp_turn_off", "Eteindre"))}
+                </button>
+              </div>
+            ` : lampDetected ? `
+              <div class="feature-placeholder">
+                <i class="fas fa-link-slash"></i>
+                <strong>${sanitize(tr("my_objects_lamp_missing_endpoint", "La lampe n'est pas encore reliee a un endpoint REST."))}</strong>
+                <span>${sanitize(tr("my_objects_lamp_missing_endpoint_sub", "Ajoutez l'adresse reseau de l'objet dans l'espace admin pour activer ON/OFF depuis cette page."))}</span>
+              </div>
+            ` : `
+              <div class="feature-placeholder">
+                <i class="fas fa-wand-magic-sparkles"></i>
+                <strong>${sanitize(tr("my_objects_feature_coming_soon", "Aucune commande speciale pour cet objet pour le moment."))}</strong>
+                <span>${sanitize(tr("my_objects_feature_coming_soon_sub", "Nous commencons par les lampes, puis nous ajouterons les fonctionnalites des autres objets."))}</span>
+              </div>
+            `}
+          </section>
+        </div>
+      `;
+    }
+
+    function openFeatureOverlay(thingId) {
+      const safeId = String(thingId || "").trim();
+      if (!safeId) return;
+
+      const item = mesObjetsCache.get(safeId);
+      if (!item) return;
+
+      activeFeatureThingId = safeId;
+      renderFeatureContent(item);
+      if (!featureOverlay) return;
+      featureOverlay.classList.add("show");
+      featureOverlay.setAttribute("aria-hidden", "false");
+    }
+
+    async function triggerLampAction(thingId, nextState) {
+      const safeId = String(thingId || "").trim();
+      const desiredState = nextState === "on" ? "on" : "off";
+      if (!safeId) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/things/${encodeURIComponent(safeId)}/actions/${encodeURIComponent(desiredState)}`, {
+          method: "POST",
+          headers: authHeaders()
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          showToast(data.detail || tr("my_objects_remote_action_error", "Impossible d'executer la commande distante"), "error");
+          return;
+        }
+
+        const cachedItem = mesObjetsCache.get(safeId);
+        if (cachedItem) {
+          cachedItem.device_state = data.device_state || {
+            power: desiredState,
+            last_action_at: new Date().toISOString(),
+            reachable: true
+          };
+          mesObjetsCache.set(safeId, cachedItem);
+          renderFeatureContent(cachedItem);
+        }
+
+        showToast(
+          data.message || (desiredState === "on"
+            ? tr("my_objects_lamp_on_success", "{name} est maintenant allumee", { name: cachedItem && cachedItem.name ? cachedItem.name : tr("objects_all", "Objet") })
+            : tr("my_objects_lamp_off_success", "{name} est maintenant eteinte", { name: cachedItem && cachedItem.name ? cachedItem.name : tr("objects_all", "Objet") })),
+          "success"
+        );
+        await loadMesObjets();
+      } catch (error) {
+        console.error("Erreur commande lampe:", error);
+        showToast(tr("error_network", "Erreur reseau"), "error");
+      }
+    }
+
     async function loadMesObjets() {
       try {
         const response = await fetch(`${API_BASE}/user/mes-objets`, {
@@ -666,6 +1172,12 @@
         }
 
         const items = Array.isArray(data) ? data : [];
+        mesObjetsCache.clear();
+        items.forEach(function (item) {
+          const safeId = String(item && item.thing_id ? item.thing_id : "").trim();
+          if (safeId) mesObjetsCache.set(safeId, item);
+        });
+
         counter.textContent = tr(
           items.length > 1 ? "my_objects_counter_plural" : "my_objects_counter_singular",
           items.length > 1 ? "{count} objets en cours" : "{count} objet en cours",
@@ -675,35 +1187,55 @@
         if (items.length === 0) {
           tableBody.innerHTML = "";
           emptyState.style.display = "block";
-          document.getElementById("objectsTable").style.display = "none";
+          objectsTable.style.display = "none";
+          closeFeatureOverlay();
           return;
         }
 
         emptyState.style.display = "none";
-        document.getElementById("objectsTable").style.display = "table";
+        objectsTable.style.display = "table";
 
         tableBody.innerHTML = items.map((item) => {
-          const room = item.location && item.location.room ? item.location.room : "-";
+          const safeId = String(item.thing_id || "").trim();
+          const room = getRoomName(item);
           const availability = String(item.availability || "en_utilisation").toLowerCase();
+          const lampDetected = isLampObject(item);
           const badge = availability === "disponible"
             ? `<span class="badge badge-ok">${sanitize(tr("status_available", "Disponible"))}</span>`
             : `<span class="badge badge-inuse">${sanitize(tr("status_in_use", "En utilisation"))}</span>`;
 
           return `
             <tr>
-              <td><strong>${sanitize(item.name || tr("objects_all", "Objet"))}</strong></td>
+              <td>
+                <button type="button" class="object-open-btn" data-open-object="${sanitize(safeId)}">
+                  ${sanitize(item.name || tr("objects_all", "Objet"))}
+                </button>
+                <span class="object-open-hint">
+                  ${sanitize(lampDetected
+                    ? tr("my_objects_open_lamp_hint", "Ouvrir les commandes de la lampe")
+                    : tr("my_objects_open_object_hint", "Ouvrir la fiche de l'objet"))}
+                </span>
+              </td>
               <td>${sanitize(item.type || "-")}</td>
               <td>${sanitize(room)}</td>
               <td>${badge}</td>
               <td>${sanitize(formatDate(item.taken_at))}</td>
               <td>
-                <button class="return-btn" onclick="retournerObjet('${sanitize(item.thing_id)}')">
+                <button type="button" class="return-btn" data-return-id="${sanitize(safeId)}">
                   <i class="fas fa-undo"></i> ${sanitize(tr("btn_return", "Rendre"))}
                 </button>
               </td>
             </tr>
           `;
         }).join("");
+
+        if (activeFeatureThingId) {
+          if (mesObjetsCache.has(activeFeatureThingId)) {
+            renderFeatureContent(mesObjetsCache.get(activeFeatureThingId));
+          } else {
+            closeFeatureOverlay();
+          }
+        }
       } catch (error) {
         console.error("Erreur mes objets:", error);
         showToast(tr("error_network", "Erreur reseau"), "error");
@@ -729,6 +1261,7 @@
           return;
         }
 
+        if (activeFeatureThingId === safeId) closeFeatureOverlay();
         showToast(data.message || tr("object_returned", "Objet rendu"), "success");
         await loadMesObjets();
       } catch (error) {
@@ -736,6 +1269,49 @@
         showToast(tr("error_network", "Erreur reseau"), "error");
       }
     }
+
+    tableBody.addEventListener("click", function (event) {
+      const returnBtn = event.target.closest("[data-return-id]");
+      if (returnBtn) {
+        retournerObjet(returnBtn.getAttribute("data-return-id"));
+        return;
+      }
+
+      const objectBtn = event.target.closest("[data-open-object]");
+      if (objectBtn) {
+        openFeatureOverlay(objectBtn.getAttribute("data-open-object"));
+      }
+    });
+
+    if (featureOverlayBackdrop) {
+      featureOverlayBackdrop.addEventListener("click", closeFeatureOverlay);
+    }
+
+    if (featureOverlayClose) {
+      featureOverlayClose.addEventListener("click", closeFeatureOverlay);
+    }
+
+    if (featureBody) {
+      featureBody.addEventListener("click", async function (event) {
+        const actionBtn = event.target.closest("[data-feature-action='lamp-power']");
+        if (!actionBtn) return;
+
+        const thingId = String(actionBtn.getAttribute("data-thing-id") || "").trim();
+        const nextState = actionBtn.getAttribute("data-next-state") === "on" ? "on" : "off";
+        const item = mesObjetsCache.get(thingId);
+        if (!thingId || !item || !isLampObject(item) || !hasRemoteLampControls(item)) return;
+
+        const buttons = featureBody.querySelectorAll("[data-feature-action='lamp-power']");
+        buttons.forEach(function (btn) { btn.disabled = true; });
+        await triggerLampAction(thingId, nextState);
+      });
+    }
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && featureOverlay && featureOverlay.classList.contains("show")) {
+        closeFeatureOverlay();
+      }
+    });
 
     refreshBtn.addEventListener("click", loadMesObjets);
     window.addEventListener("app:languagechange", function () {
