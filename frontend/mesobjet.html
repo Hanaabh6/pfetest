@@ -953,18 +953,28 @@
       return item && item.location && item.location.room ? item.location.room : "-";
     }
 
-    function isLampObject(item) {
+    function getRemoteObjectKind(item) {
       const raw = `${item && item.name ? item.name : ""} ${item && item.type ? item.type : ""}`.toLowerCase();
-      return /(lamp|lampe|light|eclair|luminaire)/.test(raw);
+      if (/(lamp|lampe|light|eclair|luminaire)/.test(raw)) return "lamp";
+      if (/(alarm|alarme|siren|sirene|alert|alerte)/.test(raw)) return "alarm";
+      return "";
     }
 
-    function hasRemoteLampControls(item) {
+    function isLampObject(item) {
+      return getRemoteObjectKind(item) === "lamp";
+    }
+
+    function isAlarmObject(item) {
+      return getRemoteObjectKind(item) === "alarm";
+    }
+
+    function hasRemotePowerControls(item) {
       const control = item && typeof item.control === "object" ? item.control : {};
       const actions = control && typeof control.actions === "object" ? control.actions : {};
       return Boolean(control.endpoint && actions.on && actions.off);
     }
 
-    function getLampPowerState(item) {
+    function getRemotePowerState(item) {
       const raw = String(item && item.device_state && item.device_state.power ? item.device_state.power : "").toLowerCase();
       return raw === "on" ? "on" : "off";
     }
@@ -984,26 +994,58 @@
       const itemType = item.type || "-";
       const room = getRoomName(item);
       const takenAt = formatDate(item.taken_at);
-      const lampDetected = isLampObject(item);
-      const remoteLampControls = lampDetected && hasRemoteLampControls(item);
-      const lampState = lampDetected ? getLampPowerState(item) : "off";
-      const lampStateLabel = lampState === "on"
-        ? tr("my_objects_lamp_state_on", "Lampe allumee")
-        : tr("my_objects_lamp_state_off", "Lampe eteinte");
-      const chipClass = lampDetected
-        ? (remoteLampControls ? (lampState === "on" ? "on" : "off") : "neutral")
+      const remoteKind = getRemoteObjectKind(item);
+      const lampDetected = remoteKind === "lamp";
+      const alarmDetected = remoteKind === "alarm";
+      const remoteControls = Boolean(remoteKind) && hasRemotePowerControls(item);
+      const remoteState = remoteKind ? getRemotePowerState(item) : "off";
+      const stateLabel = lampDetected
+        ? (remoteState === "on"
+            ? tr("my_objects_lamp_state_on", "Lampe allumee")
+            : tr("my_objects_lamp_state_off", "Lampe eteinte"))
+        : alarmDetected
+          ? (remoteState === "on"
+              ? tr("my_objects_alarm_state_on", "Alarme activee")
+              : tr("my_objects_alarm_state_off", "Alarme arretee"))
+          : tr("status_in_use", "En utilisation");
+      const chipClass = remoteKind
+        ? (remoteControls ? (remoteState === "on" ? "on" : "off") : "neutral")
         : "neutral";
       const chipIcon = lampDetected
-        ? (remoteLampControls ? (lampState === "on" ? "fa-power-off" : "fa-moon") : "fa-link")
+        ? (remoteControls ? (remoteState === "on" ? "fa-power-off" : "fa-moon") : "fa-link")
+        : alarmDetected
+          ? (remoteControls ? (remoteState === "on" ? "fa-bell" : "fa-bell-slash") : "fa-link")
         : "fa-cube";
-      const chipLabel = lampDetected
-        ? (remoteLampControls ? lampStateLabel : tr("my_objects_remote_not_configured", "Controle distant non configure"))
+      const chipLabel = remoteKind
+        ? (remoteControls ? stateLabel : tr("my_objects_remote_not_configured", "Controle distant non configure"))
         : tr("status_in_use", "En utilisation");
       const featureSubtitle = lampDetected
-        ? (remoteLampControls
+        ? (remoteControls
             ? tr("my_objects_lamp_panel_sub", "Cette lampe peut etre allumee ou eteinte directement depuis cette fiche.")
             : tr("my_objects_lamp_panel_missing_sub", "Cette lampe est detectee, mais aucun endpoint reseau n'a encore ete configure par l'admin."))
+        : alarmDetected
+          ? (remoteControls
+              ? tr("my_objects_alarm_panel_sub", "Cette alarme peut etre activee ou arretee directement depuis cette fiche.")
+              : tr("my_objects_alarm_panel_missing_sub", "Cette alarme est detectee, mais aucun endpoint reseau n'a encore ete configure par l'admin."))
         : tr("my_objects_generic_panel_sub", "Cette fiche affiche les informations de l'objet. D'autres commandes seront ajoutees selon le type.");
+      const heroIcon = lampDetected ? "fa-lightbulb" : (alarmDetected ? "fa-bell" : "fa-cube");
+      const actionHelp = lampDetected
+        ? tr("my_objects_lamp_action_help", "Choisissez si vous voulez allumer ou eteindre votre lampe.")
+        : tr("my_objects_alarm_action_help", "Choisissez si vous voulez activer ou arreter votre alarme.");
+      const actionOnLabel = lampDetected
+        ? tr("my_objects_lamp_turn_on", "Allumer")
+        : tr("my_objects_alarm_turn_on", "Activer");
+      const actionOffLabel = lampDetected
+        ? tr("my_objects_lamp_turn_off", "Eteindre")
+        : tr("my_objects_alarm_turn_off", "Arreter");
+      const actionOnIcon = lampDetected ? "fa-lightbulb" : "fa-bell";
+      const actionOffIcon = lampDetected ? "fa-power-off" : "fa-bell-slash";
+      const missingTitle = lampDetected
+        ? tr("my_objects_lamp_missing_endpoint", "La lampe n'est pas encore reliee a un endpoint REST.")
+        : tr("my_objects_alarm_missing_endpoint", "L'alarme n'est pas encore reliee a un endpoint REST.");
+      const missingSub = lampDetected
+        ? tr("my_objects_lamp_missing_endpoint_sub", "Ajoutez l'adresse reseau de l'objet dans l'espace admin pour activer ON/OFF depuis cette page.")
+        : tr("my_objects_alarm_missing_endpoint_sub", "Ajoutez l'adresse reseau de l'objet dans l'espace admin pour activer ON/OFF depuis cette page.");
 
       featureOverlayTitle.textContent = tr("my_objects_feature_title", "Fonctionnalites de l'objet");
       featureOverlaySubtitle.textContent = featureSubtitle;
@@ -1011,7 +1053,7 @@
       featureBody.innerHTML = `
         <div class="feature-hero">
           <div class="feature-icon">
-            <i class="fas ${lampDetected ? "fa-lightbulb" : "fa-cube"}"></i>
+            <i class="fas ${heroIcon}"></i>
           </div>
           <div class="feature-hero-copy">
             <h4 style="margin:0; font-size:22px; color:#0f172a;">${sanitize(itemName)}</h4>
@@ -1043,52 +1085,47 @@
                 <span>${sanitize(tr("table_taken_on", "Pris le"))}</span>
                 <strong>${sanitize(takenAt)}</strong>
               </div>
-              ${item.control && item.control.endpoint ? `
-                <div class="feature-info-item">
-                  <span>Endpoint</span>
-                  <strong>${sanitize(item.control.endpoint)}</strong>
-                </div>
-              ` : ""}
+              
             </div>
           </section>
 
           <section class="feature-panel">
             <h4>${sanitize(tr("my_objects_available_actions", "Actions disponibles"))}</h4>
-            ${lampDetected && remoteLampControls ? `
-              <p class="feature-description">${sanitize(tr("my_objects_lamp_action_help", "Choisissez si vous voulez allumer ou eteindre votre lampe."))}</p>
+            ${remoteKind && remoteControls ? `
+              <p class="feature-description">${sanitize(actionHelp)}</p>
               <div class="lamp-actions">
                 <button
                   type="button"
-                  class="lamp-action-btn on ${lampState === "on" ? "active" : ""}"
-                  data-feature-action="lamp-power"
+                  class="lamp-action-btn on ${remoteState === "on" ? "active" : ""}"
+                  data-feature-action="remote-power"
                   data-next-state="on"
                   data-thing-id="${sanitize(safeId)}"
-                  ${lampState === "on" ? "disabled" : ""}
+                  ${remoteState === "on" ? "disabled" : ""}
                 >
-                  <i class="fas fa-lightbulb"></i> ${sanitize(tr("my_objects_lamp_turn_on", "Allumer"))}
+                  <i class="fas ${actionOnIcon}"></i> ${sanitize(actionOnLabel)}
                 </button>
                 <button
                   type="button"
-                  class="lamp-action-btn off ${lampState === "off" ? "active" : ""}"
-                  data-feature-action="lamp-power"
+                  class="lamp-action-btn off ${remoteState === "off" ? "active" : ""}"
+                  data-feature-action="remote-power"
                   data-next-state="off"
                   data-thing-id="${sanitize(safeId)}"
-                  ${lampState === "off" ? "disabled" : ""}
+                  ${remoteState === "off" ? "disabled" : ""}
                 >
-                  <i class="fas fa-power-off"></i> ${sanitize(tr("my_objects_lamp_turn_off", "Eteindre"))}
+                  <i class="fas ${actionOffIcon}"></i> ${sanitize(actionOffLabel)}
                 </button>
               </div>
-            ` : lampDetected ? `
+            ` : remoteKind ? `
               <div class="feature-placeholder">
                 <i class="fas fa-link-slash"></i>
-                <strong>${sanitize(tr("my_objects_lamp_missing_endpoint", "La lampe n'est pas encore reliee a un endpoint REST."))}</strong>
-                <span>${sanitize(tr("my_objects_lamp_missing_endpoint_sub", "Ajoutez l'adresse reseau de l'objet dans l'espace admin pour activer ON/OFF depuis cette page."))}</span>
+                <strong>${sanitize(missingTitle)}</strong>
+                <span>${sanitize(missingSub)}</span>
               </div>
             ` : `
               <div class="feature-placeholder">
                 <i class="fas fa-wand-magic-sparkles"></i>
                 <strong>${sanitize(tr("my_objects_feature_coming_soon", "Aucune commande speciale pour cet objet pour le moment."))}</strong>
-                <span>${sanitize(tr("my_objects_feature_coming_soon_sub", "Nous commencons par les lampes, puis nous ajouterons les fonctionnalites des autres objets."))}</span>
+                <span>${sanitize(tr("my_objects_feature_coming_soon_sub", "Nous commencons par les lampes et les alarmes, puis nous ajouterons les fonctionnalites des autres objets."))}</span>
               </div>
             `}
           </section>
@@ -1110,7 +1147,7 @@
       featureOverlay.setAttribute("aria-hidden", "false");
     }
 
-    async function triggerLampAction(thingId, nextState) {
+    async function triggerRemotePowerAction(thingId, nextState) {
       const safeId = String(thingId || "").trim();
       const desiredState = nextState === "on" ? "on" : "off";
       if (!safeId) return;
@@ -1139,13 +1176,13 @@
 
         showToast(
           data.message || (desiredState === "on"
-            ? tr("my_objects_lamp_on_success", "{name} est maintenant allumee", { name: cachedItem && cachedItem.name ? cachedItem.name : tr("objects_all", "Objet") })
-            : tr("my_objects_lamp_off_success", "{name} est maintenant eteinte", { name: cachedItem && cachedItem.name ? cachedItem.name : tr("objects_all", "Objet") })),
+            ? tr("my_objects_remote_on_success", "{name} est maintenant active", { name: cachedItem && cachedItem.name ? cachedItem.name : tr("objects_all", "Objet") })
+            : tr("my_objects_remote_off_success", "{name} est maintenant arrete", { name: cachedItem && cachedItem.name ? cachedItem.name : tr("objects_all", "Objet") })),
           "success"
         );
         await loadMesObjets();
       } catch (error) {
-        console.error("Erreur commande lampe:", error);
+        console.error("Erreur commande objet:", error);
         showToast(tr("error_network", "Erreur reseau"), "error");
       }
     }
@@ -1200,6 +1237,7 @@
           const room = getRoomName(item);
           const availability = String(item.availability || "en_utilisation").toLowerCase();
           const lampDetected = isLampObject(item);
+          const alarmDetected = isAlarmObject(item);
           const badge = availability === "disponible"
             ? `<span class="badge badge-ok">${sanitize(tr("status_available", "Disponible"))}</span>`
             : `<span class="badge badge-inuse">${sanitize(tr("status_in_use", "En utilisation"))}</span>`;
@@ -1213,6 +1251,8 @@
                 <span class="object-open-hint">
                   ${sanitize(lampDetected
                     ? tr("my_objects_open_lamp_hint", "Ouvrir les commandes de la lampe")
+                    : alarmDetected
+                      ? tr("my_objects_open_alarm_hint", "Ouvrir les commandes de l'alarme")
                     : tr("my_objects_open_object_hint", "Ouvrir la fiche de l'objet"))}
                 </span>
               </td>
@@ -1293,17 +1333,17 @@
 
     if (featureBody) {
       featureBody.addEventListener("click", async function (event) {
-        const actionBtn = event.target.closest("[data-feature-action='lamp-power']");
+        const actionBtn = event.target.closest("[data-feature-action='remote-power']");
         if (!actionBtn) return;
 
         const thingId = String(actionBtn.getAttribute("data-thing-id") || "").trim();
         const nextState = actionBtn.getAttribute("data-next-state") === "on" ? "on" : "off";
         const item = mesObjetsCache.get(thingId);
-        if (!thingId || !item || !isLampObject(item) || !hasRemoteLampControls(item)) return;
+        if (!thingId || !item || !getRemoteObjectKind(item) || !hasRemotePowerControls(item)) return;
 
-        const buttons = featureBody.querySelectorAll("[data-feature-action='lamp-power']");
+        const buttons = featureBody.querySelectorAll("[data-feature-action='remote-power']");
         buttons.forEach(function (btn) { btn.disabled = true; });
-        await triggerLampAction(thingId, nextState);
+        await triggerRemotePowerAction(thingId, nextState);
       });
     }
 

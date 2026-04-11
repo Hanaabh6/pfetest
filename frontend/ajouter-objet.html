@@ -113,6 +113,21 @@
             background: linear-gradient(140deg, #ecfdf5, #d1fae5);
             box-shadow: 0 10px 26px rgba(16, 185, 129, 0.18);
         }
+        /* Camera and Machine cards should be green; remove other special colors */
+        .type-card-camera .type-icon,
+        .type-card-machine .type-icon {
+            background: linear-gradient(135deg, #ecfdf5, #dcfce7);
+            color: #065f46;
+        }
+        .type-card-camera:hover, .type-card-machine:hover {
+            border-color: #10b981;
+            box-shadow: 0 10px 26px rgba(16, 185, 129, 0.12);
+        }
+        .type-card-camera.active, .type-card-machine.active {
+            background: linear-gradient(140deg, #dcfce7, #bbf7d0);
+            border-color: #059669;
+            box-shadow: 0 10px 26px rgba(16, 185, 129, 0.18);
+        }
         .type-icon {
             width: 42px;
             height: 42px;
@@ -476,7 +491,7 @@
                     <div class="field-card">
                         <label class="field-label" for="objEndpoint"><i class="fas fa-wifi text-emerald-700"></i> Endpoint reseau REST</label>
                         <input type="url" id="objEndpoint" maxlength="300" placeholder="Ex: http://192.168.100.21:3001" class="field-input">
-                        <p class="field-help">Optionnel. Ajoutez-le pour un objet reel pilotable a distance comme la lampe de demo.</p>
+                        <p class="field-help">Optionnel. Ajoutez-le pour un objet reel pilotable a distance comme la lampe ou l'alarme de demo.</p>
                     </div>
 
                     <div class="preview-box" id="objectPreview">
@@ -619,7 +634,8 @@
             { value: 'Imprimante 3D', icon: 'fas fa-cube', hint: 'Ex: Imprimante 3D' },
             { value: 'Routeur / Reseau', icon: 'fas fa-wifi', hint: 'Ex: Routeur WiFi' },
             { value: 'Serveur', icon: 'fas fa-server', hint: 'Ex: Serveur physique' },
-            { value: 'Machine connectee', icon: 'fas fa-gears', hint: 'Ex: Machine à café' },
+            { value: 'Machine connectee', icon: 'fas fa-mug-hot', hint: 'Ex: Machine à café' },
+            { value: 'Alarme', icon: 'fas fa-bell', hint: 'Ex: Alarme intrusion' },
             { value: 'Communication', icon: 'fas fa-phone', hint: 'Ex: Téléphone VoIP' },
             { value: 'Microphone', icon: 'fas fa-microphone', hint: 'Ex: Microphone ambiant' },
             { value: 'Haut-parleur', icon: 'fas fa-volume-up', hint: 'Ex: Haut-parleur WiFi' },
@@ -643,6 +659,7 @@
 
         function iconForType(typeValue) {
             const n = normalizeText(typeValue);
+            if (n.includes('alarm') || n.includes('alarme') || n.includes('siren') || n.includes('sirene') || n.includes('alerte') || n.includes('alert')) return 'fas fa-bell';
             if (n.includes('eclair') || n.includes('lamp') || n.includes('luminaire')) return 'fas fa-lightbulb';
             if (n.includes('climat') || n.includes('hvac')) return 'fas fa-snowflake';
             if (n.includes('ventil')) return 'fas fa-wind';
@@ -652,7 +669,7 @@
             if (n.includes('television') || n.includes('tv') || n.includes('ecran') || n.includes('afficheur') || n.includes('projecteur')) return 'fas fa-tv';
             if (n.includes('serrure') || n.includes('lock') || n.includes('acces') || n.includes('badge')) return 'fas fa-lock';
             if (n.includes('routeur') || n.includes('reseau') || n.includes('wifi') || n.includes('serveur')) return 'fas fa-wifi';
-            if (n.includes('machine') || n.includes('cafe')) return 'fas fa-gears';
+            if (n.includes('machine') || n.includes('cafe')) return 'fas fa-mug-hot';
             if (n.includes('imprimante') || n.includes('print')) return 'fas fa-print';
             if (n.includes('prise') || n.includes('plug')) return 'fas fa-plug';
             if (n.includes('interrupteur') || n.includes('toggle')) return 'fas fa-toggle-on';
@@ -1002,8 +1019,12 @@
             `;
 
             typeShowcase.innerHTML = visibleCards.map(function (card) {
+                const labelKey = normalizeText(String(card.value || ''));
+                let extraClass = '';
+                if (labelKey.indexOf('camera') >= 0 || labelKey.indexOf('cam') >= 0) extraClass = ' type-card-camera';
+                if (labelKey.indexOf('machine') >= 0 || labelKey.indexOf('cafe') >= 0 || labelKey.indexOf('coffee') >= 0) extraClass = ' type-card-machine';
                 return `
-                    <button type="button" class="type-card" data-type-value="${card.value}" data-type-hint="${card.hint}">
+                    <button type="button" class="type-card${extraClass}" data-type-value="${card.value}" data-type-hint="${card.hint}">
                         <div class="type-icon"><i class="${card.icon}"></i></div>
                         <p class="type-title">${card.value}</p>
                         <p class="type-meta">${card.count} existant(s)</p>
