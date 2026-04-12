@@ -3,8 +3,9 @@ import sys
 from threading import Thread
 import time
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from dotenv import load_dotenv
 
 if __package__ is None:
@@ -26,6 +27,20 @@ load_dotenv(os.path.join(os.path.dirname(__file__), "..", "bdd.env"))
 index_mot_cle_collection = keyword_index_collection
 
 app = FastAPI()
+
+# === OPTIMISATIONS ===
+# Compression gzip (réduit taille réponses de ~70%)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# Cache headers pour assets statiques
+@app.middleware("http")
+async def add_cache_headers(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path.endswith((".js", ".css", ".png", ".jpg", ".svg", ".woff2", ".gif")):
+        response.headers["Cache-Control"] = "public, max-age=86400"  # 24h cache
+    elif request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "private, max-age=300"  # 5min cache API
+    return response
 
 def _cleanup_orphan_keywords_on_startup():
     """Nettoie automatiquement les mots-clés orphelins au démarrage."""
@@ -71,7 +86,6 @@ def _background_cleanup_task():
                 thing_id_clean = str(thing_id).strip()
                 if not things_collection.find_one({"id": thing_id_clean}):
                     orphan_thing_ids.append(thing_id_clean)
-            
             if orphan_thing_ids:
                 result = keyword_index_collection.delete_many({"thingId": {"$in": orphan_thing_ids}})
                 print(f"🧹 Nettoyage ({result.deleted_count} keywords)")
@@ -86,6 +100,7 @@ def _get_origins() -> list[str]:
     )
     return [origin.strip() for origin in configured.split(",") if origin.strip()]
 
+# CORS middleware (après les optimisations pour éviter double-traitement)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_get_origins(),
@@ -97,6 +112,12 @@ app.add_middleware(
 # Nettoyage automatique au démarrage
 _cleanup_orphan_keywords_on_startup()
 _initialize_view_counts_on_startup()
+
+# === HEALTH CHECK ENDPOINT ===
+@app.get("/health")
+async def health():
+    """Health check endpoint pour Render"""
+    return {"status": "ok", "service": "IntelliBuild API"}
 
 # Démarrer la tâche de fond pour le nettoyage périodique
 cleanup_thread = Thread(target=_background_cleanup_task, daemon=True)

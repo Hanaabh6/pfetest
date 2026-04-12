@@ -67,21 +67,25 @@
     </div>
   </div>
 
-  <div class="auth-box">
-    <h2 data-key="login_title">Connexion</h2>
+  <main class="auth-box">
+    <h1 data-key="login_title">Connexion</h1>
     <p data-key="login_sub">Accédez à votre plateforme Smart Building</p>
 
     <form id="loginForm">
-      <label data-key="label_email">Email</label>
-      <input id="loginEmail" type="email" placeholder="exemple@mail.com" data-key="ph_email" data-attr="placeholder" required>
+      <div class="form-group">
+        <label for="loginEmail" data-key="label_email">Email</label>
+        <input id="loginEmail" type="email" placeholder="exemple@mail.com" data-key="ph_email" data-attr="placeholder" required>
+      </div>
 
-      <label data-key="label_password">Mot de passe</label>
-      <input id="loginPassword" type="password" placeholder="••••••••" data-key="ph_password" data-attr="placeholder" required>
+      <div class="form-group">
+        <label for="loginPassword" data-key="label_password">Mot de passe</label>
+        <input id="loginPassword" type="password" placeholder="••••••••" data-key="ph_password" data-attr="placeholder" required>
+      </div>
 
       <button type="submit" class="login-btn" data-key="btn_signin">Se connecter</button>
       <button type="button" class="forgot-btn" id="forgotBtn" data-key="forgot_password">Mot de passe oublié ?</button>
     </form>
-  </div>
+  </main>
   
 </section>
 

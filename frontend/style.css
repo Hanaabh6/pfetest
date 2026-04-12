@@ -248,6 +248,7 @@ aside .logo img {
   box-shadow: 0 15px 40px rgba(0,0,0,0.3);
 }
 
+.auth-box h1,
 .auth-box h2 {
   margin-bottom: 10px;
   text-align: center;
@@ -260,18 +261,24 @@ aside .logo img {
   color: #555;
 }
 
+.auth-box .form-group {
+  margin-top: 15px;
+}
+
 .auth-box label {
   display: block;
-  margin-top: 15px;
+  margin-bottom: 6px;
   font-size: 14px;
+  font-weight: 500;
+  color: #333;
 }
 
 .auth-box input {
   width: 100%;
   padding: 10px;
-  margin-top: 5px;
   border-radius: 8px;
   border: 1px solid #ccc;
+  font-size: 14px;
 }
 
 .auth-box button {

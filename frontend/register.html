@@ -69,21 +69,27 @@
     </div>
   </div>
 
-  <div class="auth-box">
+  <main class="auth-box">
 
-    <h2 data-key="register_title">Créer un compte</h2>
+    <h1 data-key="register_title">Créer un compte</h1>
     <p data-key="register_sub">Rejoignez la plateforme IntelliBuild</p>
 
     <form id="registerForm">
 
-      <label data-key="label_email">Email</label>
-      <input id="registerEmail" type="email" placeholder="exemple@mail.com" data-key="ph_email" data-attr="placeholder" required>
+      <div class="form-group">
+        <label for="registerEmail" data-key="label_email">Email</label>
+        <input id="registerEmail" type="email" placeholder="exemple@mail.com" data-key="ph_email" data-attr="placeholder" required>
+      </div>
 
-      <label data-key="label_password">Mot de passe</label>
-      <input id="registerPassword" type="password" placeholder="••••••••" data-key="ph_password" data-attr="placeholder" required>
+      <div class="form-group">
+        <label for="registerPassword" data-key="label_password">Mot de passe</label>
+        <input id="registerPassword" type="password" placeholder="••••••••" data-key="ph_password" data-attr="placeholder" required>
+      </div>
 
-      <label data-key="label_confirm_password">Confirmer le mot de passe</label>
-      <input id="registerConfirm" type="password" placeholder="••••••••" data-key="ph_confirm_password" data-attr="placeholder" required>
+      <div class="form-group">
+        <label for="registerConfirm" data-key="label_confirm_password">Confirmer le mot de passe</label>
+        <input id="registerConfirm" type="password" placeholder="••••••••" data-key="ph_confirm_password" data-attr="placeholder" required>
+      </div>
 
       <!-- bouton inscription -->
       <button type="submit" class="signup-btn" data-key="btn_signup">
@@ -97,7 +103,7 @@
 
     <span class="auth-link" data-html="true" data-key="auth_link_login"></span>
 
-  </div>
+  </main>
   
 </section>
 
