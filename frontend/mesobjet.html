@@ -841,6 +841,7 @@
   </div>
 
   <script src="translations.js"></script>
+  <script src="ws-client.js"></script>
   <script>
     const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "https://pfetest-api.onrender.com";
     const token = localStorage.getItem("userToken");
@@ -867,6 +868,26 @@
     let toastTimer = null;
     let activeFeatureThingId = "";
     const mesObjetsCache = new Map();
+
+    function applyRealtimeDeviceState(eventData) {
+      const thingId = String(eventData && eventData.thing_id ? eventData.thing_id : "").trim();
+      if (!thingId || !mesObjetsCache.has(thingId)) return;
+
+      const cachedItem = mesObjetsCache.get(thingId);
+      if (!cachedItem) return;
+
+      if (eventData.device_state && typeof eventData.device_state === "object") {
+        cachedItem.device_state = eventData.device_state;
+      } else if (eventData.type === "device_unreachable") {
+        const previousState = cachedItem.device_state && typeof cachedItem.device_state === "object" ? cachedItem.device_state : {};
+        cachedItem.device_state = Object.assign({}, previousState, { reachable: false });
+      }
+
+      mesObjetsCache.set(thingId, cachedItem);
+      if (activeFeatureThingId === thingId) {
+        renderFeatureContent(cachedItem);
+      }
+    }
 
     if (!token) {
       window.location.href = "login.html";
@@ -1358,6 +1379,23 @@
       if (!mesObjetsReady) return;
       loadMesObjets();
     });
+
+    if (window.AppWS && token) {
+      window.AppWS.on("device_state_changed", function (eventData) {
+        applyRealtimeDeviceState(eventData);
+      });
+
+      window.AppWS.on("device_unreachable", function (eventData) {
+        applyRealtimeDeviceState(eventData);
+        const message = eventData && eventData.error
+          ? String(eventData.error)
+          : tr("my_objects_remote_action_error", "Impossible d'executer la commande distante");
+        showToast(message, "error");
+      });
+
+      window.AppWS.connect({ apiBase: API_BASE, token: token });
+    }
+
     loadMesObjets().finally(function () {
       mesObjetsReady = true;
     });

@@ -21,6 +21,7 @@ from backend.routers.main_crud import crud_router
 from backend.routers.main_notifications import notifications_router
 from backend.routers.main_recherche import recherche_router
 from backend.routers.main_devices import devices_router
+from backend.routers.main_ws import ws_router
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", "bdd.env"))
 
@@ -130,6 +131,7 @@ app.include_router(borrow_router)
 app.include_router(crud_router)
 app.include_router(notifications_router)
 app.include_router(devices_router)
+app.include_router(ws_router)
 
 @app.get("/")
 def root():

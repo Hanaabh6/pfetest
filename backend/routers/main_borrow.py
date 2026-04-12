@@ -1,12 +1,15 @@
 from datetime import datetime, timezone
+import os
 import sys
 
 import requests
 from fastapi import APIRouter, HTTPException, Request
 
 from ..base import things_collection, user_history_collection
-from .main_auth import _get_user_from_token, _prune_user_history, extract_bearer_token
+from .main_auth import _get_user_from_token,_prune_user_history, extract_bearer_token 
+
 from ..notifications_service import create_notification
+from ..ws_manager import broadcast_event
 
 borrow_router = APIRouter(tags=["borrow"])
 
@@ -78,6 +81,15 @@ def _remote_action_config(thing: dict, action_name: str) -> dict:
     if not href:
         raise HTTPException(status_code=400, detail="Aucune action distante configuree pour cet objet")
     return {"href": href, "method": method}
+
+
+def _remote_timeout_seconds() -> float:
+    raw_value = str(os.getenv("REMOTE_ACTION_TIMEOUT", "2.5")).strip()
+    try:
+        timeout_value = float(raw_value)
+    except Exception:
+        return 2.5
+    return min(6.0, max(0.8, timeout_value))
 
 
 @borrow_router.get("/user/mes-objets")
@@ -304,12 +316,24 @@ def trigger_remote_object_action(thing_id: str, action_name: str, request: Reque
         raise HTTPException(status_code=404, detail="Objet introuvable")
 
     remote_cfg = _remote_action_config(thing, safe_action)
+    timeout_s = _remote_timeout_seconds()
+
+    broadcast_event(
+        {
+            "type": "command_sent",
+            "thing_id": thing_id,
+            "action": safe_action,
+            "user_id": user_id,
+            "email": email,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+    )
 
     # Premier essai: appel selon la configuration fournie
     last_exception = None
     remote_response = None
     try:
-        remote_response = requests.request(remote_cfg["method"], remote_cfg["href"], timeout=6)
+        remote_response = requests.request(remote_cfg["method"], remote_cfg["href"], timeout=timeout_s)
     except requests.RequestException as exc:
         last_exception = exc
 
@@ -317,7 +341,7 @@ def trigger_remote_object_action(thing_id: str, action_name: str, request: Reque
     if not remote_response or not getattr(remote_response, "ok", False):
         # tentatives alternatives: même method avec JSON, POST avec different payloads, puis GET
         try:
-            resp_alt = requests.request(remote_cfg["method"], remote_cfg["href"], json={"action": safe_action}, timeout=6)
+            resp_alt = requests.request(remote_cfg["method"], remote_cfg["href"], json={"action": safe_action}, timeout=timeout_s)
             if getattr(resp_alt, "ok", False):
                 remote_response = resp_alt
         except requests.RequestException as exc2:
@@ -326,7 +350,7 @@ def trigger_remote_object_action(thing_id: str, action_name: str, request: Reque
         if not remote_response or not getattr(remote_response, "ok", False):
             for body in ({"state": safe_action}, {"power": safe_action}):
                 try:
-                    resp_alt = requests.post(remote_cfg["href"], json=body, timeout=6)
+                    resp_alt = requests.post(remote_cfg["href"], json=body, timeout=timeout_s)
                     if getattr(resp_alt, "ok", False):
                         remote_response = resp_alt
                         break
@@ -335,7 +359,7 @@ def trigger_remote_object_action(thing_id: str, action_name: str, request: Reque
 
         if not remote_response or not getattr(remote_response, "ok", False):
             try:
-                resp_alt = requests.get(remote_cfg["href"], timeout=6)
+                resp_alt = requests.get(remote_cfg["href"], timeout=timeout_s)
                 if getattr(resp_alt, "ok", False):
                     remote_response = resp_alt
             except requests.RequestException as exc4:
@@ -346,6 +370,17 @@ def trigger_remote_object_action(thing_id: str, action_name: str, request: Reque
             {"id": thing_id},
             {"$set": {"device_state.reachable": False}},
         )
+        broadcast_event(
+            {
+                "type": "device_unreachable",
+                "thing_id": thing_id,
+                "action": safe_action,
+                "user_id": user_id,
+                "email": email,
+                "error": str(last_exception or "Objet distant injoignable"),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        )
         raise HTTPException(status_code=502, detail=f"Objet distant injoignable: {last_exception}") from last_exception
 
     try:
@@ -355,6 +390,17 @@ def trigger_remote_object_action(thing_id: str, action_name: str, request: Reque
 
     if not getattr(remote_response, "ok", False):
         detail = payload.get("detail") or payload.get("error") or payload.get("message") or "Echec action distante"
+        broadcast_event(
+            {
+                "type": "device_action_failed",
+                "thing_id": thing_id,
+                "action": safe_action,
+                "user_id": user_id,
+                "email": email,
+                "error": str(detail),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        )
         raise HTTPException(status_code=502, detail=str(detail))
 
     now_iso = datetime.now(timezone.utc).isoformat()
@@ -369,6 +415,18 @@ def trigger_remote_object_action(thing_id: str, action_name: str, request: Reque
     things.update_one(
         {"id": thing_id},
         {"$set": {"device_state": device_state}},
+    )
+
+    broadcast_event(
+        {
+            "type": "device_state_changed",
+            "thing_id": thing_id,
+            "action": safe_action,
+            "user_id": user_id,
+            "email": email,
+            "device_state": device_state,
+            "timestamp": now_iso,
+        }
     )
 
     history.insert_one(
