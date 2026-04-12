@@ -36,7 +36,7 @@ async def add_cache_headers(request, call_next):
 ```
 
 ### Optimiser requêtes MongoDB
-- Ajouter indexes sur champs fréquemment interrogés (voir `MONGODB_VALIDATION_SCHEMA.json`)
+
 - Exemple :
   ```python
   db.objects.create_index("name")
