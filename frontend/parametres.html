@@ -709,14 +709,12 @@
 
         usersBody.innerHTML = list.map(function (user) {
           const role = String(user.role || "user").toLowerCase();
-          const nextRole = role === "admin" ? "user" : "admin";
           return `
             <tr>
               <td style="font-weight:700;color:#0f172a;">${user.display_name || displayNameFromEmail(user.email)}</td>
               <td>${user.email || "-"}</td>
               <td>${role}</td>
               <td>
-                <button class="btn btn-outline" onclick="changeUserRole('${user.id}', '${nextRole}', '${user.email || ""}')">Passer ${nextRole}</button>
                 <button class="btn btn-danger" onclick="(function(){ if (String(localStorage.getItem('userId')||'') === '${user.id}') { alert('Vous ne pouvez pas supprimer votre propre compte.'); return; } deleteUser('${user.id}', '${user.email || ""}'); })()" style="margin-left:8px;">Supprimer</button>
               </td>
             </tr>
@@ -795,32 +793,8 @@
       }
     }
 
-    async function changeUserRole(userId, nextRole, email) {
-      if (!userId) return;
-      const ok = await window.appUiConfirm(`Confirmer le changement de role vers '${nextRole}' pour ${email || userId} ?`);
-      if (!ok) return;
-
-      try {
-        const response = await fetch(`${apiBase}/admin/users/${encodeURIComponent(userId)}/role`, {
-          method: "PATCH",
-          headers: authHeaders(),
-          body: JSON.stringify({ role: nextRole })
-        });
-
-        const data = await response.json().catch(function () { return {}; });
-        if (!response.ok) {
-          alert(data.detail || "Impossible de changer le role.");
-          return;
-        }
-
-        await logAction("Gestion utilisateurs", `Role modifie pour ${data.email || userId}: ${nextRole}`, "Succes");
-        await loadUsers();
-        await loadHistory();
-        alert("Role utilisateur mis a jour.");
-      } catch (error) {
-        console.error("Erreur changement role:", error);
-      }
-    }
+    // Fonction `changeUserRole` supprimée — la modification des rôles via l'interface/API est désactivée.
+    // Les rôles doivent être gérés de manière centralisée par l'administrateur.
 
     async function deleteUser(userId, email) {
       if (!userId) return;
@@ -926,7 +900,7 @@
     loadUserActivity();
     loadHistory();
 
-    window.changeUserRole = changeUserRole;
+    // `changeUserRole` removed; role changes disabled.
     window.deleteUser = deleteUser;
   </script>
 </body>

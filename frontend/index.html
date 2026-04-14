@@ -138,7 +138,7 @@
             <option value="ar">AR</option>
         </select>
         <nav class="flex flex-col gap-4 mt-10">
-            <a href="index.html" class="bg-emerald-700 p-3 rounded-lg flex items-center gap-3 text-white">
+            <a href="index.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
                 <i class="fas fa-home"></i> <span data-key="nav_dashboard">Dashboard</span>
             </a>
             <a href="ajouter-objet.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
@@ -149,6 +149,12 @@
             </a>
             <a href="localisations.html" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
                 <i class="fas fa-map-marker-alt"></i> <span data-key="nav_locations">Localisations</span>
+            </a>
+            <a href="#" id="openFavoritesOverlay" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
+                <i class="fas fa-heart"></i> <span data-key="nav_favorites">Favoris</span>
+            </a>
+            <a href="#" id="openReportsOverlay" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
+                <i class="fas fa-flag"></i> <span data-key="nav_reports">Signaler un probleme</span>
             </a>
             <a href="#" id="openHistoryOverlay" class="p-3 hover:bg-gray-800 rounded-lg flex items-center gap-3 transition">
                 <i class="fas fa-clock-rotate-left"></i> <span data-key="nav_history">Historique</span>
@@ -302,6 +308,8 @@
         const adminHistoryKey = 'adminHistory';
         const openHistoryOverlay = document.getElementById('openHistoryOverlay');
         const openRoleOverlay = document.getElementById('openRoleOverlay');
+        const openFavoritesOverlay = document.getElementById('openFavoritesOverlay');
+        const openReportsOverlay = document.getElementById('openReportsOverlay');
         const infoOverlay = document.getElementById('infoOverlay');
         const overlayBackdrop = document.getElementById('overlayBackdrop');
         const overlayClose = document.getElementById('overlayClose');
@@ -311,6 +319,7 @@
         const positionDebugText = document.getElementById('positionDebugText');
         let editingThingId = '';
         let objectCacheById = {};
+        const REPORTS_STORAGE_KEY = 'intelliBuildReports';
 
         function authHeaders() {
             const token = localStorage.getItem('userToken') || '';
@@ -346,6 +355,19 @@
                 return translations[locale][key];
             }
             return fallback;
+        }
+
+        function escapeHtml(value) {
+            return String(value || '').replace(/[&<>"']/g, function (char) {
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                };
+                return map[char] || char;
+            });
         }
 
         function openOverlay(title, htmlContent) {
@@ -538,6 +560,273 @@
             `;
         }
 
+        function readStoredReports() {
+            try {
+                const raw = localStorage.getItem(REPORTS_STORAGE_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                console.error('Erreur lecture signalements:', error);
+                return [];
+            }
+        }
+
+        function writeStoredReports(reports) {
+            try {
+                localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(reports));
+                return true;
+            } catch (error) {
+                console.error('Erreur sauvegarde signalements:', error);
+                return false;
+            }
+        }
+
+        function getReportStatusLabel(status) {
+            const map = {
+                new: 'Nouveau',
+                in_review: 'En cours',
+                resolved: 'Résolu',
+                archived: 'Archivé'
+            };
+            return map[String(status || '').trim()] || 'Nouveau';
+        }
+
+        function getReportPriorityLabel(priority) {
+            const map = {
+                high: 'Haute',
+                medium: 'Moyenne',
+                low: 'Faible'
+            };
+            return map[String(priority || '').trim()] || 'Faible';
+        }
+
+        function getReportPriorityClass(priority) {
+            const value = String(priority || '').trim();
+            if (value === 'high') return 'bg-rose-100 text-rose-700 border-rose-200';
+            if (value === 'medium') return 'bg-amber-100 text-amber-700 border-amber-200';
+            return 'bg-slate-100 text-slate-700 border-slate-200';
+        }
+
+        function getReportStatusClass(status) {
+            const value = String(status || '').trim();
+            if (value === 'resolved') return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+            if (value === 'in_review') return 'bg-sky-100 text-sky-700 border-sky-200';
+            if (value === 'archived') return 'bg-slate-100 text-slate-600 border-slate-200';
+            return 'bg-rose-100 text-rose-700 border-rose-200';
+        }
+
+        function getReportTypeLabel(type, fallback) {
+            const map = {
+                objet_indisponible: 'Objet non disponible',
+                objet_endommage: 'Objet endommagé',
+                utilisateur_frauduleux: 'Utilisateur suspect',
+                bug_application: 'Bug application',
+                autre: 'Autre'
+            };
+            const normalized = String(type || '').trim();
+            return fallback || map[normalized] || normalized || 'Autre';
+        }
+
+        function formatReportDate(value) {
+            if (!value) return '-';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return String(value);
+            return date.toLocaleString('fr-FR', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function normalizeReport(report) {
+            const raw = report && typeof report === 'object' ? report : {};
+            const status = ['new', 'in_review', 'resolved', 'archived'].includes(String(raw.status || '').trim())
+                ? String(raw.status).trim()
+                : 'new';
+            const priority = ['high', 'medium', 'low'].includes(String(raw.priority || '').trim())
+                ? String(raw.priority).trim()
+                : 'low';
+
+            return {
+                id: String(raw.id || raw._id || ''),
+                type: String(raw.type || 'autre'),
+                type_label: String(raw.type_label || getReportTypeLabel(raw.type, '')),
+                object_id: String(raw.object_id || raw.thing_id || ''),
+                description: String(raw.description || raw.detail || ''),
+                reporter_name: String(raw.reporter_name || raw.user_name || raw.email || 'Utilisateur'),
+                reporter_email: String(raw.reporter_email || raw.email || ''),
+                reporter_id: String(raw.reporter_id || raw.user_id || ''),
+                reported_at: String(raw.reported_at || raw.created_at || ''),
+                updated_at: String(raw.updated_at || raw.reported_at || raw.created_at || ''),
+                status: status,
+                priority: priority,
+                handled_by: String(raw.handled_by || ''),
+                source: String(raw.source || 'local')
+            };
+        }
+
+        function getReportStatusRank(status) {
+            const order = { new: 0, in_review: 1, resolved: 2, archived: 3 };
+            return order[String(status || '').trim()] ?? 99;
+        }
+
+        function listStoredReports() {
+            return readStoredReports()
+                .map(normalizeReport)
+                .filter(function (report) {
+                    return Boolean(report.id);
+                })
+                .sort(function (left, right) {
+                    const rankDiff = getReportStatusRank(left.status) - getReportStatusRank(right.status);
+                    if (rankDiff !== 0) return rankDiff;
+                    return new Date(right.reported_at || 0).getTime() - new Date(left.reported_at || 0).getTime();
+                });
+        }
+
+        function buildReportsOverlayHtml(reports) {
+            const counts = reports.reduce(function (acc, report) {
+                acc.total += 1;
+                acc[report.status] = (acc[report.status] || 0) + 1;
+                return acc;
+            }, { total: 0, new: 0, in_review: 0, resolved: 0, archived: 0 });
+
+            const rows = reports.length ? reports.map(function (report) {
+                const safeId = escapeHtml(report.id);
+                const reporterLine = report.reporter_email
+                    ? `${escapeHtml(report.reporter_name)}<div class="text-xs text-slate-500 mt-1">${escapeHtml(report.reporter_email)}</div>`
+                    : escapeHtml(report.reporter_name);
+                const handledLine = report.handled_by
+                    ? `<div class="text-xs text-slate-400 mt-2">Traité par ${escapeHtml(report.handled_by)}</div>`
+                    : '';
+
+                return `
+                    <tr class="border-b border-slate-200 align-top">
+                        <td class="p-3 text-xs text-slate-500 whitespace-nowrap">
+                            <div class="font-bold text-slate-700">#${safeId}</div>
+                            <div>${escapeHtml(formatReportDate(report.reported_at))}</div>
+                        </td>
+                        <td class="p-3 text-sm">
+                            <div class="font-semibold text-slate-800">${escapeHtml(getReportTypeLabel(report.type, report.type_label))}</div>
+                            <div class="text-xs text-slate-500 mt-1">${report.object_id ? 'Objet: ' + escapeHtml(report.object_id) : 'Objet non précisé'}</div>
+                        </td>
+                        <td class="p-3 text-sm text-slate-700 max-w-[320px]">
+                            <div class="whitespace-pre-wrap break-words">${escapeHtml(report.description || 'Aucune description')}</div>
+                        </td>
+                        <td class="p-3 text-sm text-slate-700">${reporterLine}</td>
+                        <td class="p-3 text-sm">
+                            <span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${getReportPriorityClass(report.priority)}">${escapeHtml(getReportPriorityLabel(report.priority))}</span>
+                        </td>
+                        <td class="p-3 text-sm">
+                            <span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${getReportStatusClass(report.status)}">${escapeHtml(getReportStatusLabel(report.status))}</span>
+                            ${handledLine}
+                        </td>
+                        <td class="p-3 text-sm">
+                            <div class="flex flex-wrap gap-2">
+                                <button type="button" data-report-id="${safeId}" data-report-action="in_review" class="px-3 py-1.5 rounded-lg border border-sky-200 text-sky-700 bg-sky-50 text-xs font-bold hover:bg-sky-100 ${report.status === 'in_review' ? 'opacity-50 cursor-not-allowed' : ''}" ${report.status === 'in_review' ? 'disabled' : ''}>Prendre en charge</button>
+                                <button type="button" data-report-id="${safeId}" data-report-action="resolved" class="px-3 py-1.5 rounded-lg border border-emerald-200 text-emerald-700 bg-emerald-50 text-xs font-bold hover:bg-emerald-100 ${report.status === 'resolved' ? 'opacity-50 cursor-not-allowed' : ''}" ${report.status === 'resolved' ? 'disabled' : ''}>Résolu</button>
+                                <button type="button" data-report-id="${safeId}" data-report-action="archived" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 bg-slate-100 text-xs font-bold hover:bg-slate-200 ${report.status === 'archived' ? 'opacity-50 cursor-not-allowed' : ''}" ${report.status === 'archived' ? 'disabled' : ''}>Archiver</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('') : `
+                <tr>
+                    <td colspan="7" class="p-6 text-center text-slate-500">Aucun signalement utilisateur pour le moment.</td>
+                </tr>
+            `;
+
+            return `
+                <div class="grid gap-5">
+                    <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="glass-main p-4 rounded-2xl shadow-xl border border-white/40">
+                            <p class="text-xs uppercase tracking-widest text-slate-500">Total</p>
+                            <p class="text-3xl font-extrabold text-slate-800 mt-2">${counts.total}</p>
+                        </div>
+                        <div class="glass-main p-4 rounded-2xl shadow-xl border border-white/40">
+                            <p class="text-xs uppercase tracking-widest text-slate-500">Nouveaux</p>
+                            <p class="text-3xl font-extrabold text-rose-700 mt-2">${counts.new}</p>
+                        </div>
+                        <div class="glass-main p-4 rounded-2xl shadow-xl border border-white/40">
+                            <p class="text-xs uppercase tracking-widest text-slate-500">En cours</p>
+                            <p class="text-3xl font-extrabold text-sky-700 mt-2">${counts.in_review}</p>
+                        </div>
+                        <div class="glass-main p-4 rounded-2xl shadow-xl border border-white/40">
+                            <p class="text-xs uppercase tracking-widest text-slate-500">Clôturés</p>
+                            <p class="text-3xl font-extrabold text-emerald-700 mt-2">${counts.resolved + counts.archived}</p>
+                        </div>
+                    </section>
+
+                    <section class="glass-main p-6 rounded-3xl shadow-2xl">
+                        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900">Signalements utilisateurs</h3>
+                                <p class="text-sm text-slate-500 mt-1">Traitez les remontées reçues depuis l'espace utilisateur et suivez leur état.</p>
+                            </div>
+                            <span class="inline-flex items-center rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700">${counts.total} signalement(s)</span>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="text-gray-600 border-b border-gray-300">
+                                    <tr class="text-[11px] uppercase font-bold tracking-wider">
+                                        <th class="p-3">Date</th>
+                                        <th class="p-3">Type</th>
+                                        <th class="p-3">Description</th>
+                                        <th class="p-3">Utilisateur</th>
+                                        <th class="p-3">Priorité</th>
+                                        <th class="p-3">Statut</th>
+                                        <th class="p-3">Traitement</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">${rows}</tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        function setReportStatus(reportId, nextStatus) {
+            const reports = readStoredReports().map(normalizeReport);
+            const targetId = String(reportId || '').trim();
+            const index = reports.findIndex(function (report) {
+                return String(report.id || '').trim() === targetId;
+            });
+            if (index < 0) return;
+
+            reports[index] = {
+                ...reports[index],
+                status: nextStatus,
+                handled_by: localStorage.getItem('userEmail') || 'admin@intellibuild',
+                updated_at: new Date().toISOString()
+            };
+
+            if (!writeStoredReports(reports)) {
+                return;
+            }
+
+            addAdminHistory('Signalement', `Signalement ${targetId} -> ${getReportStatusLabel(nextStatus)}`, 'Succes');
+            openReportsOverlayView();
+        }
+
+        function attachReportOverlayActions() {
+            overlayBody.querySelectorAll('[data-report-action]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const reportId = button.getAttribute('data-report-id') || '';
+                    const action = button.getAttribute('data-report-action') || '';
+                    if (!reportId || !action) return;
+                    setReportStatus(reportId, action);
+                });
+            });
+        }
+
+        function openReportsOverlayView() {
+            openOverlay('Signalements utilisateurs', buildReportsOverlayHtml(listStoredReports()));
+            attachReportOverlayActions();
+        }
+
         function buildDetailOverlayHtml(details) {
             return `
                 <div class="glass-main p-6 rounded-3xl shadow-2xl">
@@ -591,8 +880,8 @@
                                     <option value="Bureau RH">Bureau RH</option>
                                     <option value="Comptabilité">Comptabilité</option>
                                     <option value="Salle de Presse">Salle de Presse</option>
-                                    <option value="Réunion 2B">Réunion 2B</option>
                                     <option value="Bureau Com">Bureau Com</option>
+                                    <option value="Archives">Archives</option>
                                 </optgroup>
                                 <optgroup label="3ème étage">
                                     <option value="Open Space Alpha">Open Space Alpha</option>
@@ -609,62 +898,6 @@
                                     <option value="Terrasse Privée">Terrasse Privée</option>
                                     <option value="Secrétariat">Secrétariat</option>
                                     <option value="Archives Dir.">Archives Dir.</option>
-                                </optgroup>
-                                <optgroup label="Étage 5">
-                                    <option value="Open Space 5A">Open Space 5A</option>
-                                    <option value="Open Space 5B">Open Space 5B</option>
-                                    <option value="Salle Sprint">Salle Sprint</option>
-                                    <option value="Design Studio">Design Studio</option>
-                                    <option value="Salle Produit">Salle Produit</option>
-                                    <option value="Archives 5">Archives 5</option>
-                                </optgroup>
-                                <optgroup label="Étage 6">
-                                    <option value="Support N1">Support N1</option>
-                                    <option value="Support N2">Support N2</option>
-                                    <option value="Incident Room">Incident Room</option>
-                                    <option value="SRE Hub">SRE Hub</option>
-                                    <option value="Planning">Planning</option>
-                                    <option value="Salle Briefing">Salle Briefing</option>
-                                </optgroup>
-                                <optgroup label="Étage 7">
-                                    <option value="Classe 7A">Classe 7A</option>
-                                    <option value="Classe 7B">Classe 7B</option>
-                                    <option value="Salle Exam">Salle Exam</option>
-                                    <option value="Media Room">Media Room</option>
-                                    <option value="Cowork 7">Cowork 7</option>
-                                    <option value="Coaching">Coaching</option>
-                                </optgroup>
-                                <optgroup label="Étage 8">
-                                    <option value="Lab IoT A">Lab IoT A</option>
-                                    <option value="Lab IoT B">Lab IoT B</option>
-                                    <option value="Prototype Hub">Prototype Hub</option>
-                                    <option value="Test CEM">Test CEM</option>
-                                    <option value="QA Hardware">QA Hardware</option>
-                                    <option value="Atelier R&D">Atelier R&D</option>
-                                </optgroup>
-                                <optgroup label="Étage 9">
-                                    <option value="NOC 9A">NOC 9A</option>
-                                    <option value="NOC 9B">NOC 9B</option>
-                                    <option value="Réseau Core">Réseau Core</option>
-                                    <option value="Salle UPS">Salle UPS</option>
-                                    <option value="Stock Fibre">Stock Fibre</option>
-                                    <option value="Monitoring 24-7">Monitoring 24-7</option>
-                                </optgroup>
-                                <optgroup label="Étage 10">
-                                    <option value="Direction Produit">Direction Produit</option>
-                                    <option value="Direction Ops">Direction Ops</option>
-                                    <option value="Direction Tech">Direction Tech</option>
-                                    <option value="Board Room">Board Room</option>
-                                    <option value="Lounge 10">Lounge 10</option>
-                                    <option value="Archives Exécutif">Archives Exécutif</option>
-                                </optgroup>
-                                <optgroup label="Étage 11">
-                                    <option value="Observatoire IA">Observatoire IA</option>
-                                    <option value="Salle Drone">Salle Drone</option>
-                                    <option value="Bureau Innovation">Bureau Innovation</option>
-                                    <option value="War Room 11">War Room 11</option>
-                                    <option value="Studio XR">Studio XR</option>
-                                    <option value="Terrasse Technique">Terrasse Technique</option>
                                 </optgroup>
                             </select>
                         </label>
@@ -955,6 +1188,16 @@
             openOverlay(tr('role_overlay_title', 'Role utilisateur'), buildRoleOverlayHtml());
         });
 
+        openFavoritesOverlay.addEventListener('click', function (e) {
+            e.preventDefault();
+            openOverlay('Mes Favoris', '<div class="glass-main p-6 rounded-3xl shadow-2xl"><p class="text-slate-700">Consultez les objets favoris sur <a href="mesobjet.html" class="text-emerald-600 font-bold hover:underline">Mes objets</a></p></div>');
+        });
+
+        openReportsOverlay.addEventListener('click', function (e) {
+            e.preventDefault();
+            openReportsOverlayView();
+        });
+
         overlayBackdrop.addEventListener('click', closeOverlay);
         overlayClose.addEventListener('click', closeOverlay);
 
@@ -962,7 +1205,29 @@
             if (event.key === 'Escape' && !infoOverlay.hidden) closeOverlay();
         });
 
+        function updateActiveMenuLink() {
+            const path = (window.location.pathname.split('/').pop() || '').toLowerCase();
+            const currentPage = path.replace('.html', '') || 'index';
+
+            const navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href') || '';
+                const linkPage = href.replace('.html', '').replace('/', '').toLowerCase();
+
+                if (linkPage === currentPage || (currentPage === '' && linkPage === 'index')) {
+                    link.classList.add('bg-emerald-700');
+                    link.style.color = '#ffffff';
+                    link.style.boxShadow = 'inset 0 0 0 1px rgba(16, 185, 129, 0.45)';
+                } else {
+                    link.classList.remove('bg-emerald-700');
+                    link.style.color = '';
+                    link.style.boxShadow = '';
+                }
+            });
+        }
+
         window.onload = () => {
+            updateActiveMenuLink();
             refreshPositionDebugBadge();
             chargerObjets("");
         };

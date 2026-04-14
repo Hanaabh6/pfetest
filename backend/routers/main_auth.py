@@ -398,38 +398,12 @@ def get_admin_user_activity(request: Request, limit: int = 200):
 
 @auth_router.patch("/admin/users/{target_user_id}/role")
 def update_admin_user_role(target_user_id: str, request: Request, data: UpdateUserRoleRequest = Body(...)):
-    require_admin(request)
-    actor = _get_authenticated_user(request)
-    role = str(data.role or "").strip().lower()
-    if role not in {"admin", "user"}:
-        raise HTTPException(status_code=400, detail="Role invalide")
-
-    row = _get_user_profile_row(target_user_id)
-    if not row:
-        raise HTTPException(status_code=404, detail="Utilisateur introuvable")
-
-    supabase.table("utilisateur").update({"role": role}).eq("id", target_user_id).execute()
-
-    recipient_email = str(row.get("email", "") or "")
-    create_notification(
-        target_role=role,
-        recipient_user_id=target_user_id,
-        recipient_email=recipient_email,
-        actor_user_id=str(actor.id),
-        actor_email=str(getattr(actor, "email", "") or ""),
-        title="Role mis a jour",
-        message=f"Votre role a ete modifie vers '{role}'.",
-        notif_type="info",
-        metadata={"action": "role_update", "new_role": role},
+    # Endpoint disabled: changing user roles via API is intentionally blocked.
+    # This prevents accidental or unauthorized role changes from the UI or API.
+    raise HTTPException(
+        status_code=403,
+        detail="Modification des rôles désactivée via l'API. Veuillez contacter l'administrateur.",
     )
-
-    return {
-        "success": True,
-        "id": target_user_id,
-        "role": role,
-        "email": recipient_email,
-        "display_name": _display_name_from_profile(recipient_email, row),
-    }
 
 
 @auth_router.delete("/admin/users/{target_user_id}")

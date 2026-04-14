@@ -64,16 +64,40 @@ body {
 }
 .lang-note { margin-top: 8px; margin-bottom: 0; font-size: 11px; opacity: 0.88; }
 
-.main { flex: 1; padding: 30px; }
+.main { flex: 1; padding: 30px; display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; }
 .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
 .search {
-  width: min(100%, 560px); padding: 14px 16px; border-radius: 25px; border: none; outline: none;
-  background: rgba(255, 255, 255, 0.9); box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12); font-size: 15px;
+  width: 100%; padding: 18px 28px 18px 56px; border-radius: 40px; border: 2px solid rgba(14, 165, 164, 0.25); outline: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(240, 253, 250, 0.96)); 
+  box-shadow: 0 10px 35px rgba(14, 165, 164, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  font-size: 18px; font-weight: 500; color: #0f172a; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+  box-sizing: border-box; position: relative;
 }
-.profile { position: relative; }
+.search:hover {
+  border-color: rgba(14, 165, 164, 0.45); box-shadow: 0 14px 45px rgba(14, 165, 164, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.search:focus {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(240, 253, 250, 1)); 
+  box-shadow: 0 18px 60px rgba(14, 165, 164, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.8); 
+  border-color: rgba(14, 165, 164, 0.6); transform: translateY(-3px);
+}
+.search::placeholder {
+  color: #cbd5e1; font-weight: 500;
+}
+.search-wrapper {
+  position: relative; width: 100%; max-width: 650px;
+}
+.search-wrapper::before {
+  content: "\f002"; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; left: 24px; top: 50%; 
+  transform: translateY(-50%); color: #0ea5a4; font-size: 20px; pointer-events: none; transition: all 0.3s ease;
+}
+.profile { position: fixed; top: 24px; right: 30px; z-index: 100; }
 .avatar {
-  width: 52px; height: 52px; background: #1f9d55; color: var(--text-light);
-  border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; border: none;
+  width: 56px; height: 56px; background: linear-gradient(135deg, #0f766e, #0ea5a4); color: var(--text-light);
+  border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; border: 2px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 20px rgba(15, 118, 110, 0.25); transition: all 0.3s ease;
+}
+.avatar:hover {
+  box-shadow: 0 12px 28px rgba(15, 118, 110, 0.35); transform: scale(1.05);
 }
 .dropdown {
   display: none; position: absolute; right: 0; top: 60px; background: rgba(255, 255, 255, 0.96);
@@ -107,18 +131,33 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
 
 .overlay-modal { position: fixed; inset: 0; display: grid; place-items: center; z-index: 1200; }
 .overlay-modal[hidden] { display: none; }
-.overlay-backdrop { position: absolute; inset: 0; background: rgba(2, 6, 23, 0.66); backdrop-filter: blur(3px); }
+.overlay-backdrop { position: absolute; inset: 0; background: rgba(2, 6, 23, 0.75); backdrop-filter: blur(6px); }
 .overlay-panel {
-  position: relative; width: min(980px, calc(100vw - 32px)); max-height: calc(100vh - 48px); overflow: auto;
-  border-radius: 22px; padding: 24px; background: rgba(255, 255, 255, 0.97);
-  box-shadow: 0 24px 55px rgba(2, 6, 23, 0.35); border: 1px solid rgba(148, 163, 184, 0.25);
+  position: relative; width: min(1000px, calc(100vw - 40px)); max-height: calc(100vh - 60px); overflow: auto;
+  border-radius: 28px; padding: 32px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.99), rgba(240, 253, 250, 0.98));
+  box-shadow: 0 32px 80px rgba(2, 6, 23, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.8); border: 2px solid rgba(14, 165, 164, 0.15);
 }
-.overlay-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-.overlay-title { margin: 0; font-size: 22px; color: #0f172a; }
+.overlay-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 2px solid rgba(14, 165, 164, 0.15); }
+.overlay-title { margin: 0; font-size: 26px; color: #0f172a; font-weight: 800; }
 .overlay-close {
-  border: none; width: 36px; height: 36px; border-radius: 999px; background: #e2e8f0; color: #0f172a; font-size: 18px; cursor: pointer;
+  border: none; width: 40px; height: 40px; border-radius: 999px; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); color: #0f172a; font-size: 20px; cursor: pointer; transition: all 0.3s ease;
 }
-.overlay-close:hover { background: #cbd5e1; }
+.overlay-close:hover { background: linear-gradient(135deg, #e5e7eb, #d1d5db); transform: rotate(90deg); }
+
+.overlay-body {
+  animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 .app-toast {
   position: fixed;
@@ -402,6 +441,89 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
   color: #be123c;
 }
 
+.feature-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0 0 24px;
+}
+
+.feature-box {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
+  border-radius: 22px;
+  padding: 20px;
+}
+
+.feature-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.feature-kicker {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f766e;
+}
+
+.feature-title {
+  margin: 0;
+  font-size: 20px;
+  color: #0f172a;
+}
+
+.feature-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, #0f766e, #0ea5a4);
+  box-shadow: 0 12px 24px rgba(15, 118, 110, 0.2);
+}
+
+.feature-copy {
+  margin: 12px 0 0;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.feature-metric {
+  margin: 16px 0 0;
+  font-size: 30px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.feature-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.feature-link {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 800;
+  cursor: pointer;
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.feature-link.primary {
+  background: linear-gradient(135deg, #0f766e, #0ea5a4);
+  color: #fff;
+}
+
 @media (max-width: 900px) {
   .container { flex-direction: column; width: 100%; }
   .sidebar { width: 100%; }
@@ -412,6 +534,7 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
   .profile-grid { grid-template-columns: 1fr; }
   .object-detail-grid { grid-template-columns: 1fr; }
   .object-sheet-head { flex-direction: column; }
+  .feature-strip { grid-template-columns: 1fr; }
 }
 </style>
   <link rel="stylesheet" href="theme.css">
@@ -450,6 +573,8 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
         <a href="localisations-user.html"><i class="fas fa-map-marker-alt"></i><span data-key="nav_locations">Localisations</span></a>
         <a href="notifications-user.html"><i class="fas fa-bell"></i><span data-key="nav_notifications">Notifications</span></a>
         <a href="documatation.html"><i class="fas fa-book-open"></i><span data-key="nav_documentation">Documentation</span></a>
+        <a href="#" id="openFavoritesOverlay"><i class="fas fa-heart"></i><span data-key="nav_favorites">Favoris</span></a>
+        <a href="#" id="openReportOverlay"><i class="fas fa-exclamation-circle"></i><span data-key="nav_reports">Signaler un problème</span></a>
         <a href="#" id="openHistoryOverlay"><i class="fas fa-clock-rotate-left"></i><span data-key="nav_history">Historique</span></a>
         <a href="#" id="openRoleOverlay"><i class="fas fa-user-shield"></i><span data-key="nav_role">Role</span></a>
         <a href="parametres-user.html"><i class="fas fa-cog"></i><span data-key="nav_settings">Parametres</span></a>
@@ -470,7 +595,7 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
   </div>
 
   <div class="main">
-    <section class="user-hero">
+    <section class="user-hero" style="display: none;">
       <div class="hero-copy">
         <span class="hero-kicker">Espace utilisateur</span>
         <h1>Retrouvez vos objets plus vite</h1>
@@ -488,26 +613,76 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
       </div>
     </section>
 
-    <div class="topbar user-toolbar">
-      <input id="mainSearch" class="search" type="search" placeholder="Rechercher un objet..." data-key="search_objects" data-attr="placeholder" aria-label="Rechercher un objet">
-      <div class="profile">
-        <button class="avatar" id="profileButton" type="button" aria-haspopup="menu" aria-controls="menu" aria-expanded="false">A</button>
-        <div class="dropdown" id="menu" role="menu" aria-labelledby="profileButton">
-          <strong id="menuName">Amel Amiri</strong>
-          <hr>
-          <a href="#" role="menuitem" id="openProfileOverlay" data-key="menu_profile">Mon profil</a>
-          <a href="#" role="menuitem" id="logoutLink" data-key="logout">Deconnexion</a>
-        </div>
+    <div class="topbar user-toolbar" style="justify-content: center; align-items: center; gap: 0; margin-bottom: 40px; margin-top: 40px;">
+      <div class="search-wrapper">
+        <input id="mainSearch" class="search" type="search" placeholder="Rechercher un objet..." data-key="search_objects" data-attr="placeholder" aria-label="Rechercher un objet">
       </div>
     </div>
 
-    <div class="cards">
+    <section class="feature-strip">
+      <article class="feature-box">
+        <div class="feature-top">
+          <div>
+            <p class="feature-kicker">Favoris</p>
+            <h3 class="feature-title">Objets suivis</h3>
+          </div>
+          <div class="feature-icon"><i class="fas fa-heart"></i></div>
+        </div>
+        <p class="feature-copy">Gardez vos objets utiles à portée de main et rouvrez leur fiche rapidement.</p>
+        <p class="feature-metric" id="favoriteCountDisplay">0</p>
+        <div class="feature-actions">
+          <button type="button" class="feature-link primary" id="openFavoritesMainBtn">Ouvrir favoris</button>
+        </div>
+      </article>
+
+      <article class="feature-box">
+        <div class="feature-top">
+          <div>
+            <p class="feature-kicker">Signalement</p>
+            <h3 class="feature-title">Remonter un souci</h3>
+          </div>
+          <div class="feature-icon"><i class="fas fa-flag"></i></div>
+        </div>
+        <p class="feature-copy">Déclarez un objet indisponible, un bug ou un comportement suspect sans quitter la page.</p>
+        <p class="feature-metric" id="reportCountDisplay">0</p>
+        <div class="feature-actions">
+          <button type="button" class="feature-link primary" id="openReportMainBtn">Créer un signalement</button>
+        </div>
+      </article>
+
+      <article class="feature-box">
+        <div class="feature-top">
+          <div>
+            <p class="feature-kicker">Historique</p>
+            <h3 class="feature-title">Dernières actions</h3>
+          </div>
+          <div class="feature-icon"><i class="fas fa-clock-rotate-left"></i></div>
+        </div>
+        <p class="feature-copy">Consultez vos dernières actions effectuées sur les objets du bâtiment.</p>
+        <p class="feature-metric" id="historyCountDisplay">0</p>
+        <div class="feature-actions">
+          <button type="button" class="feature-link" id="openHistoryMainBtn">Voir historique</button>
+        </div>
+      </article>
+    </section>
+
+    <div class="profile">
+      <button class="avatar" id="profileButton" type="button" aria-haspopup="menu" aria-controls="menu" aria-expanded="false">A</button>
+      <div class="dropdown" id="menu" role="menu" aria-labelledby="profileButton">
+        <strong id="menuName">Amel Amiri</strong>
+        <hr>
+        <a href="#" role="menuitem" id="openProfileOverlay" data-key="menu_profile">Mon profil</a>
+        <a href="#" role="menuitem" id="logoutLink" data-key="logout">Deconnexion</a>
+      </div>
+    </div>
+
+    <div class="cards" style="display: none;">
       <div class="card"><h3 data-key="stat_total">Total</h3><p id="statTotal">0</p></div>
       <div class="card"><h3 data-key="stat_active">Actifs</h3><p id="statActifs">0</p></div>
       <div class="card"><h3 data-key="stat_inactive">Inactifs</h3><p id="statInactifs">0</p></div>
     </div>
 
-    <div class="table-box dashboard-table" id="objectsSection">
+    <div class="table-box dashboard-table" id="objectsSection" style="margin-top: 40px; display: none;">
       <h3 class="section-head" data-key="user_recent_objects">Objets recents</h3>
       <table>
         <thead>
@@ -516,8 +691,7 @@ tbody tr:hover { background: rgba(16, 185, 129, 0.1); }
             <th scope="col" data-key="table_type">Type</th>
             <th scope="col" data-key="table_location">Localisation</th>
             <th scope="col">Distance</th>
-            <th scope="col" data-key="table_status">Statut</th>
-            <th scope="col">Action</th>
+            <th scope="col">Disponibilité</th>
           </tr>
         </thead>
         <tbody id="objectsBody"></tbody>
@@ -561,6 +735,8 @@ const mainSearch = document.getElementById("mainSearch");
 const openObjectsSection = document.getElementById("openObjectsSection");
 const objectsSection = document.getElementById("objectsSection");
 const openHistoryOverlay = document.getElementById("openHistoryOverlay");
+const openFavoritesOverlay = document.getElementById("openFavoritesOverlay");
+const openReportOverlay = document.getElementById("openReportOverlay");
 const openRoleOverlay = document.getElementById("openRoleOverlay");
 const infoOverlay = document.getElementById("infoOverlay");
 const overlayBackdrop = document.getElementById("overlayBackdrop");
@@ -573,16 +749,25 @@ const appToastText = document.getElementById("appToastText");
 const statTotal = document.getElementById("statTotal");
 const statActifs = document.getElementById("statActifs");
 const statInactifs = document.getElementById("statInactifs");
+const favoriteCountDisplay = document.getElementById("favoriteCountDisplay");
+const reportCountDisplay = document.getElementById("reportCountDisplay");
+const historyCountDisplay = document.getElementById("historyCountDisplay");
+const openFavoritesMainBtn = document.getElementById("openFavoritesMainBtn");
+const openReportMainBtn = document.getElementById("openReportMainBtn");
+const openHistoryMainBtn = document.getElementById("openHistoryMainBtn");
 const apiBase = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "https://pfetest-api.onrender.com";
 const userToken = localStorage.getItem("userToken");
 let appToastTimer = null;
 const PROFILE_NAME_KEY = "userDisplayName";
 const NEARBY_NOTIFY_CACHE_KEY = "nearbyThingNotificationCache";
+const FAVORITES_KEY = "userFavorites";
+const REPORTS_STORAGE_KEY = "intelliBuildReports";
 let historyEntries = [];
 let selectedObjectDetails = null;
 let userProfileData = null;
 let roomCoordsCache = {};
 const objectDetailsCache = new Map();
+let favorites = [];
 
 if (!userToken) window.location.href = "login.html";
 
@@ -738,6 +923,60 @@ function formatHumanDate(value) {
   return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
 }
 
+function readStoredReports() {
+  try {
+    const raw = localStorage.getItem(REPORTS_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.error("Erreur lecture signalements:", error);
+    return [];
+  }
+}
+
+function writeStoredReports(entries) {
+  try {
+    localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(entries));
+    return true;
+  } catch (error) {
+    console.error("Erreur sauvegarde signalements:", error);
+    return false;
+  }
+}
+
+function createClientReportId() {
+  return `report-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function getReportTypeLabel(type) {
+  const map = {
+    objet_indisponible: "Objet non disponible",
+    objet_endommage: "Objet endommagé",
+    utilisateur_frauduleux: "Utilisateur suspect",
+    bug_application: "Bug application",
+    autre: "Autre"
+  };
+  return map[String(type || "").trim()] || "Autre";
+}
+
+function getReportPriority(type) {
+  const raw = String(type || "").trim();
+  if (raw === "utilisateur_frauduleux" || raw === "objet_endommage") return "high";
+  if (raw === "objet_indisponible" || raw === "bug_application") return "medium";
+  return "low";
+}
+
+function getCurrentReporterSnapshot() {
+  const email = String((userProfileData && userProfileData.email) || localStorage.getItem("userEmail") || "").trim();
+  const id = String((userProfileData && userProfileData.id) || localStorage.getItem("userId") || "").trim();
+  const displayName = getDisplayNameFromStorage() || menuName.textContent || (email ? email.split("@")[0] : "Utilisateur");
+  return {
+    id: id,
+    email: email,
+    name: displayName || "Utilisateur"
+  };
+}
+
 async function loadUserProfile() {
   try {
     const response = await fetch(`${apiBase}/user/profile`, { method: "GET", headers: getAuthHeaders() });
@@ -857,21 +1096,23 @@ function buildProfileOverlayHtml(profile, stats) {
 
 function buildHistoryOverlayHtml() {
   if (!historyEntries.length) {
-    return "<p>Aucune activite recente pour votre compte.</p>";
+    return `<div style="text-align:center;padding:60px 40px;"><i class="fas fa-history" style="font-size:48px;color:#cbd5e1;margin-bottom:16px;display:block;"></i><p style="color:#64748b;font-size:18px;margin:0;font-weight:600;">Aucune activité enregistrée</p><p style="color:#94a3b8;font-size:14px;margin:8px 0 0;">Votre historique apparaîtra ici</p></div>`;
   }
 
-  const rows = historyEntries.slice(0, 80).map(function (entry) {
+  const rows = historyEntries.slice(0, 80).map(function (entry, index) {
     const status = String(entry.status || "-");
-    const badgeClass = status.toLowerCase().includes("succes")
+    const isSuccess = status.toLowerCase().includes("succes");
+    const badgeClass = isSuccess
       ? "background:#dcfce7;color:#166534;"
       : "background:#fee2e2;color:#b91c1c;";
+    const iconClass = isSuccess ? "fas fa-check-circle" : "fas fa-alert-circle";
 
     return `
-      <tr>
-        <td style="padding:10px;border-bottom:1px solid #e2e8f0;white-space:nowrap;color:#475569;">${sanitizeText(entry.date || formatHumanDate(entry.created_at) || "-")}</td>
-        <td style="padding:10px;border-bottom:1px solid #e2e8f0;font-weight:700;color:#0f172a;">${sanitizeText(entry.action || "-")}</td>
-        <td style="padding:10px;border-bottom:1px solid #e2e8f0;color:#334155;max-width:420px;overflow:hidden;text-overflow:ellipsis;">${sanitizeText(entry.detail || "-")}</td>
-        <td style="padding:10px;border-bottom:1px solid #e2e8f0;"><span style="display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700;${badgeClass}">${sanitizeText(status)}</span></td>
+      <tr style="border-bottom:1px solid #e2e8f0;transition:background 0.3s ease;" onmouseover="this.style.background='rgba(14, 165, 164, 0.05)'" onmouseout="this.style.background=''">
+        <td style="padding:14px;color:#475569;white-space:nowrap;"><i class="fas fa-calendar" style="color:#0ea5a4;margin-right:8px;"></i>${sanitizeText(entry.date || formatHumanDate(entry.created_at) || "-")}</td>
+        <td style="padding:14px;font-weight:700;color:#0f172a;"><i class="${iconClass}" style="margin-right:8px;color:${isSuccess ? '#10b981' : '#ef4444'};"></i>${sanitizeText(entry.action || "-")}</td>
+        <td style="padding:14px;color:#334155;max-width:300px;overflow:hidden;text-overflow:ellipsis;">${sanitizeText(entry.detail || "-")}</td>
+        <td style="padding:14px;"><span style="display:inline-block;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;${badgeClass}">${sanitizeText(status)}</span></td>
       </tr>
     `;
   }).join("");
@@ -880,11 +1121,129 @@ function buildHistoryOverlayHtml() {
     <div style="overflow-x:auto;">
       <table style="width:100%;border-collapse:collapse;">
         <thead>
-          <tr>
-            <th style="text-align:left;padding:10px;border-bottom:1px solid #cbd5e1;font-size:12px;color:#64748b;text-transform:uppercase;">Date</th>
-            <th style="text-align:left;padding:10px;border-bottom:1px solid #cbd5e1;font-size:12px;color:#64748b;text-transform:uppercase;">Action</th>
-            <th style="text-align:left;padding:10px;border-bottom:1px solid #cbd5e1;font-size:12px;color:#64748b;text-transform:uppercase;">Detail</th>
-            <th style="text-align:left;padding:10px;border-bottom:1px solid #cbd5e1;font-size:12px;color:#64748b;text-transform:uppercase;">Statut</th>
+          <tr style="border-bottom:2px solid #0ea5a4;background:linear-gradient(135deg, rgba(14, 165, 164, 0.08), rgba(240, 253, 250, 0.08));">
+            <th style="text-align:left;padding:16px;font-size:13px;color:#0f766e;text-transform:uppercase;font-weight:800;letter-spacing:0.5px;">📅 Date</th>
+            <th style="text-align:left;padding:16px;font-size:13px;color:#0f766e;text-transform:uppercase;font-weight:800;letter-spacing:0.5px;">⚡ Action</th>
+            <th style="text-align:left;padding:16px;font-size:13px;color:#0f766e;text-transform:uppercase;font-weight:800;letter-spacing:0.5px;">📝 Détails</th>
+            <th style="text-align:left;padding:16px;font-size:13px;color:#0f766e;text-transform:uppercase;font-weight:800;letter-spacing:0.5px;">✓ Statut</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function loadFavoritesFromStorage() {
+  try {
+    const raw = localStorage.getItem(scopedKey(FAVORITES_KEY, getCurrentUserId()));
+    if (raw) {
+      favorites = JSON.parse(raw);
+    } else {
+      favorites = [];
+    }
+  } catch (error) {
+    console.error("Erreur chargement favoris:", error);
+    favorites = [];
+  }
+}
+
+function updateUserFeatureWidgets() {
+  if (favoriteCountDisplay) {
+    favoriteCountDisplay.textContent = String(Array.isArray(favorites) ? favorites.length : 0);
+  }
+
+  if (reportCountDisplay) {
+    const currentId = String((userProfileData && userProfileData.id) || localStorage.getItem("userId") || "").trim();
+    const currentEmail = String((userProfileData && userProfileData.email) || localStorage.getItem("userEmail") || "").trim().toLowerCase();
+    const reports = readStoredReports().filter(function (entry) {
+      const reporterId = String(entry && entry.reporter_id ? entry.reporter_id : "").trim();
+      const reporterEmail = String(entry && entry.reporter_email ? entry.reporter_email : "").trim().toLowerCase();
+      if (currentId && reporterId) return reporterId === currentId;
+      if (currentEmail && reporterEmail) return reporterEmail === currentEmail;
+      return false;
+    });
+    reportCountDisplay.textContent = String(reports.length);
+  }
+
+  if (historyCountDisplay) {
+    historyCountDisplay.textContent = String(Array.isArray(historyEntries) ? historyEntries.length : 0);
+  }
+}
+
+function saveFavoritesToStorage() {
+  try {
+    localStorage.setItem(scopedKey(FAVORITES_KEY, getCurrentUserId()), JSON.stringify(favorites));
+  } catch (error) {
+    console.error("Erreur sauvegarde favoris:", error);
+  }
+}
+
+function isFavorite(objectId) {
+  const id = String(objectId || "").trim();
+  return favorites.some(fav => String(fav.id || "").trim() === id);
+}
+
+function toggleFavorite(objectId, objectData) {
+  const id = String(objectId || "").trim();
+  if (!id) return;
+
+  const index = favorites.findIndex(fav => String(fav.id || "").trim() === id);
+  if (index >= 0) {
+    favorites.splice(index, 1);
+    showAppToast("Objet retire des favoris", "success", "Favoris");
+  } else {
+    const data = objectData || objectDetailsCache.get(id) || { id: id, name: "Objet" };
+    favorites.push({
+      id: id,
+      name: data.name || "Objet",
+      type: data.type || "-",
+      location: data.location || "-",
+      description: data.description || "",
+      statusCode: data.statusCode || "inactive",
+      distanceText: data.distanceText || "-",
+      sameRoom: Boolean(data.sameRoom),
+      added_at: new Date().toISOString()
+    });
+    showAppToast("Objet ajoute aux favoris", "success", "Favoris");
+  }
+  saveFavoritesToStorage();
+  updateUserFeatureWidgets();
+}
+
+function buildFavoritesOverlayHtml() {
+  if (!favorites.length) {
+    return `<div style="text-align:center;padding:60px 40px;"><i class="fas fa-heart" style="font-size:48px;color:#cbd5e1;margin-bottom:16px;display:block;"></i><p style="color:#64748b;font-size:18px;margin:0;font-weight:600;">Aucun objet favori</p><p style="color:#94a3b8;font-size:14px;margin:8px 0 0;">Ajoutez des objets à vos favoris avec le cœur</p></div>`;
+  }
+
+  const rows = favorites.map(function (fav) {
+    const statusCode = fav.statusCode || "inactive";
+    const statusClass = statusCode === "active" ? "status-active" : "status-inactive";
+    const statusText = statusCode === "active" ? tr("status_active_label", "Active") : tr("status_inactive_label", "Inactive");
+    const favId = String(fav.id || "").replace(/"/g, "&quot;");
+    const isSuccess = statusCode === "active";
+    
+    return `
+      <tr style="border-bottom:1px solid #e2e8f0;transition:background 0.3s ease;cursor:pointer;" class="favorite-row" tabindex="0" role="button" data-fav-id="${favId}" data-fav-name="${sanitizeText(fav.name || "Objet")}" onmouseover="this.style.background='rgba(14, 165, 164, 0.05)'" onmouseout="this.style.background=''">
+        <td style="padding:14px;font-weight:600;color:#0f172a;"><i class="fas fa-star" style="color:#f59e0b;margin-right:8px;"></i>${sanitizeText(fav.name || "Objet")}</td>
+        <td style="padding:14px;color:#475569;">${sanitizeText(fav.type || "-")}</td>
+        <td style="padding:14px;color:#475569;"><i class="fas fa-map-marker-alt" style="color:#0ea5a4;margin-right:6px;"></i>${sanitizeText(fav.location || "-")}</td>
+        <td style="padding:14px;"><span style="display:inline-block;padding:6px 12px;border-radius:20px;font-weight:600;background:${statusCode === "active" ? "#dcfce7" : "#ffe4e6"};color:${statusCode === "active" ? "#065f46" : "#be123c"};font-size:12px;"><i class="fas ${isSuccess ? "fa-check-circle" : "fa-alert-circle"}" style="margin-right:4px;"></i>${statusText}</span></td>
+        <td style="padding:14px;"><button type="button" class="remove-favorite-btn" data-fav-id="${favId}" style="border:none;background:#fee2e2;color:#b91c1c;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;transition:all 0.3s ease;" onmouseover="this.style.background='#fca5a5'" onmouseout="this.style.background='#fee2e2'"><i class="fas fa-trash-alt"></i> Retirer</button></td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="border-bottom:2px solid #0ea5a4;background:linear-gradient(135deg, rgba(14, 165, 164, 0.08), rgba(240, 253, 250, 0.08));">
+            <th style="text-align:left;padding:16px;font-size:13px;color:#0f766e;text-transform:uppercase;font-weight:800;letter-spacing:0.5px;">⭐ Nom</th>
+            <th style="text-align:left;padding:16px;font-size:13px;color:#0f766e;text-transform:uppercase;font-weight:800;letter-spacing:0.5px;">📦 Type</th>
+            <th style="text-align:left;padding:16px;font-size:13px;color:#0f766e;text-transform:uppercase;font-weight:800;letter-spacing:0.5px;">📍 Localisation</th>
+            <th style="text-align:left;padding:16px;font-size:13px;color:#0f766e;text-transform:uppercase;font-weight:800;letter-spacing:0.5px;">✓ Statut</th>
+            <th style="text-align:left;padding:16px;font-size:13px;color:#0f766e;text-transform:uppercase;font-weight:800;letter-spacing:0.5px;">🗑️ Action</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
@@ -924,6 +1283,109 @@ async function logUserAction(action, detail, status) {
       body: JSON.stringify({ action, detail, status })
     });
   } catch (error) { console.error("Erreur log historique:", error); }
+}
+
+function buildReportFormHtml() {
+  return `
+    <form id="reportForm" style="display:flex;flex-direction:column;gap:1.2rem;">
+      <div style="display:flex;flex-direction:column;gap:0.5rem;">
+        <label style="font-weight:600;color:#333;font-size:14px;">Type de problème *</label>
+        <select id="reportType" required style="padding:0.8rem;border:2px solid #ddd;border-radius:6px;font-size:14px;background:#fff;color:#333;cursor:pointer;font-family:Arial, sans-serif;">
+          <option value="">Sélectionnez un type</option>
+          <option value="objet_indisponible">Objet non disponible</option>
+          <option value="objet_endommage">Objet endommagé/cassé</option>
+          <option value="utilisateur_frauduleux">Utilisateur suspect</option>
+          <option value="bug_application">Bug dans l'application</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+      
+      <div style="display:flex;flex-direction:column;gap:0.5rem;">
+        <label style="font-weight:600;color:#333;font-size:14px;">Objet concerné (optionnel)</label>
+        <input type="text" id="reportObjectId" placeholder="ID ou nom de l'objet" style="padding:0.8rem;border:2px solid #ddd;border-radius:6px;font-size:14px;background:#fff;font-family:Arial, sans-serif;">
+      </div>
+      
+      <div style="display:flex;flex-direction:column;gap:0.5rem;">
+        <label style="font-weight:600;color:#333;font-size:14px;">Description du problème *</label>
+        <textarea id="reportDescription" required placeholder="Décrivez en détail le problème..." style="padding:0.8rem;border:2px solid #ddd;border-radius:6px;font-size:14px;background:#fff;resize:vertical;min-height:120px;font-family:Arial, sans-serif;"></textarea>
+      </div>
+      
+      <div style="display:flex;gap:1rem;margin-top:1rem;">
+        <button type="button" id="cancelReportBtn" style="flex:1;padding:0.9rem;border:none;background:#ccc;color:#333;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:Arial, sans-serif;">Annuler</button>
+        <button type="submit" style="flex:1;padding:0.9rem;border:none;background:linear-gradient(135deg, #ff6b6b, #ee5a52);color:white;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 12px rgba(255,107,107,0.3);font-family:Arial, sans-serif;">Envoyer le signalement</button>
+      </div>
+    </form>
+  `;
+}
+
+async function submitReport(reportType, objectId, description) {
+  const cleanType = String(reportType || "").trim();
+  const cleanDescription = String(description || "").trim();
+  const cleanObjectId = String(objectId || "").trim();
+  if (!cleanType || !cleanDescription) {
+    showAppToast("Remplissez les champs obligatoires", "error", "Erreur");
+    return false;
+  }
+
+  try {
+    const reporter = getCurrentReporterSnapshot();
+    const reportData = {
+      id: createClientReportId(),
+      type: cleanType,
+      type_label: getReportTypeLabel(cleanType),
+      object_id: cleanObjectId || null,
+      description: cleanDescription,
+      reported_at: new Date().toISOString(),
+      reporter_id: reporter.id,
+      reporter_email: reporter.email || null,
+      reporter_name: reporter.name,
+      priority: getReportPriority(cleanType),
+      status: "new",
+      source: "user-dashboard",
+      updated_at: new Date().toISOString()
+    };
+
+    const reports = readStoredReports();
+    reports.unshift(reportData);
+    if (!writeStoredReports(reports)) {
+      showAppToast("Impossible d'enregistrer le signalement", "error", "Erreur");
+      return false;
+    }
+
+    let remoteSynced = false;
+    try {
+      const response = await fetch(`${apiBase}/reports/create`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(reportData)
+      });
+
+      if (response.ok) {
+        remoteSynced = true;
+      } else {
+        const errorText = await response.text();
+        console.error("Erreur lors de l'envoi du signalement:", errorText);
+      }
+    } catch (networkError) {
+      console.error("Erreur sync signalement:", networkError);
+    }
+
+    showAppToast(
+      remoteSynced
+        ? "Signalement envoyé avec succès"
+        : "Signalement enregistré. L'admin peut maintenant le traiter.",
+      "success",
+      "Rapport"
+    );
+    await logUserAction("Signalement créé", `Type: ${cleanType}`, remoteSynced ? "Succes" : "Local");
+    updateUserFeatureWidgets();
+    closeOverlay();
+    return true;
+  } catch (error) {
+    console.error("Erreur signalement:", error);
+    showAppToast("Erreur réseau lors du signalement", "error", "Erreur");
+    return false;
+  }
 }
 
 function shouldNotifyNearbyClient(thingId) {
@@ -1062,8 +1524,7 @@ async function loadUserThings(query) {
           <td>${sanitizeText(objectType)}</td>
           <td>${sanitizeText(objectLocation)}</td>
           <td>${sanitizeText(distanceText)}</td>
-          <td><span class="badge ${statusClass}" data-status="${statusCode}">${statusText}</span></td>
-          <td>Voir les details</td>
+          <td><button type="button" class="check-availability-btn" data-obj-id="${safeObjectId}" style="border:none;background:linear-gradient(135deg, #0f766e, #0ea5a4);color:#fff;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;transition:all 0.3s ease;" onmouseover="this.style.boxShadow='0 6px 16px rgba(14, 165, 164, 0.3)'" onmouseout="this.style.boxShadow='none'"><i class="fas fa-check-circle"></i> Vérifier</button></td>
         </tr>
       `;
     }).join("");
@@ -1080,7 +1541,16 @@ async function loadUserThings(query) {
       });
     });
 
+    objectsBody.querySelectorAll(".check-availability-btn").forEach((btn) => {
+      btn.addEventListener("click", async (event) => {
+        event.stopPropagation();
+        const objId = btn.dataset.objId || "";
+        await checkObjectAvailability(objId);
+      });
+    });
+
     refreshStats();
+    objectsSection.style.display = "block";
   } catch (error) {
     console.error("Erreur objets:", error);
   }
@@ -1111,6 +1581,39 @@ async function prendreObjet(objId, objName) {
   } catch (error) {
     console.error("Erreur prendre:", error);
     showAppToast("Erreur reseau", "error", "Connexion");
+  }
+}
+
+async function checkObjectAvailability(objId) {
+  const safeObjId = String(objId || "").trim();
+  if (!safeObjId) {
+    showAppToast("Identifiant objet introuvable", "error", "Erreur");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${apiBase}/things/${encodeURIComponent(safeObjId)}`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    });
+
+    if (!response.ok) {
+      showAppToast("Impossible de vérifier la disponibilité", "error", "Erreur");
+      return;
+    }
+
+    const data = await response.json();
+    const statusCode = toStatusCode(data.availability || data.status);
+    const isAvailable = statusCode === "active";
+
+    if (isAvailable) {
+      showAppToast(`${String(data.name || "L'objet")} est disponible ! Vous pouvez le prendre.`, "success", "✅ Disponible");
+    } else {
+      showAppToast(`${String(data.name || "L'objet")} n'est pas disponible pour le moment.`, "error", "❌ Non disponible");
+    }
+  } catch (error) {
+    console.error("Erreur vérification disponibilité:", error);
+    showAppToast("Erreur réseau lors de la vérification", "error", "Connexion");
   }
 }
 
@@ -1154,9 +1657,13 @@ function openObjectDecision(row) {
   const actions = isAvailable
     ? `<div class="object-action-row">
          <button type="button" onclick="confirmTakeSelectedObject()" class="object-action-btn primary">Oui, je le prends</button>
+         <button type="button" onclick="toggleFavoriteFromDetail()" class="object-action-btn light" id="toggleFavBtn" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-heart"></i> ${isFavorite(selectedObjectDetails.id) ? "Retirer des favoris" : "Ajouter aux favoris"}</button>
+         <button type="button" onclick="openReportOverlayView()" class="object-action-btn light"><i class="fas fa-flag"></i> Signaler</button>
          <button type="button" onclick="closeOverlay()" class="object-action-btn light">Pas maintenant</button>
        </div>`
     : `<div class="object-action-row">
+         <button type="button" onclick="toggleFavoriteFromDetail()" class="object-action-btn light" id="toggleFavBtn" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-heart"></i> ${isFavorite(selectedObjectDetails.id) ? "Retirer des favoris" : "Ajouter aux favoris"}</button>
+         <button type="button" onclick="openReportOverlayView()" class="object-action-btn light"><i class="fas fa-flag"></i> Signaler</button>
          <button type="button" onclick="closeOverlay()" class="object-action-btn light">Fermer</button>
        </div>`;
 
@@ -1213,6 +1720,105 @@ async function confirmTakeSelectedObject() {
   await prendreObjet(selectedObjectDetails.id, selectedObjectDetails.name || "Objet");
 }
 
+function toggleFavoriteFromDetail() {
+  if (!selectedObjectDetails?.id) return;
+  toggleFavorite(selectedObjectDetails.id, selectedObjectDetails);
+  const btn = document.getElementById("toggleFavBtn");
+  if (btn) {
+    btn.innerHTML = `<i class="fas fa-heart"></i> ${isFavorite(selectedObjectDetails.id) ? "Retirer des favoris" : "Ajouter aux favoris"}`;
+  }
+}
+
+function openFavoriteObjectDetail(favoriteId) {
+  const fav = favorites.find(function (entry) {
+    return String(entry && entry.id ? entry.id : "").trim() === String(favoriteId || "").trim();
+  });
+  if (!fav) return;
+
+  objectDetailsCache.set(String(fav.id), {
+    id: String(fav.id),
+    name: fav.name || "Objet",
+    type: fav.type || "-",
+    location: fav.location || "-",
+    description: fav.description || "Aucune description disponible.",
+    statusCode: fav.statusCode || "inactive",
+    statusText: (fav.statusCode || "inactive") === "active"
+      ? tr("status_active_label", "Actif")
+      : tr("status_inactive_label", "Inactif"),
+    distanceText: fav.distanceText || "-",
+    sameRoom: Boolean(fav.sameRoom)
+  });
+
+  openObjectDecision({
+    dataset: {
+      objId: String(fav.id),
+      objName: String(fav.name || "Objet"),
+      objStatus: String(fav.statusCode || "inactive")
+    }
+  });
+}
+
+function attachFavoritesOverlayEvents() {
+  overlayBody.querySelectorAll(".favorite-row").forEach(function (row) {
+    row.addEventListener("click", function (event) {
+      if (event.target.closest(".remove-favorite-btn")) return;
+      openFavoriteObjectDetail(row.dataset.favId || "");
+    });
+    row.addEventListener("keydown", function (event) {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      openFavoriteObjectDetail(row.dataset.favId || "");
+    });
+  });
+
+  overlayBody.querySelectorAll(".remove-favorite-btn").forEach(function (button) {
+    button.addEventListener("click", function (event) {
+      event.stopPropagation();
+      const targetId = String(button.dataset.favId || "").trim();
+      if (!targetId) return;
+      favorites = favorites.filter(function (entry) {
+        return String(entry && entry.id ? entry.id : "").trim() !== targetId;
+      });
+      saveFavoritesToStorage();
+      showAppToast("Objet retire des favoris", "success", "Favoris");
+      openFavoritesOverlayView();
+    });
+  });
+}
+
+function openFavoritesOverlayView() {
+  loadFavoritesFromStorage();
+  openOverlay("Mes objets favoris", buildFavoritesOverlayHtml());
+  attachFavoritesOverlayEvents();
+}
+
+function openReportOverlayView(prefilledObjectId) {
+  openOverlay("Signaler un problème", buildReportFormHtml());
+
+  const objectInput = document.getElementById("reportObjectId");
+  const form = document.getElementById("reportForm");
+  const cancelBtn = document.getElementById("cancelReportBtn");
+  const defaultObjectId = String(prefilledObjectId || (selectedObjectDetails && selectedObjectDetails.id) || "").trim();
+
+  if (objectInput && defaultObjectId) {
+    objectInput.value = defaultObjectId;
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", closeOverlay);
+  }
+
+  if (form) {
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const type = document.getElementById("reportType")?.value || "";
+      const objId = document.getElementById("reportObjectId")?.value || "";
+      const desc = document.getElementById("reportDescription")?.value || "";
+      await submitReport(type, objId, desc);
+    });
+  }
+}
+
 async function retournerObjet(objId) {
   const safeObjId = String(objId || "").trim();
   if (!safeObjId) {
@@ -1244,9 +1850,8 @@ async function retournerObjet(objId) {
 function refreshStats() {
   const visibleRows = Array.from(objectsBody.querySelectorAll(".object-row")).filter(row => row.style.display !== "none");
   const total = visibleRows.length;
-  const actifs = visibleRows.filter(row => {
-    const badge = row.querySelector("[data-status]");
-    return badge && badge.getAttribute("data-status") === "active";
+  const actifs = visibleRows.filter(function (row) {
+    return String(row.dataset.objStatus || "").toLowerCase() === "active";
   }).length;
   const inactifs = total - actifs;
   statTotal.textContent = String(total);
@@ -1265,9 +1870,16 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-mainSearch.addEventListener("input", () => loadUserThings(mainSearch.value));
+mainSearch.addEventListener("input", async () => {
+  if (mainSearch.value.trim() === "") {
+    objectsSection.style.display = "none";
+  } else {
+    // Ne pas montrer les objets au dashboard, attendre que l'user clique sur "Objets"
+  }
+});
 openObjectsSection.addEventListener("click", async (event) => {
   event.preventDefault();
+  objectsSection.style.display = "block";
   await loadUserThings(mainSearch.value || "");
   objectsSection.scrollIntoView({ behavior: "smooth", block: "start" });
 });
@@ -1275,8 +1887,34 @@ openObjectsSection.addEventListener("click", async (event) => {
 openHistoryOverlay.addEventListener("click", async (event) => {
   event.preventDefault();
   await loadUserHistory();
+  updateUserFeatureWidgets();
   openOverlay("Historique utilisateur", buildHistoryOverlayHtml());
 });
+if (openFavoritesMainBtn) {
+  openFavoritesMainBtn.addEventListener("click", openFavoritesOverlayView);
+}
+if (openReportMainBtn) {
+  openReportMainBtn.addEventListener("click", function () {
+    openReportOverlayView();
+  });
+}
+if (openHistoryMainBtn) {
+  openHistoryMainBtn.addEventListener("click", async function () {
+    await loadUserHistory();
+    updateUserFeatureWidgets();
+    openOverlay("Historique utilisateur", buildHistoryOverlayHtml());
+  });
+}
+openFavoritesOverlay.addEventListener("click", async (event) => {
+  event.preventDefault();
+  openFavoritesOverlayView();
+});
+
+openReportOverlay.addEventListener("click", (event) => {
+  event.preventDefault();
+  openReportOverlayView();
+});
+
 openRoleOverlay.addEventListener("click", (event) => {
   event.preventDefault();
   openOverlay("Role utilisateur", "<p>Role: User</p>");
@@ -1348,8 +1986,10 @@ async function initUserDashboard() {
   if (String((userProfileData && userProfileData.role) || "").toLowerCase() !== "user") {
     return;
   }
+  loadFavoritesFromStorage();
   await loadUserThings("");
   await loadUserHistory();
+  updateUserFeatureWidgets();
 
   const uid = getCurrentUserId() || "anonymous";
   const sessionLoginKey = `sessionLoginLogged:${uid}`;
@@ -1363,6 +2003,5 @@ initUserDashboard();
 </script>
 </body>
 </html>
-
 
 
