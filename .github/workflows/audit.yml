@@ -1,0 +1,46 @@
+name: Accessibility and Lighthouse audits
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 5 * * 1' # weekly on Monday at 05:00 UTC
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Lighthouse & Pa11y
+        run: |
+          npm install -g lighthouse pa11y
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser || sudo apt-get install -y chromium || true
+
+      - name: Run Lighthouse audit
+        env:
+          URL: ${{ secrets.DEPLOY_URL }}
+        run: |
+          if [ -z "$URL" ]; then echo "Set DEPLOY_URL secret to your public app URL" && exit 1; fi
+          lighthouse "$URL" --output html --output-path lighthouse-report.html --chrome-flags="--no-sandbox"
+
+      - name: Run Pa11y accessibility audit
+        env:
+          URL: ${{ secrets.DEPLOY_URL }}
+        run: |
+          if [ -z "$URL" ]; then echo "Set DEPLOY_URL secret to your public app URL" && exit 1; fi
+          pa11y "$URL" --reporter html > pa11y-report.html || true
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-reports
+          path: |
+            lighthouse-report.html
+            pa11y-report.html
